@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.example.nuviofrontend.R
 import com.example.nuviofrontend.ui.theme.BackgroundColorInput
 import com.example.nuviofrontend.ui.theme.ColorInput
+import com.example.nuviofrontend.ui.theme.White
 
 @Composable
 fun CustomTextField(
@@ -51,7 +52,7 @@ fun CustomTextField(
         label?.let {
             Text(
                 text = it,
-                color = Color.White,
+                color = White,
                 style = textStyle,
                 modifier = Modifier.width(304.dp).padding(bottom = 4.dp),
                 textAlign = TextAlign.Start
@@ -70,8 +71,8 @@ fun CustomTextField(
             value = value,
             onValueChange = onValueChange,
             singleLine = true,
-            cursorBrush = SolidColor(Color.White),
-            textStyle = textStyle.copy(color = Color.White),
+            cursorBrush = SolidColor(White),
+            textStyle = textStyle.copy(color = White),
             visualTransformation = if (isPassword && !passwordVisible) PasswordVisualTransformation() else VisualTransformation.None,
             decorationBox = { innerTextField ->
                 Row(
@@ -103,7 +104,7 @@ fun CustomTextField(
                             Icon(
                                 painter = icon,
                                 contentDescription = if (passwordVisible) "Hide password" else "Show password",
-                                tint = Color.White
+                                tint = White
                             )
                         }
                     }

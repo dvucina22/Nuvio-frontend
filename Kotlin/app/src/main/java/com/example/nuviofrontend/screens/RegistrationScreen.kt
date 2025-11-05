@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import com.example.nuviofrontend.R
 import com.example.nuviofrontend.screens.components.CustomButton
 import com.example.nuviofrontend.ui.theme.ButtonColorDark
+import com.example.nuviofrontend.ui.theme.White
 import com.example.nuviofrontend.ui_components.CustomTextField
 
 @Composable
@@ -83,7 +84,7 @@ fun RegistrationForm() {
     )  {
         Text(
             text = "Registracija",
-            color = Color.White,
+            color = White,
             style = MaterialTheme.typography.displayLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp)
