@@ -9,14 +9,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -89,32 +91,33 @@ fun MainScreen(navController: NavController){
             ) {
                 Button(
                     onClick = { /*todo login*/ },
-                    modifier = Modifier.fillMaxWidth().height(48.dp).padding(vertical = 4.dp),
+                    modifier = Modifier.height(45.dp).width(230.dp).padding(vertical = 4.dp),
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = ButtonColorDark)
                 ){
-                    Text("Login", color = Color.White)
+                    Text("Prijava", color = Color.White, style = MaterialTheme.typography.labelSmall,)
                 }
+                Spacer(modifier = Modifier.height(8.dp))
                 Button(
                     onClick = {
                         navController.navigate("registration")
                     },
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp)
+                        .height(45.dp).width(230.dp)
                         .padding(vertical = 4.dp),
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = ButtonColorDark)
                 ) {
-                    Text("Register", color = Color.White)
+                    Text("Registracija", color = Color.White, style = MaterialTheme.typography.labelSmall,)
                 }
                 Text(
-                    text = "Continue as guest",
+                    text = "Nastavi kao gost",
                     color = Color(0xFF9DA39F),
                     fontSize = 14.sp,
+                    style = MaterialTheme.typography.labelSmall,
                     textAlign = TextAlign.Center,
                     textDecoration = TextDecoration.Underline,
-                    modifier = Modifier.padding(top = 24.dp).clickable {/*todo guest*/}
+                    modifier = Modifier.padding(top = 24.dp).clickable {/*todo gost*/}
                 )
             }
         }
