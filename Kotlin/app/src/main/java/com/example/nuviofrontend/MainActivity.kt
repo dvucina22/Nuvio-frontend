@@ -38,6 +38,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.nuviofrontend.screens.components.CustomButton
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -89,27 +90,15 @@ fun MainScreen(navController: NavController){
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Button(
-                    onClick = { /*todo login*/ },
-                    modifier = Modifier.height(45.dp).width(230.dp).padding(vertical = 4.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = ButtonColorDark)
-                ){
-                    Text("Prijava", color = Color.White, style = MaterialTheme.typography.labelSmall,)
-                }
+                CustomButton(
+                    text = "Prijava",
+                    onClick = { /*todo login*/ }
+                )
                 Spacer(modifier = Modifier.height(8.dp))
-                Button(
-                    onClick = {
-                        navController.navigate("registration")
-                    },
-                    modifier = Modifier
-                        .height(45.dp).width(230.dp)
-                        .padding(vertical = 4.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = ButtonColorDark)
-                ) {
-                    Text("Registracija", color = Color.White, style = MaterialTheme.typography.labelSmall,)
-                }
+                CustomButton(
+                    text = "Registracija",
+                    onClick = { navController.navigate("registration") }
+                )
                 Text(
                     text = "Nastavi kao gost",
                     color = Color(0xFF9DA39F),
