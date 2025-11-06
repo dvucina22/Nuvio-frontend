@@ -1,4 +1,4 @@
-package com.example.nuviofrontend.ui_components
+package com.example.nuviofrontend.core.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -27,9 +26,9 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.nuviofrontend.R
-import com.example.nuviofrontend.ui.theme.BackgroundColorInput
-import com.example.nuviofrontend.ui.theme.ColorInput
-import com.example.nuviofrontend.ui.theme.White
+import com.example.nuviofrontend.core.ui.theme.BackgroundColorInput
+import com.example.nuviofrontend.core.ui.theme.ColorInput
+import com.example.nuviofrontend.core.ui.theme.White
 
 @Composable
 fun CustomTextField(

@@ -1,4 +1,4 @@
-package com.example.nuviofrontend.ui.theme
+package com.example.nuviofrontend.core.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
