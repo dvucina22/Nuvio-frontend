@@ -1,4 +1,9 @@
 package com.example.nuviofrontend.feature.auth.data.dto
 
-class LoginRequest {
-}
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
+data class LoginRequest(
+    val email: String,
+    val password: String
+)

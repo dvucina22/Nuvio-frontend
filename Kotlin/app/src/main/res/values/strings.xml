@@ -1,3 +1,24 @@
 <resources>
     <string name="app_name">NuvioFrontend</string>
+
+    <string name="login_title">Prijava</string>
+    <string name="label_email">Email</string>
+    <string name="label_password">Lozinka</string>
+    <string name="placeholder_email">Unesite email</string>
+    <string name="placeholder_password">Unesite lozinku</string>
+    <string name="button_login">Prijava</string>
+    <string name="text_register_prompt">Nemate račun? Registrirajte se.</string>
+    <string name="toast_invalid_credentials">Unesite ispravne podatke!</string>
+    <string name="logo_content_description">Logo aplikacije</string>
+
+    <string name="error_email_empty">Email ne smije biti prazan</string>
+    <string name="error_email_invalid">Neispravan format email adrese</string>
+    <string name="error_password_empty">Lozinka ne smije biti prazna</string>
+
+    <string name="error_login_invalid_credentials">Pogrešni podaci za prijavu.</string>
+    <string name="error_login_forbidden">Nemate dopuštenje za pristup.</string>
+    <string name="error_server_generic">Pogreška na poslužitelju (%1$d).</string>
+    <string name="error_network">Provjerite internetsku vezu.</string>
+    <string name="error_unknown">Nepoznata pogreška.</string>
+    <string name="welcome_message">Dobro došli!</string>
 </resources>
