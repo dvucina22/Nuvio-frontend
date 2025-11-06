@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
-import java.io.IOException
 import javax.inject.Inject
 
 sealed class RegisterState {
@@ -99,7 +98,12 @@ class RegisterViewModel @Inject constructor(
                 when {
                     errorBody.contains("email already exists", ignoreCase = true) -> emailError.value = app.getString(R.string.error_email_exists)
                     errorBody.contains("password", ignoreCase = true) -> passwordError.value = app.getString(R.string.error_password_complexity)
-                    else -> generalError.value = "Server greška: ${e.code()}"
+                    else -> {
+                        val message = app.getString(R.string.error_generic, e.code())
+                        generalError.value = message
+                        _registerState.value = RegisterState.Error(message)
+                    }
+
                 }
             }
         }
