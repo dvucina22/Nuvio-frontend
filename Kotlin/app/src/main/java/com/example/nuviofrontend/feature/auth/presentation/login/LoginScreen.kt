@@ -1,9 +1,5 @@
 package com.example.nuviofrontend.feature.auth.presentation.login
 
-import android.R.attr.onClick
-import android.R.attr.text
-import android.R.attr.textStyle
-import android.R.attr.value
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -26,9 +22,10 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.nuviofrontend.R
+import com.example.nuviofrontend.core.ui.components.CustomButton
 import com.example.nuviofrontend.core.ui.components.CustomTextField
 import com.example.nuviofrontend.core.ui.theme.White
-import com.example.nuviofrontend.screens.components.CustomButton
+
 
 @Composable
 fun LoginScreen(onNavigateToRegister: () -> Unit, onNavigateToHome: () -> Unit, viewModel: LoginViewModel) {
