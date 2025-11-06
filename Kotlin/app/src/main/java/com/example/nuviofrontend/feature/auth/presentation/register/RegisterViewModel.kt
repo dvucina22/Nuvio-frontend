@@ -101,13 +101,6 @@ class RegisterViewModel @Inject constructor(
                     errorBody.contains("password", ignoreCase = true) -> passwordError.value = app.getString(R.string.error_password_complexity)
                     else -> generalError.value = "Server greška: ${e.code()}"
                 }
-                _registerState.value = RegisterState.Error(app.getString(R.string.error_generic))
-            } catch (e: IOException) {
-                generalError.value = app.getString(R.string.error_network)
-                _registerState.value = RegisterState.Error(app.getString(R.string.error_network))
-            } catch (e: Exception) {
-                generalError.value = app.getString(R.string.error_unknown)
-                _registerState.value = RegisterState.Error(app.getString(R.string.error_unknown))
             }
         }
     }
