@@ -23,10 +23,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -49,11 +49,11 @@ fun HomeScreen() {
                 drawerContainerColor = Color(0xFF1A1F16)
             ) {
                 DrawerHeader()
-                DrawerItem(Icons.Default.LocalOffer, "Proizvodi")
-                DrawerItem(Icons.Default.Favorite, "Favoriti")
-                DrawerItem(Icons.Default.ShoppingCart, "Košarica")
-                DrawerItem(Icons.Default.ReceiptLong, "Povijest narudžbi")
-                DrawerItem(Icons.Default.Person, "Moj profil")
+                DrawerItem(Icons.Default.LocalOffer, stringResource(R.string.products))
+                DrawerItem(Icons.Default.Favorite, stringResource(R.string.favorites))
+                DrawerItem(Icons.Default.ShoppingCart, stringResource(R.string.cart))
+                DrawerItem(Icons.Default.ReceiptLong, stringResource(R.string.order_history))
+                DrawerItem(Icons.Default.Person, stringResource(R.string.my_profile))
             }
         }
     ) {
@@ -83,7 +83,7 @@ fun HomeScreen() {
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                Text("Početni zaslon", color = White)
+                Text(text = stringResource(R.string.welcome_message), color = White)
             }
         }
     }
@@ -107,7 +107,7 @@ fun DrawerHeader() {
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                "Nuvio",
+                text = stringResource(R.string.nuvio),
                 style = MaterialTheme.typography.titleLarge,
                 color = DirtyWhite,
                 textAlign = TextAlign.Center
@@ -122,7 +122,7 @@ fun DrawerHeader() {
         )
         Spacer(modifier = Modifier.fillMaxWidth().height(10.dp))
         Text(
-            text = "Pozdrav, {ime}",
+            text = stringResource(R.string.hello_world),
             style = MaterialTheme.typography.titleMedium,
             color = DirtyWhite,
             textAlign = TextAlign.Center,
@@ -138,7 +138,7 @@ fun DrawerItem(icon: ImageVector, label: String) {
         icon = { Icon(icon, contentDescription = label, tint = ColorInput) },
         label = { Text(label, color = DirtyWhite, style = MaterialTheme.typography.titleSmall) },
         selected = false,
-        onClick = { /* TODO: navigacija */ },
+        onClick = { /* todo */ },
         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
     )
 }

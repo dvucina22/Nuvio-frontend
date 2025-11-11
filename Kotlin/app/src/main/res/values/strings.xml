@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">NuvioFrontend</string>
 
+    <string name="nuvio">Nuvio</string>
+
     <string name="login_title">Prijava</string>
     <string name="label_email">Email</string>
     <string name="text_guest">Nastavi kao gost</string>
@@ -37,4 +39,12 @@
     <string name="error_passwords_mismatch">Lozinke se ne podudaraju</string>
     <string name="error_email_exists">Email je zauzet</string>
     <string name="error_generic">Greška</string>
+
+    <string name="products">Proizvodi</string>
+    <string name="favorites">Favoriti</string>
+    <string name="cart">Košarica</string>
+    <string name="order_history">Povijest narudžbi</string>
+    <string name="my_profile">Moj profil</string>
+
+    <string name="hello_world">Pozdrav, {ime}</string>
 </resources>
