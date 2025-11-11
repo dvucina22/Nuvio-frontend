@@ -12,11 +12,11 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface ApiService {
-    @POST("register")
+    @POST("accounts/register")
     suspend fun register(@Body request: RegisterRequest): Response<RegisterResponse>
-    @POST("login")
+    @POST("accounts/login")
     suspend fun login(@Body request: LoginRequest): Response<LoginResponse>
 
-    @POST("oauth/{provider}/verify")
+    @POST("accounts/oauth/{provider}/verify")
     suspend fun verifyOAuth(@Path("provider") provider: String, @Body request: OAuthVerifyRequest): Response<OAuthVerifyResponse>
 }

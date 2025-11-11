@@ -1,10 +1,12 @@
 package com.example.nuviofrontend.feature.auth.data
 
 import com.example.nuviofrontend.core.network.token.TokenManager
+import com.example.nuviofrontend.core.network.token.UserPrefs
+import com.example.nuviofrontend.core.network.token.UserProfile
 import com.example.nuviofrontend.feature.auth.data.dto.LoginRequest
 import com.example.nuviofrontend.feature.auth.data.dto.RegisterRequest
 
-class AuthRepository(private val authService: AuthService, private val tokenManager: TokenManager) {
+class AuthRepository(private val authService: AuthService, private val tokenManager: TokenManager, private val userPrefs: UserPrefs) {
     suspend fun register(firstName: String?, lastName: String?, email: String, phoneNumber: String?, password: String
     ): Boolean {
         val request = RegisterRequest(firstName, lastName, email, phoneNumber, password)
@@ -16,18 +18,44 @@ class AuthRepository(private val authService: AuthService, private val tokenMana
         val request = LoginRequest(email, password)
         val response = authService.login(request)
         tokenManager.saveAccessToken(response.token)
+        userPrefs.saveProfile(
+            UserProfile(
+                firstName = response.firstName.orEmpty(),
+                lastName = response.lastName.orEmpty(),
+                email = response.email.orEmpty()
+            )
+        )
         return true
     }
 
     suspend fun loginWithGoogle(idToken: String): Boolean {
-        val res = authService.verifyOAuth("google", idToken)
-        tokenManager.saveAccessToken(res.token)
+        val response = authService.verifyOAuth("google", idToken)
+        tokenManager.saveAccessToken(response.token)
+        userPrefs.saveProfile(
+            UserProfile(
+                firstName = response.firstName.orEmpty(),
+                lastName = response.lastName.orEmpty(),
+                email = response.email.orEmpty()
+            )
+        )
         return true
     }
 
     suspend fun loginWithProvider(provider: String, idToken: String): Boolean {
-        val res = authService.verifyOAuth(provider, idToken)
-        tokenManager.saveAccessToken(res.token)
+        val response = authService.verifyOAuth(provider, idToken)
+        tokenManager.saveAccessToken(response.token)
+        userPrefs.saveProfile(
+            UserProfile(
+                firstName = response.firstName.orEmpty(),
+                lastName = response.lastName.orEmpty(),
+                email = response.email.orEmpty()
+            )
+        )
         return true
+    }
+
+    suspend fun logout() {
+        tokenManager.clear()
+        userPrefs.clear()
     }
 }

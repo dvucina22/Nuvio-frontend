@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
-fun MainScreen(onNavigateToRegister: () -> Unit, onNavigateToLogin: () -> Unit) {
+fun MainScreen(onNavigateToRegister: () -> Unit, onNavigateToLogin: () -> Unit, onContinueAsGuest: () -> Unit) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -97,7 +97,7 @@ fun MainScreen(onNavigateToRegister: () -> Unit, onNavigateToLogin: () -> Unit) 
                     textDecoration = TextDecoration.Underline,
                     modifier = Modifier
                         .padding(top = 24.dp)
-                        .clickable { /* TODO: guest flow */ }
+                        .clickable { onContinueAsGuest() }
                 )
             }
         }

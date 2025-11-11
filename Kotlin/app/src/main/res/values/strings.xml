@@ -50,6 +50,9 @@
     <string name="cart">Košarica</string>
     <string name="order_history">Povijest narudžbi</string>
     <string name="my_profile">Moj profil</string>
+    <string name="sign_out">Odjava</string>
 
-    <string name="hello_world">Pozdrav, {ime}</string>
+    <string name="hello_user">Pozdrav, %1$s</string>
+    <string name="hello_world">Pozdrav!</string>
+    <string name="hello_guest">Pozdrav, gost!</string>
 </resources>

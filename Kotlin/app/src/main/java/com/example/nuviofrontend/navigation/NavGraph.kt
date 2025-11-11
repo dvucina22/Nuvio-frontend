@@ -1,12 +1,17 @@
 package com.example.nuviofrontend.navigation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.nuviofrontend.MainScreen
+import com.example.nuviofrontend.feature.auth.presentation.AuthViewModel
 import com.example.nuviofrontend.feature.auth.presentation.login.LoginScreen
 import com.example.nuviofrontend.feature.auth.presentation.login.LoginViewModel
 import com.example.nuviofrontend.feature.auth.presentation.register.RegisterScreen
@@ -14,21 +19,42 @@ import com.example.nuviofrontend.feature.home.presentation.HomeScreen
 
 @Composable
 fun AppNavGraph(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = Screen.MainScreen.route) {
+    NavHost(navController = navController, startDestination = Screen.Splash.route) {
+        composable(Screen.Splash.route) {
+            val authVm: com.example.nuviofrontend.feature.auth.presentation.AuthViewModel = hiltViewModel()
+            val ui by authVm.uiState.collectAsState()
+
+            LaunchedEffect(ui.isLoggedIn) {
+                navController.navigate(if (ui.isLoggedIn) Screen.Home.route else Screen.MainScreen.route) {
+                    popUpTo(0)
+                    launchSingleTop = true
+                }
+            }
+        }
 
         composable(Screen.MainScreen.route) {
             MainScreen(
                 onNavigateToRegister = { navController.navigate(Screen.Register.route) },
-                onNavigateToLogin = { navController.navigate(Screen.Login.route) }
+                onNavigateToLogin = { navController.navigate(Screen.Login.route) },
+                onContinueAsGuest = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(0)
+                        launchSingleTop = true
+                    }
+                }
             )
         }
 
         composable(Screen.Login.route) {
             val loginViewModel: LoginViewModel = hiltViewModel()
-
             LoginScreen(
                 onNavigateToRegister = { navController.navigate(Screen.Register.route) },
-                onNavigateToHome = { navController.navigate(Screen.Home.route) },
+                onNavigateToHome = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(0)
+                        launchSingleTop = true
+                    }
+                },
                 viewModel = loginViewModel
             )
         }
@@ -38,13 +64,27 @@ fun AppNavGraph(navController: NavHostController) {
                 onRegisterSuccess = {
                     navController.navigate(Screen.Login.route) {
                         popUpTo(Screen.Register.route) { inclusive = true }
+                        launchSingleTop = true
                     }
                 }
             )
         }
 
         composable(Screen.Home.route) {
-            HomeScreen()
+            val authVm: AuthViewModel = hiltViewModel()
+            val ui by authVm.uiState.collectAsState()
+
+            HomeScreen(
+                isLoggedIn = ui.isLoggedIn,
+                firstName = ui.firstName,
+                onSignOut = {
+                    authVm.logout()
+                    navController.navigate(Screen.MainScreen.route) {
+                        popUpTo(0)
+                        launchSingleTop = true
+                    }
+                }
+            )
         }
     }
 }

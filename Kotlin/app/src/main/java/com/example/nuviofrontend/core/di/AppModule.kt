@@ -18,6 +18,7 @@ import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import javax.inject.Singleton
 import com.example.nuviofrontend.R
+import com.example.nuviofrontend.core.network.token.UserPrefs
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -27,6 +28,10 @@ object AppModule {
     @Singleton
     fun provideTokenManager(@ApplicationContext context: Context): TokenManager =
         TokenManager(context)
+
+    @Provides @Singleton
+    fun provideUserPrefs(@ApplicationContext context: Context): UserPrefs =
+        UserPrefs(context)
 
     @Provides
     @Singleton
@@ -52,8 +57,9 @@ object AppModule {
     @Singleton
     fun provideAuthRepository(
         authService: AuthService,
-        tokenManager: TokenManager
-    ): AuthRepository = AuthRepository(authService, tokenManager)
+        tokenManager: TokenManager,
+        userPrefs: UserPrefs
+    ): AuthRepository = AuthRepository(authService, tokenManager, userPrefs)
 
     @Provides @Singleton
     fun provideGoogleSignInClient(@ApplicationContext context: Context): GoogleSignInClient {
