@@ -23,13 +23,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.nuviofrontend.core.ui.components.CustomButton
 import com.example.nuviofrontend.core.ui.theme.NuvioFrontendTheme
 import com.example.nuviofrontend.navigation.NavigationHost
-import com.example.nuviofrontend.screens.components.CustomButton
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -79,16 +80,16 @@ fun MainScreen(onNavigateToRegister: () -> Unit, onNavigateToLogin: () -> Unit) 
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 CustomButton(
-                    text = "Prijava",
+                    text = stringResource(R.string.login_title),
                     onClick = onNavigateToLogin
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 CustomButton(
-                    text = "Registracija",
+                    text = stringResource(R.string.registration_title),
                     onClick = onNavigateToRegister
                 )
                 Text(
-                    text = "Nastavi kao gost",
+                    text = stringResource(R.string.text_guest),
                     color = Color(0xFF9DA39F),
                     fontSize = 14.sp,
                     style = MaterialTheme.typography.labelSmall,

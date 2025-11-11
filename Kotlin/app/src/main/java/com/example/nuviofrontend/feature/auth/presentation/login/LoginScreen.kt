@@ -24,9 +24,10 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.nuviofrontend.R
+import com.example.nuviofrontend.core.ui.components.CustomButton
 import com.example.nuviofrontend.core.ui.components.CustomTextField
 import com.example.nuviofrontend.core.ui.theme.White
-import com.example.nuviofrontend.screens.components.CustomButton
+
 
 @Composable
 fun LoginScreen(onNavigateToRegister: () -> Unit, onNavigateToHome: () -> Unit, viewModel: LoginViewModel) {

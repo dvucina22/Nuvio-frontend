@@ -1,4 +1,4 @@
-package com.example.nuviofrontend.screens.components
+package com.example.nuviofrontend.core.ui.components
 
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width

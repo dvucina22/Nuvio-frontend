@@ -5,18 +5,24 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.nuviofrontend.R
+import okhttp3.internal.notify
 
 val Montserrat = FontFamily(
-    Font(R.font.montserrat_regular),
     Font(R.font.montserrat_bold, weight = FontWeight.Bold),
-    Font(R.font.montserrat_semibold, weight = FontWeight.SemiBold)
+    Font(R.font.montserrat_semibold, weight = FontWeight.SemiBold),
 )
-
-val Typography = Typography(
+val MontserratRegular = FontFamily(
+    Font(R.font.montserrat_regular, weight = FontWeight.Normal)
+)
+val MontserratAlternates = FontFamily(
+    Font(R.font.montserrat_alternates_regular, weight = FontWeight.Normal)
+)
+val AppTypography = Typography(
     labelSmall = TextStyle(
-        fontFamily = Montserrat,
+        fontFamily = MontserratRegular,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         letterSpacing = 0.5.sp
@@ -26,5 +32,23 @@ val Typography = Typography(
         fontWeight = FontWeight.SemiBold,
         fontSize = 20.sp,
         letterSpacing = 0.5.sp
-    )
+    ),
+    titleLarge = TextStyle(
+        fontFamily = MontserratAlternates,
+        fontWeight = FontWeight.Normal,
+        fontSize = 40.sp,
+        letterSpacing = 0.5.sp
+    ),
+    titleMedium = TextStyle(
+        fontFamily = MontserratRegular,
+        fontWeight = FontWeight.Normal,
+        fontSize = 20.sp,
+        letterSpacing = 0.5.sp
+    ),
+    titleSmall = TextStyle(
+        fontFamily = MontserratRegular,
+        fontWeight = FontWeight.Normal,
+        fontSize = 17.sp,
+        letterSpacing = 0.5.sp
+    ),
 )

@@ -5,10 +5,21 @@ import com.example.nuviofrontend.feature.auth.data.dto.LoginRequest
 import com.example.nuviofrontend.feature.auth.data.dto.LoginResponse
 import com.example.nuviofrontend.feature.auth.data.dto.OAuthVerifyRequest
 import com.example.nuviofrontend.feature.auth.data.dto.OAuthVerifyResponse
+import com.example.nuviofrontend.feature.auth.data.dto.RegisterRequest
+import com.example.nuviofrontend.feature.auth.data.dto.RegisterResponse
 import retrofit2.HttpException
 import java.io.IOException
 
 class AuthService(private val api: ApiService) {
+    suspend fun register(request: RegisterRequest): RegisterResponse {
+        val response = api.register(request)
+        if (response.isSuccessful) {
+            return response.body() ?: throw IOException("Empty response body")
+        } else {
+            throw HttpException(response)
+        }
+    }
+
     suspend fun login(request: LoginRequest): LoginResponse {
         try {
             val response = api.login(request)

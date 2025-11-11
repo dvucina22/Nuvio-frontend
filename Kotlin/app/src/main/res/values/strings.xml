@@ -1,8 +1,11 @@
 <resources>
     <string name="app_name">NuvioFrontend</string>
 
+    <string name="nuvio">Nuvio</string>
+
     <string name="login_title">Prijava</string>
     <string name="label_email">Email</string>
+    <string name="text_guest">Nastavi kao gost</string>
     <string name="label_password">Lozinka</string>
     <string name="placeholder_email">Unesite email</string>
     <string name="placeholder_password">Unesite lozinku</string>
@@ -26,4 +29,27 @@
     <string name="button_login_google">Nastavi s Google računom</string>
     <string name="error_google_signin_cancelled">Google prijava je otkazana.</string>
     <string name="error_google_no_idtoken">Nije moguće dohvatiti Google ID token.</string>
+
+    <string name="register_successful">Registracija uspješna!</string>
+    <string name="registration_title">Registracija</string>
+    <string name="label_first_name">Ime</string>
+    <string name="label_last_name">Prezime</string>
+    <string name="label_phone_number">Broj telefona</string>
+    <string name="label_confirm_password">Potvrdite lozinku</string>
+
+    <string name="error_email_required">Email je obavezan</string>
+    <string name="error_password_required">Lozinka je obavezna</string>
+    <string name="error_password_complexity">Lozinka mora imati najmanje 8 znakova, jedno veliko slovo i jedan broj</string>
+    <string name="error_confirm_password_empty">Potvrda lozinke je obavezna</string>
+    <string name="error_passwords_mismatch">Lozinke se ne podudaraju</string>
+    <string name="error_email_exists">Email je zauzet</string>
+    <string name="error_generic">Greška</string>
+
+    <string name="products">Proizvodi</string>
+    <string name="favorites">Favoriti</string>
+    <string name="cart">Košarica</string>
+    <string name="order_history">Povijest narudžbi</string>
+    <string name="my_profile">Moj profil</string>
+
+    <string name="hello_world">Pozdrav, {ime}</string>
 </resources>

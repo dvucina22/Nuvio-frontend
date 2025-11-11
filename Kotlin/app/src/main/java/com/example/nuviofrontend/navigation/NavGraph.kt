@@ -35,7 +35,11 @@ fun AppNavGraph(navController: NavHostController) {
 
         composable(Screen.Register.route) {
             RegisterScreen(
-                onNavigateToLogin = { navController.navigate(Screen.Login.route) }
+                onRegisterSuccess = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Register.route) { inclusive = true }
+                    }
+                }
             )
         }
 

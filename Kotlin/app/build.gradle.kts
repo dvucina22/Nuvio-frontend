@@ -71,4 +71,7 @@ dependencies {
     kapt("com.google.dagger:hilt-compiler:2.52")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     implementation("com.google.android.gms:play-services-auth:21.2.0")
+    implementation(platform("androidx.compose:compose-bom:2024.10.00"))
+    implementation("androidx.compose.material:material-icons-extended")
+
 }
