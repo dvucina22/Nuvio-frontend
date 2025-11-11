@@ -10,4 +10,16 @@ class AuthRepository(private val authService: AuthService, private val tokenMana
         tokenManager.saveAccessToken(response.token)
         return true
     }
+
+    suspend fun loginWithGoogle(idToken: String): Boolean {
+        val res = authService.verifyOAuth("google", idToken)
+        tokenManager.saveAccessToken(res.token)
+        return true
+    }
+
+    suspend fun loginWithProvider(provider: String, idToken: String): Boolean {
+        val res = authService.verifyOAuth(provider, idToken)
+        tokenManager.saveAccessToken(res.token)
+        return true
+    }
 }

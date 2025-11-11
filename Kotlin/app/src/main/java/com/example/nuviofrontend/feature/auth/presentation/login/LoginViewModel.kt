@@ -1,10 +1,16 @@
 package com.example.nuviofrontend.feature.auth.presentation.login
 
+import android.app.Activity
 import android.app.Application
+import android.content.Intent
+import androidx.activity.result.ActivityResult
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nuviofrontend.R
 import com.example.nuviofrontend.feature.auth.data.AuthRepository
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.common.api.ApiException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,7 +27,11 @@ sealed class LoginState {
 }
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(private val repository: AuthRepository, private val app: Application) : ViewModel() {
+class LoginViewModel @Inject constructor(
+    private val repository: AuthRepository,
+    private val app: Application,
+    private val googleClient: GoogleSignInClient
+) : ViewModel() {
 
     private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
     val loginState = _loginState.asStateFlow()
@@ -35,12 +45,8 @@ class LoginViewModel @Inject constructor(private val repository: AuthRepository,
         _passwordError.value = null
 
         if (email.isBlank() || password.isBlank()) {
-            if (email.isBlank()) {
-                _emailError.value = app.getString(R.string.error_email_empty)
-            }
-            if (password.isBlank()) {
-                _passwordError.value = app.getString(R.string.error_password_empty)
-            }
+            if (email.isBlank()) _emailError.value = app.getString(R.string.error_email_empty)
+            if (password.isBlank()) _passwordError.value = app.getString(R.string.error_password_empty)
             return
         }
         else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
@@ -50,25 +56,62 @@ class LoginViewModel @Inject constructor(private val repository: AuthRepository,
 
         viewModelScope.launch {
             _loginState.value = LoginState.Loading
-
             try {
                 repository.login(email, password)
                 _loginState.value = LoginState.Success
             }
             catch (e: HttpException) {
-                when (e.code()) {
-                    401 -> _loginState.value =
-                        LoginState.Error(app.getString(R.string.error_login_invalid_credentials), isServerError = false)
-                    403 -> _loginState.value =
-                        LoginState.Error(app.getString(R.string.error_login_forbidden), isServerError = false)
-                    else -> _loginState.value =
-                        LoginState.Error(app.getString(R.string.error_server_generic), isServerError = true)
+                _loginState.value = when (e.code()) {
+                    401 -> LoginState.Error(app.getString(R.string.error_login_invalid_credentials))
+                    403 -> LoginState.Error(app.getString(R.string.error_login_forbidden))
+                    else -> LoginState.Error(app.getString(R.string.error_server_generic), isServerError = true)
                 }
             }
-            catch (e: IOException) {
-                _loginState.value = LoginState.Error(app.getString(R.string.error_network), isServerError = false)
+            catch (_: IOException) {
+                _loginState.value = LoginState.Error(app.getString(R.string.error_network))
             }
-            catch (e: Exception) {
+            catch (_: Exception) {
+                _loginState.value = LoginState.Error(app.getString(R.string.error_server_generic), isServerError = true)
+            }
+        }
+    }
+
+    fun googleSignInIntent(): Intent = googleClient.signInIntent
+
+    fun handleGoogleResult(result: ActivityResult) {
+        val data: Intent? = result.data
+        if (result.resultCode != Activity.RESULT_OK || data == null) {
+            _loginState.value = LoginState.Error(app.getString(R.string.error_google_signin_cancelled))
+            return
+        }
+
+        val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+        viewModelScope.launch {
+            _loginState.value = LoginState.Loading
+            try {
+                val account = task.getResult(ApiException::class.java)
+                val idToken = account?.idToken
+                if (idToken.isNullOrBlank()) {
+                    _loginState.value = LoginState.Error(app.getString(R.string.error_google_no_idtoken))
+                    return@launch
+                }
+                repository.loginWithGoogle(idToken)
+                _loginState.value = LoginState.Success
+            }
+            catch (e: ApiException) {
+                _loginState.value = LoginState.Error(app.getString(R.string.error_google_signin_cancelled))
+            }
+            catch (e: HttpException) {
+                _loginState.value = when (e.code()) {
+                    401 -> LoginState.Error(app.getString(R.string.error_login_invalid_credentials))
+                    403 -> LoginState.Error(app.getString(R.string.error_login_forbidden))
+                    else -> LoginState.Error(app.getString(R.string.error_server_generic), isServerError = true)
+                }
+            }
+            catch (_: IOException) {
+                _loginState.value = LoginState.Error(app.getString(R.string.error_network))
+            }
+            catch (_: Throwable) {
                 _loginState.value = LoginState.Error(app.getString(R.string.error_server_generic), isServerError = true)
             }
         }

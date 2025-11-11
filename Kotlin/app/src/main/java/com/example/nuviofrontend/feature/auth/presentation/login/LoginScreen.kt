@@ -1,10 +1,8 @@
 package com.example.nuviofrontend.feature.auth.presentation.login
 
-import android.R.attr.onClick
-import android.R.attr.text
-import android.R.attr.textStyle
-import android.R.attr.value
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -58,6 +56,10 @@ fun LoginScreen(onNavigateToRegister: () -> Unit, onNavigateToHome: () -> Unit, 
         }
     }
 
+    val googleLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result -> viewModel.handleGoogleResult(result) }
+
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -92,7 +94,8 @@ fun LoginScreen(onNavigateToRegister: () -> Unit, onNavigateToHome: () -> Unit, 
                 onEmailChange = { email = it },
                 onPasswordChange = { password = it },
                 onLogin = { viewModel.login(email, password) },
-                onNavigateToRegister = onNavigateToRegister
+                onNavigateToRegister = onNavigateToRegister,
+                onGoogleLoginClick = { googleLauncher.launch(viewModel.googleSignInIntent()) }
             )
         }
     }
@@ -108,7 +111,8 @@ fun LoginForm(
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onLogin: () -> Unit,
-    onNavigateToRegister: () -> Unit
+    onNavigateToRegister: () -> Unit,
+    onGoogleLoginClick: () -> Unit
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
 
@@ -156,6 +160,13 @@ fun LoginForm(
         CustomButton(
             text = stringResource(id = R.string.button_login),
             onClick = onLogin
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        CustomButton(
+            text = stringResource(id = R.string.button_login_google),
+            onClick = onGoogleLoginClick
         )
 
         Spacer(modifier = Modifier.height(8.dp))

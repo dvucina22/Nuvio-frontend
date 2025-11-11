@@ -7,6 +7,9 @@ import com.example.nuviofrontend.core.network.interceptor.AuthInterceptor
 import com.example.nuviofrontend.core.network.token.TokenManager
 import com.example.nuviofrontend.feature.auth.data.AuthRepository
 import com.example.nuviofrontend.feature.auth.data.AuthService
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,6 +17,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import javax.inject.Singleton
+import com.example.nuviofrontend.R
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -50,4 +54,14 @@ object AppModule {
         authService: AuthService,
         tokenManager: TokenManager
     ): AuthRepository = AuthRepository(authService, tokenManager)
+
+    @Provides @Singleton
+    fun provideGoogleSignInClient(@ApplicationContext context: Context): GoogleSignInClient {
+        val serverClientId = context.getString(R.string.server_client_id)
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestEmail()
+            .requestIdToken(serverClientId)
+            .build()
+        return GoogleSignIn.getClient(context, gso)
+    }
 }

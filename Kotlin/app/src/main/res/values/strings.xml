@@ -21,4 +21,9 @@
     <string name="error_network">Provjerite internetsku vezu.</string>
     <string name="error_unknown">Nepoznata pogreška.</string>
     <string name="welcome_message">Dobro došli!</string>
+
+    <string name="server_client_id">34592663945-alnaa3u2tbns05c68mjv41u7hrqkrbtq.apps.googleusercontent.com</string>
+    <string name="button_login_google">Nastavi s Google računom</string>
+    <string name="error_google_signin_cancelled">Google prijava je otkazana.</string>
+    <string name="error_google_no_idtoken">Nije moguće dohvatiti Google ID token.</string>
 </resources>
