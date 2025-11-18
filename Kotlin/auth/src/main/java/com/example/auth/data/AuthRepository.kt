@@ -1,0 +1,74 @@
+package com.example.auth.data
+
+import com.example.core.model.UserProfile
+import com.example.core.network.token.IUserPrefs
+import com.example.core.auth.dto.LoginRequest
+import com.example.core.auth.dto.RegisterRequest
+import com.example.core.network.token.ITokenStorage
+
+class AuthRepository(
+    private val authService: AuthService,
+    private val tokenStorage: ITokenStorage,
+    private val userPrefs: IUserPrefs
+) {
+
+    suspend fun register(
+        firstName: String?,
+        lastName: String?,
+        email: String,
+        phoneNumber: String?,
+        password: String
+    ): Boolean {
+        val request = RegisterRequest(firstName, lastName, email, phoneNumber, password)
+        authService.register(request)
+        return true
+    }
+
+    suspend fun login(email: String, password: String): Boolean {
+        val request = LoginRequest(email, password)
+        val response = authService.login(request)
+
+        tokenStorage.saveAccessToken(response.token)
+        userPrefs.saveProfile(
+            UserProfile(
+                firstName = response.firstName.orEmpty(),
+                lastName = response.lastName.orEmpty(),
+                email = response.email.orEmpty()
+            )
+        )
+        return true
+    }
+
+    suspend fun loginWithGoogle(idToken: String): Boolean {
+        val response = authService.verifyOAuth("google", idToken)
+
+        tokenStorage.saveAccessToken(response.token)
+        userPrefs.saveProfile(
+            UserProfile(
+                firstName = response.firstName.orEmpty(),
+                lastName = response.lastName.orEmpty(),
+                email = response.email.orEmpty()
+            )
+        )
+        return true
+    }
+
+    suspend fun loginWithProvider(provider: String, idToken: String): Boolean {
+        val response = authService.verifyOAuth(provider, idToken)
+
+        tokenStorage.saveAccessToken(response.token)
+        userPrefs.saveProfile(
+            UserProfile(
+                firstName = response.firstName.orEmpty(),
+                lastName = response.lastName.orEmpty(),
+                email = response.email.orEmpty()
+            )
+        )
+        return true
+    }
+
+    suspend fun logout() {
+        tokenStorage.clear()
+        userPrefs.clear()
+    }
+}

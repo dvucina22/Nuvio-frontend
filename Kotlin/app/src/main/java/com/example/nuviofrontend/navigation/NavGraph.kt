@@ -1,7 +1,5 @@
 package com.example.nuviofrontend.navigation
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -10,18 +8,19 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.auth.presentation.AuthViewModel
+import com.example.auth.presentation.login.LoginScreen
+import com.example.auth.presentation.login.LoginViewModel
+import com.example.auth.presentation.register.RegisterScreen
 import com.example.nuviofrontend.MainScreen
-import com.example.nuviofrontend.feature.auth.presentation.AuthViewModel
-import com.example.nuviofrontend.feature.auth.presentation.login.LoginScreen
-import com.example.nuviofrontend.feature.auth.presentation.login.LoginViewModel
-import com.example.nuviofrontend.feature.auth.presentation.register.RegisterScreen
+
 import com.example.nuviofrontend.feature.home.presentation.HomeScreen
 
 @Composable
 fun AppNavGraph(navController: NavHostController) {
     NavHost(navController = navController, startDestination = Screen.Splash.route) {
         composable(Screen.Splash.route) {
-            val authVm: com.example.nuviofrontend.feature.auth.presentation.AuthViewModel = hiltViewModel()
+            val authVm: com.example.auth.presentation.AuthViewModel = hiltViewModel()
             val ui by authVm.uiState.collectAsState()
 
             LaunchedEffect(ui.isLoggedIn) {

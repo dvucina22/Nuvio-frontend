@@ -21,3 +21,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "NuvioFrontend"
 include(":app")
+include(":core")
+include(":auth")
+include(":auth-oauth")
+include(":core-mod")

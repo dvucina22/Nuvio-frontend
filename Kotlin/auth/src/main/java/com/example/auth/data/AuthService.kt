@@ -1,0 +1,39 @@
+package com.example.auth.data
+
+import com.example.core.auth.dto.LoginRequest
+import com.example.core.auth.dto.LoginResponse
+import com.example.core.auth.dto.OAuthVerifyRequest
+import com.example.core.auth.dto.OAuthVerifyResponse
+import com.example.core.auth.dto.RegisterRequest
+import com.example.core.auth.dto.RegisterResponse
+import com.example.core.network.api.ApiService
+import retrofit2.HttpException
+import java.io.IOException
+
+class AuthService(private val api: ApiService) {
+
+    suspend fun register(request: RegisterRequest): RegisterResponse {
+        val response = api.register(request)
+        if (response.isSuccessful) {
+            return response.body() ?: throw IOException("Empty response body")
+        }
+        throw HttpException(response)
+    }
+
+    suspend fun login(request: LoginRequest): LoginResponse {
+        val response = api.login(request)
+        if (response.isSuccessful) {
+            return response.body() ?: throw IOException("Empty response body")
+        }
+        throw HttpException(response)
+    }
+
+    suspend fun verifyOAuth(provider: String, idToken: String): OAuthVerifyResponse {
+        val body = OAuthVerifyRequest(idToken)
+        val response = api.verifyOAuth(provider, body)
+        if (response.isSuccessful) {
+            return response.body() ?: throw IOException("Empty response body")
+        }
+        throw HttpException(response)
+    }
+}

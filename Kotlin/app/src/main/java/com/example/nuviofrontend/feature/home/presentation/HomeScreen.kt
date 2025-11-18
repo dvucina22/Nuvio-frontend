@@ -18,10 +18,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.nuviofrontend.R
-import com.example.nuviofrontend.core.ui.theme.ColorInput
-import com.example.nuviofrontend.core.ui.theme.DirtyWhite
-import com.example.nuviofrontend.core.ui.theme.White
+import com.example.core.R
+import com.example.core.ui.theme.ColorInput
+import com.example.core.ui.theme.DirtyWhite
+import com.example.core.ui.theme.White
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
