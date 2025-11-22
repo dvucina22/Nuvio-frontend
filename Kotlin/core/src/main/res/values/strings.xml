@@ -43,7 +43,7 @@
     <string name="error_confirm_password_empty">Potvrda lozinke je obavezna</string>
     <string name="error_passwords_mismatch">Lozinke se ne podudaraju</string>
     <string name="error_email_exists">Email je zauzet</string>
-    <string name="error_generic">Greška</string>
+    <string name="error_generic">Greška (%1$d)</string>
 
     <string name="products">Proizvodi</string>
     <string name="favorites">Favoriti</string>
@@ -55,4 +55,14 @@
     <string name="hello_user">Pozdrav, %1$s</string>
     <string name="hello_world">Pozdrav!</string>
     <string name="hello_guest">Pozdrav, gost!</string>
+
+    <string name="profile_title">Profil</string>
+    <string name="guest">Gost</string>
+    <string name="not_logged_in">Niste prijavljeni</string>
+    <string name="edit_button">Uredi</string>
+    <string name="login_button">Prijavi se</string>
+    <string name="settings">Postavke</string>
+    <string name="saved_cards">Spremljene kartice</string>
+    <string name="change_password">Promijenite lozinku</string>
+    <string name="help">Pomoć</string>
 </resources>

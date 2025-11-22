@@ -14,7 +14,8 @@ import javax.inject.Inject
 data class AuthUiState(
     val isLoggedIn: Boolean = false,
     val firstName: String = "",
-    val lastName: String = ""
+    val lastName: String = "",
+    val email: String = ""
 )
 
 @HiltViewModel
@@ -23,7 +24,8 @@ class AuthViewModel @Inject constructor(private val tokenManager: TokenManager, 
     val uiState: StateFlow<AuthUiState> = combine(tokenManager.accessTokenFlow, userPrefs.profileFlow) { token, profile ->
             val firstName = profile?.firstName ?: ""
             val lastName = profile?.lastName ?: ""
-            AuthUiState(isLoggedIn = !token.isNullOrEmpty(), firstName = firstName, lastName = lastName)
+            val email = profile?.email ?: ""
+            AuthUiState(isLoggedIn = !token.isNullOrEmpty(), firstName = firstName, lastName = lastName, email = email)
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AuthUiState())
 
     fun logout() {

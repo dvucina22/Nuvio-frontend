@@ -41,7 +41,12 @@ import com.example.nuviofrontend.feature.search.presentation.SearchScreen
 
 @Composable
 fun MainAppScreen(
-    firstName: String?
+    isLoggedIn: Boolean,
+    firstName: String?,
+    lastName: String? = null,
+    email: String? = null,
+    onSignOut: () -> Unit,
+    onNavigateToLogin: () -> Unit
 ) {
     var selectedTab by remember { mutableStateOf(HomeTab.HOME) }
 
@@ -62,7 +67,15 @@ fun MainAppScreen(
                 HomeTab.SEARCH -> SearchScreen()
                 HomeTab.CART -> CartScreen()
                 HomeTab.FAVORITES -> FavoriteScreen()
-                HomeTab.PROFILE -> ProfileScreen()
+                HomeTab.PROFILE -> ProfileScreen(
+                    isLoggedIn = isLoggedIn,
+                    firstName = firstName,
+                    lastName = lastName,
+                    email = email,
+                    onSignOut = onSignOut,
+                    onNavigateToLogin = onNavigateToLogin
+                )
+
             }
         }
 

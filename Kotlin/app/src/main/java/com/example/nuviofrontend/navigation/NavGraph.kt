@@ -71,7 +71,22 @@ fun AppNavGraph(navController: NavHostController) {
             val ui by authVm.uiState.collectAsState()
 
             MainAppScreen(
-                firstName = ui.firstName
+                isLoggedIn = ui.isLoggedIn,
+                firstName = ui.firstName,
+                lastName = ui.lastName,
+                email = ui.email,
+                onSignOut = {
+                    authVm.logout()
+                    navController.navigate(Screen.MainScreen.route) {
+                        popUpTo(0)
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToLogin = {
+                    navController.navigate(Screen.Login.route) {
+                        launchSingleTop = true
+                    }
+                }
             )
         }
 
