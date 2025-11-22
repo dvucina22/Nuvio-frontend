@@ -14,8 +14,6 @@ import com.example.auth.presentation.login.LoginViewModel
 import com.example.auth.presentation.register.RegisterScreen
 import com.example.nuviofrontend.MainScreen
 
-import com.example.nuviofrontend.feature.home.presentation.HomeScreen
-
 @Composable
 fun AppNavGraph(navController: NavHostController) {
     NavHost(navController = navController, startDestination = Screen.Splash.route) {
@@ -24,7 +22,7 @@ fun AppNavGraph(navController: NavHostController) {
             val ui by authVm.uiState.collectAsState()
 
             LaunchedEffect(ui.isLoggedIn) {
-                navController.navigate(if (ui.isLoggedIn) Screen.Home.route else Screen.MainScreen.route) {
+                navController.navigate(if (ui.isLoggedIn) Screen.MainAppScreen.route else Screen.MainScreen.route) {
                     popUpTo(0)
                     launchSingleTop = true
                 }
@@ -36,7 +34,7 @@ fun AppNavGraph(navController: NavHostController) {
                 onNavigateToRegister = { navController.navigate(Screen.Register.route) },
                 onNavigateToLogin = { navController.navigate(Screen.Login.route) },
                 onContinueAsGuest = {
-                    navController.navigate(Screen.Home.route) {
+                    navController.navigate(Screen.MainAppScreen.route) {
                         popUpTo(0)
                         launchSingleTop = true
                     }
@@ -49,7 +47,7 @@ fun AppNavGraph(navController: NavHostController) {
             LoginScreen(
                 onNavigateToRegister = { navController.navigate(Screen.Register.route) },
                 onNavigateToHome = {
-                    navController.navigate(Screen.Home.route) {
+                    navController.navigate(Screen.MainAppScreen.route) {
                         popUpTo(0)
                         launchSingleTop = true
                     }
@@ -68,22 +66,14 @@ fun AppNavGraph(navController: NavHostController) {
                 }
             )
         }
-
-        composable(Screen.Home.route) {
+        composable(Screen.MainAppScreen.route) {
             val authVm: AuthViewModel = hiltViewModel()
             val ui by authVm.uiState.collectAsState()
 
-            HomeScreen(
-                isLoggedIn = ui.isLoggedIn,
-                firstName = ui.firstName,
-                onSignOut = {
-                    authVm.logout()
-                    navController.navigate(Screen.MainScreen.route) {
-                        popUpTo(0)
-                        launchSingleTop = true
-                    }
-                }
+            MainAppScreen(
+                firstName = ui.firstName
             )
         }
+
     }
 }
