@@ -46,7 +46,8 @@ fun MainAppScreen(
     lastName: String? = null,
     email: String? = null,
     onSignOut: () -> Unit,
-    onNavigateToLogin: () -> Unit
+    onNavigateToLogin: () -> Unit,
+    onNavigateToProfileEdit: () -> Unit
 ) {
     var selectedTab by remember { mutableStateOf(HomeTab.HOME) }
 
@@ -73,7 +74,8 @@ fun MainAppScreen(
                     lastName = lastName,
                     email = email,
                     onSignOut = onSignOut,
-                    onNavigateToLogin = onNavigateToLogin
+                    onEdit = onNavigateToProfileEdit,
+                    onNavigateToLogin = onNavigateToLogin,
                 )
 
             }

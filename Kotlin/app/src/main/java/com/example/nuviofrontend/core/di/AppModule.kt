@@ -8,6 +8,9 @@ import com.example.core.R
 import com.example.core.network.api.ApiClient
 import com.example.core.network.api.ApiService
 import com.example.core.network.interceptor.AuthInterceptor
+import com.example.core.network.token.IUserPrefs
+import com.example.nuviofrontend.feature.profile.data.UserRepository
+import com.example.nuviofrontend.feature.profile.data.UserService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -40,5 +43,20 @@ object AppModule {
             .requestIdToken(serverClientId)
             .build()
         return GoogleSignIn.getClient(context, gso)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserService(apiService: ApiService): UserService {
+        return UserService(apiService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserRepository(
+        userService: UserService,
+        userPrefs: IUserPrefs
+    ): UserRepository {
+        return UserRepository(userService, userPrefs)
     }
 }

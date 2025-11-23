@@ -65,4 +65,14 @@
     <string name="saved_cards">Spremljene kartice</string>
     <string name="change_password">Promijenite lozinku</string>
     <string name="help">Pomoć</string>
+
+    <string name="back_button">Natrag</string>
+    <string name="placeholder_first_name">Unesite ime</string>
+    <string name="placeholder_last_name">Unesite prezime</string>
+    <string name="label_phone">Broj telefona</string>
+    <string name="placeholder_phone">Unesite broj telefona</string>
+    <string name="save_button">Spremi</string>
+    <string name="label_gender">Spol</string>
+    <string name="placeholder_gender">Odaberite spol</string>
+
 </resources>
