@@ -194,20 +194,6 @@ fun CustomTextField(
 
                 Spacer(modifier = Modifier.weight(1f))
             }
-
-            if (expanded) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Black.copy(alpha = 0.2f))
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-                        ) {
-                            expanded = false
-                        }
-                )
-            }
         }
     }
 }

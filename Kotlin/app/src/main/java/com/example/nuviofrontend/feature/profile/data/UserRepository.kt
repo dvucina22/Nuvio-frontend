@@ -58,4 +58,8 @@ class UserRepository(
 
         return profile
     }
+
+    suspend fun changePassword(oldPassword: String, newPassword: String): String {
+        return userService.changePassword(oldPassword, newPassword)
+    }
 }

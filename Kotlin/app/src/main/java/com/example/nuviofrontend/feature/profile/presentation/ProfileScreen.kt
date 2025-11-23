@@ -37,6 +37,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.core.R
+import com.example.core.ui.theme.BackgroundNavDark
 import com.example.core.ui.theme.White
 import com.example.nuviofrontend.core.ui.components.CustomButton
 
@@ -48,7 +49,8 @@ fun ProfileScreen(
     email: String? = null,
     onSignOut: () -> Unit = {},
     onEdit: () -> Unit = {},
-    onNavigateToLogin: () -> Unit = {}
+    onNavigateToLogin: () -> Unit = {},
+    onChangePassword: () -> Unit = {}
 ) {
     val displayName = if (isLoggedIn && !firstName.isNullOrBlank()) {
         if (!lastName.isNullOrBlank()) "$firstName $lastName" else firstName
@@ -151,14 +153,16 @@ fun ProfileScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            Divider(color = Color(0x335A676A))
+            Divider(color = BackgroundNavDark)
 
             if (isLoggedIn) {
                 ProfileMenuItem(Icons.Default.Settings, stringResource(R.string.settings))
                 ProfileMenuItem(Icons.Default.CreditCard, stringResource(R.string.saved_cards))
                 ProfileMenuItem(Icons.Default.List, stringResource(R.string.order_history))
-                ProfileMenuItem(Icons.Default.Lock, stringResource(R.string.change_password))
-                Divider(color = Color(0x335A676A))
+                ProfileMenuItem(Icons.Default.Lock, stringResource(R.string.change_password)){
+                    onChangePassword()
+                }
+                Divider(color = BackgroundNavDark)
             }
 
             ProfileMenuItem(Icons.Default.Help, stringResource(R.string.help))

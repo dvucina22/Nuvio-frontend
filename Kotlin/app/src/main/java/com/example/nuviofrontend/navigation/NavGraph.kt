@@ -83,15 +83,10 @@ fun AppNavGraph(navController: NavHostController) {
                 email = ui.email,
                 onSignOut = {
                     authVm.logout()
-                    navController.navigate(Screen.MainScreen.route) {
-                        popUpTo(0)
-                        launchSingleTop = true
-                    }
+                    navController.navigate(Screen.MainScreen.route)
                 },
                 onNavigateToLogin = {
-                    navController.navigate(Screen.Login.route) {
-                        launchSingleTop = true
-                    }
+                    navController.navigate(Screen.Login.route)
                 },
                 onNavigateToProfileEdit = {
                     navController.navigate(Screen.ProfileEdit.route)

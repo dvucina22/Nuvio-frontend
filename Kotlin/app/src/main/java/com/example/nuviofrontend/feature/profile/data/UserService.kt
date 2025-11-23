@@ -1,6 +1,7 @@
 package com.example.nuviofrontend.feature.profile.data
 
 import com.example.core.network.api.ApiService
+import com.example.core.user.dto.ChangePasswordRequest
 import com.example.core.user.dto.UpdateUserRequest
 import com.example.core.user.dto.UserDto
 import retrofit2.HttpException
@@ -27,5 +28,28 @@ class UserService(private val api: ApiService) {
             return getUserResponse.body() ?: throw IOException("Empty response body")
         }
         throw HttpException(getUserResponse)
+    }
+
+    suspend fun changePassword(oldPassword: String, newPassword: String): String {
+        val response = api.changePassword(ChangePasswordRequest(oldPassword, newPassword))
+
+        if (response.isSuccessful) {
+            return response.body()?.message ?: "Password updated successfully"
+        }
+
+        val code = response.code()
+        val errorBody = response.errorBody()?.string() ?: ""
+
+        when {
+            code == 401 || errorBody.contains("password invalid", ignoreCase = true) -> {
+                throw IllegalArgumentException("Kriva stara lozinka")
+            }
+            code == 400 || errorBody.contains("password does not meet security requirements", ignoreCase = true) -> {
+                throw IllegalArgumentException("Lozinka mora imati najmanje 8 znakova, jedno veliko slovo i jedan broj")
+            }
+            else -> {
+                throw Exception("Server error: $code")
+            }
+        }
     }
 }

@@ -6,6 +6,8 @@ import com.example.core.auth.dto.OAuthVerifyRequest
 import com.example.core.auth.dto.OAuthVerifyResponse
 import com.example.core.auth.dto.RegisterRequest
 import com.example.core.auth.dto.RegisterResponse
+import com.example.core.user.dto.ChangePasswordRequest
+import com.example.core.user.dto.ChangePasswordResponse
 import com.example.core.user.dto.UpdateUserRequest
 import com.example.core.user.dto.UpdateUserResponse
 import com.example.core.user.dto.UserDto
@@ -26,7 +28,8 @@ interface ApiService {
     suspend fun getUser(): Response<UserDto>
     @PUT("accounts/logged-user")
     suspend fun updateUser(@Body request: UpdateUserRequest): Response<UpdateUserResponse>
-
+    @POST("accounts/update-password")
+    suspend fun changePassword(@Body request: ChangePasswordRequest): Response<ChangePasswordResponse>
     @POST("accounts/oauth/{provider}/verify")
     suspend fun verifyOAuth(@Path("provider") provider: String, @Body request: OAuthVerifyRequest): Response<OAuthVerifyResponse>
 }

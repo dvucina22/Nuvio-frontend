@@ -74,5 +74,29 @@
     <string name="save_button">Spremi</string>
     <string name="label_gender">Spol</string>
     <string name="placeholder_gender">Odaberite spol</string>
+    <string name="Profile">Profil</string>
+
+    <string name="change_password_title">Promjena lozinke</string>
+    <string name="old_password_label">Stara lozinka</string>
+    <string name="old_password_placeholder">Unesite staru lozinku</string>
+    <string name="new_password_label">Nova lozinka</string>
+    <string name="new_password_placeholder">Unesite novu lozinku</string>
+    <string name="confirm_password_label">Ponovljena nova lozinka</string>
+    <string name="confirm_password_placeholder">Ponovite novu lozinku</string>
+
+    <string name="old_password">Stara lozinka</string>
+    <string name="new_password">Nova lozinka</string>
+    <string name="confirm_password">Ponovljena nova lozinka</string>
+    <string name="placeholder_old_password">Unesite staru lozinku</string>
+    <string name="placeholder_new_password">Unesite novu lozinku</string>
+    <string name="placeholder_confirm_password">Ponovite novu lozinku</string>
+    <string name="button_save">Spremi</string>
+
+    <string name="error_old_password_empty">Stara lozinka je obavezna</string>
+    <string name="error_new_password_empty">Nova lozinka je obavezna</string>
+    <string name="error_old_password_invalid">Unijeli ste krivu staru lozinku</string>
+    <string name="error_missing_fields">Nisu unesena sva polja</string>
+
+    <string name="toast_password_changed">Lozinka uspješno promijenjena</string>
 
 </resources>

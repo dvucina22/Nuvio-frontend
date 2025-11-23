@@ -80,7 +80,6 @@ class ProfileEditViewModel @Inject constructor(
         email: String,
         phoneNumber: String
     ) {
-        // Clear previous errors
         _uiState.value = _uiState.value.copy(
             firstNameError = null,
             lastNameError = null,
@@ -88,7 +87,6 @@ class ProfileEditViewModel @Inject constructor(
             phoneNumberError = null
         )
 
-        // Validate inputs
         var hasError = false
 
         if (firstName.isBlank()) {
@@ -113,7 +111,6 @@ class ProfileEditViewModel @Inject constructor(
             return
         }
 
-        // Make API call
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
             _profileEditState.value = ProfileEditState.Loading
