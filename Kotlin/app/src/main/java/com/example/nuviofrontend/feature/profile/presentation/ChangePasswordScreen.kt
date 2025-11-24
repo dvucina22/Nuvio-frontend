@@ -3,6 +3,7 @@ package com.example.nuviofrontend.feature.profile.presentation
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -17,6 +18,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.core.R
 import com.example.core.ui.components.CustomTopBar
 import com.example.core.ui.components.ProfileHeader
+import com.example.core.ui.theme.BackgroundNavDark
 import com.example.nuviofrontend.core.ui.components.CustomButton
 import com.example.nuviofrontend.core.ui.components.CustomTextField
 
@@ -91,6 +93,8 @@ fun ChangePasswordScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        Divider(color = BackgroundNavDark, modifier = Modifier.padding(vertical = 16.dp))
+
         CustomTextField(
             value = oldPassword,
             onValueChange = {
@@ -137,6 +141,8 @@ fun ChangePasswordScreen(
             isError = confirmPasswordError != null,
             errorMessage = confirmPasswordError
         )
+
+        Divider(color = BackgroundNavDark, modifier = Modifier.padding(vertical = 16.dp))
 
         Spacer(modifier = Modifier.height(24.dp))
 

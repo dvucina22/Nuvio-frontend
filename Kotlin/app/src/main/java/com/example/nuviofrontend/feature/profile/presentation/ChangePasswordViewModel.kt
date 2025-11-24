@@ -84,15 +84,15 @@ class ChangePasswordViewModel @Inject constructor(
 
         viewModelScope.launch {
             _changePasswordState.value = ChangePasswordState.Loading
-
             try {
                 userRepository.changePassword(oldPassword.value, newPassword.value)
                 _changePasswordState.value = ChangePasswordState.Success
             } catch (e: IllegalArgumentException) {
                 when (e.message) {
-                    "password_invalid" -> oldPasswordError.value = app.getString(R.string.error_old_password_invalid)
+                    "old_password_incorrect" -> oldPasswordError.value = app.getString(R.string.error_old_password_invalid)
                     "password_complexity" -> newPasswordError.value = app.getString(R.string.error_password_complexity)
                     "missing_fields" -> generalError.value = app.getString(R.string.error_missing_fields)
+                    "user_not_found" -> generalError.value = app.getString(R.string.error_missing_fields)
                     else -> generalError.value = app.getString(R.string.error_unknown)
                 }
                 _changePasswordState.value = ChangePasswordState.Error(generalError.value ?: "")
@@ -102,8 +102,6 @@ class ChangePasswordViewModel @Inject constructor(
             }
         }
     }
-
-
 
     fun resetState() {
         clearErrors()

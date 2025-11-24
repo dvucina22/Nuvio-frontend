@@ -32,26 +32,17 @@ class UserService(private val api: ApiService) {
 
     suspend fun changePassword(oldPassword: String, newPassword: String): String {
         val response = api.changePassword(ChangePasswordRequest(oldPassword, newPassword))
-
         if (response.isSuccessful) {
             return response.body()?.message ?: "Password updated successfully"
         }
-
-        val errorBody = response.errorBody()?.string() ?: ""
-
+        val errorBody = response.errorBody()?.string()?.lowercase() ?: ""
         when {
-            errorBody.contains("password invalid", ignoreCase = true) -> {
-                throw IllegalArgumentException("password_invalid")
-            }
-            errorBody.contains("password does not meet security requirements", ignoreCase = true) -> {
-                throw IllegalArgumentException("password_complexity")
-            }
-            errorBody.contains("missing required fields", ignoreCase = true) -> {
-                throw IllegalArgumentException("missing_fields")
-            }
-            else -> {
-                throw Exception("server_error")
-            }
+            "old password incorrect" in errorBody -> throw IllegalArgumentException("old_password_incorrect")
+            "password does not meet security requirements" in errorBody -> throw IllegalArgumentException("password_complexity")
+            "missing required fields" in errorBody -> throw IllegalArgumentException("missing_fields")
+            "user not found" in errorBody -> throw IllegalArgumentException("user_not_found")
+            else -> throw Exception("server_error")
         }
+
     }
 }

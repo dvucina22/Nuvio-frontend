@@ -1,6 +1,5 @@
 package com.example.nuviofrontend.navigation
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.Image
@@ -19,12 +18,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.example.nuviofrontend.feature.cart.presentation.CartScreen
-import com.example.nuviofrontend.feature.profile.presentation.ProfileScreen
 import com.example.nuviofrontend.feature.search.presentation.SearchScreen
 import com.example.nuviofrontend.feature.home.presentation.HomeScreen
 import com.example.core.R
@@ -33,26 +33,20 @@ import com.example.core.ui.theme.IconSelectedTintDark
 import com.example.core.ui.theme.IconUnselectedTintDark
 import com.example.core.ui.theme.SelectedItemBackgroundDark
 import com.example.nuviofrontend.feature.favorite.presentation.FavoriteScreen
-import com.example.nuviofrontend.feature.profile.presentation.ChangePasswordScreen
-import com.example.nuviofrontend.feature.profile.presentation.ChangePasswordState
-import com.example.nuviofrontend.feature.profile.presentation.ChangePasswordViewModel
 
-enum class ProfileSubScreen {
-    ProfileView,
-    ChangePassword
-}
+
 @Composable
 fun MainAppScreen(
     isLoggedIn: Boolean,
     firstName: String?,
-    lastName: String? = null,
-    email: String? = null,
+    lastName: String?,
+    email: String?,
     onSignOut: () -> Unit,
     onNavigateToLogin: () -> Unit,
     onNavigateToProfileEdit: () -> Unit
 ) {
-    var selectedTab by remember { mutableStateOf(HomeTab.HOME) }
-    var profileSubScreen by remember { mutableStateOf<ProfileSubScreen>(ProfileSubScreen.ProfileView) }
+    val navController = rememberNavController()
+    val tabs = HomeTab.values()
 
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
@@ -62,64 +56,41 @@ fun MainAppScreen(
             contentScale = ContentScale.Crop
         )
 
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
+        NavHost(
+            navController = navController,
+            startDestination = HomeTab.HOME.name,
+            modifier = Modifier.fillMaxSize()
         ) {
-            when (selectedTab) {
-                HomeTab.HOME -> HomeScreen(firstName)
-                HomeTab.SEARCH -> SearchScreen()
-                HomeTab.CART -> CartScreen()
-                HomeTab.FAVORITES -> FavoriteScreen()
-                HomeTab.PROFILE -> {
-                    when(profileSubScreen) {
-                        ProfileSubScreen.ProfileView -> ProfileScreen(
+            tabs.forEach { tab ->
+                composable(tab.name) {
+                    when (tab) {
+                        HomeTab.HOME -> HomeScreen(firstName)
+                        HomeTab.SEARCH -> SearchScreen()
+                        HomeTab.CART -> CartScreen()
+                        HomeTab.FAVORITES -> FavoriteScreen()
+                        HomeTab.PROFILE -> ProfileNavHost(
+                            navController = rememberNavController(),
                             isLoggedIn = isLoggedIn,
                             firstName = firstName,
                             lastName = lastName,
                             email = email,
                             onSignOut = onSignOut,
                             onNavigateToLogin = onNavigateToLogin,
-                            onEdit = onNavigateToProfileEdit,
-                            onChangePassword = {
-                                profileSubScreen = ProfileSubScreen.ChangePassword
-                            }
+                            onNavigateToProfileEdit = onNavigateToProfileEdit
                         )
-                        ProfileSubScreen.ChangePassword -> {
-                            val viewModel: ChangePasswordViewModel = hiltViewModel()
-                            val changePasswordState by viewModel.changePasswordState.collectAsState()
-                            val context = LocalContext.current
-
-                            LaunchedEffect(changePasswordState) {
-                                when (changePasswordState) {
-                                    is ChangePasswordState.Success -> {
-                                        Toast.makeText(context, "Lozinka uspješno promijenjena", Toast.LENGTH_SHORT).show()
-                                        viewModel.resetState()
-                                        profileSubScreen = ProfileSubScreen.ProfileView
-                                    }
-                                    is ChangePasswordState.Error -> {
-                                        Toast.makeText(context, (changePasswordState as ChangePasswordState.Error).message, Toast.LENGTH_LONG).show()
-                                        viewModel.resetState()
-                                    }
-                                    else -> Unit
-                                }
-                            }
-                            ChangePasswordScreen(
-                                isLoggedIn = isLoggedIn,
-                                firstName = firstName,
-                                lastName = lastName,
-                                email = email,
-                                onBack = { profileSubScreen = ProfileSubScreen.ProfileView }
-                            )
-                        }
                     }
                 }
             }
         }
 
         CustomBottomNavBar(
-            selectedIndex = selectedTab.ordinal,
-            onItemSelected = { selectedTab = HomeTab.values()[it] },
+            selectedIndex = tabs.indexOfFirst { it.name == navController.currentBackStackEntryAsState().value?.destination?.route },
+            onItemSelected = { index ->
+                navController.navigate(tabs[index].name) {
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            },
             modifier = Modifier.align(Alignment.BottomCenter)
         )
     }
