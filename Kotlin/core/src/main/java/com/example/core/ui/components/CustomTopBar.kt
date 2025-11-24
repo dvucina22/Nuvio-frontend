@@ -31,7 +31,7 @@ fun CustomTopBar(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 20.dp)
+            .padding(top = 30.dp)
             .height(50.dp)
             .padding(horizontal = 20.dp)
     ) {

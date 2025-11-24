@@ -81,6 +81,8 @@ fun AppNavGraph(navController: NavHostController) {
                 firstName = ui.firstName,
                 lastName = ui.lastName,
                 email = ui.email,
+                gender = ui.gender,
+                profilePictureUrl = ui.profilePictureUrl,
                 onSignOut = {
                     authVm.logout()
                     navController.navigate(Screen.MainScreen.route)
@@ -103,10 +105,12 @@ fun AppNavGraph(navController: NavHostController) {
             LaunchedEffect(profileEditState) {
                 when (profileEditState) {
                     is ProfileEditState.Success -> {
-                        Toast.makeText(context, "Profile updated successfully", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Profile updated successfully", Toast.LENGTH_SHORT)
+                            .show()
                         profileEditVm.resetState()
                         navController.popBackStack()
                     }
+
                     is ProfileEditState.Error -> {
                         Toast.makeText(
                             context,
@@ -115,6 +119,7 @@ fun AppNavGraph(navController: NavHostController) {
                         ).show()
                         profileEditVm.resetState()
                     }
+
                     else -> Unit
                 }
             }
@@ -122,23 +127,22 @@ fun AppNavGraph(navController: NavHostController) {
             ProfileEditScreen(
                 firstName = uiState.firstName,
                 lastName = uiState.lastName,
-                email = uiState.email,
                 phoneNumber = uiState.phoneNumber,
-                hasProfilePicture = false,
+                gender = uiState.gender,
+                profilePictureUrl = uiState.profilePictureUrl,
+                hasProfilePicture = uiState.profilePictureUrl.isNotEmpty(),
                 isLoading = uiState.isLoading,
+                isUploadingImage = uiState.isUploadingImage,
                 firstNameError = uiState.firstNameError,
                 lastNameError = uiState.lastNameError,
-                emailError = uiState.emailError,
                 phoneNumberError = uiState.phoneNumberError,
-                onBack = {
-                    navController.popBackStack()
+                genderError = uiState.genderError,
+                onBack = { navController.popBackStack() },
+                onSave = { firstName, lastName, phoneNumber, gender ->
+                    profileEditVm.updateProfile(firstName, lastName, phoneNumber, gender)
                 },
-                onSave = { firstName, lastName, email, phoneNumber ->
-                    profileEditVm.updateProfile(firstName, lastName, email, phoneNumber)
-                },
-                onProfilePictureClick = {
-                    // TODO: Implement profile picture selection
-                    Toast.makeText(context, "Profile picture selection coming soon", Toast.LENGTH_SHORT).show()
+                onProfilePictureSelected = { uri ->
+                    profileEditVm.uploadProfilePicture(uri)
                 }
             )
         }

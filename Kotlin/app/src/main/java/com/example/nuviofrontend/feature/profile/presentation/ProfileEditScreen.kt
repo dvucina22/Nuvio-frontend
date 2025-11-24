@@ -1,5 +1,9 @@
 package com.example.nuviofrontend.feature.profile.presentation
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -10,12 +14,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,40 +27,59 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.example.core.R
+import com.example.core.ui.components.CustomDropdown
 import com.example.core.ui.components.CustomTopBar
+import com.example.core.ui.theme.BackgroundNavDark
 import com.example.core.ui.theme.White
 import com.example.nuviofrontend.core.ui.components.CustomButton
 import com.example.nuviofrontend.core.ui.components.CustomTextField
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileEditScreen(
     firstName: String = "",
     lastName: String = "",
-    email: String = "",
     phoneNumber: String = "",
+    gender: String = "",
+    profilePictureUrl: String = "",
     hasProfilePicture: Boolean = false,
     isLoading: Boolean = false,
+    isUploadingImage: Boolean = false,
     firstNameError: String? = null,
     lastNameError: String? = null,
-    emailError: String? = null,
     phoneNumberError: String? = null,
+    genderError: String? = null,
     onBack: () -> Unit = {},
     onSave: (String, String, String, String) -> Unit = { _, _, _, _ -> },
-    onProfilePictureClick: () -> Unit = {}
+    onProfilePictureSelected: (Uri) -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
 
     var firstNameState by remember { mutableStateOf(firstName) }
     var lastNameState by remember { mutableStateOf(lastName) }
-    var emailState by remember { mutableStateOf(email) }
     var phoneNumberState by remember { mutableStateOf(phoneNumber) }
+    var genderState by remember { mutableStateOf(gender) }
+    var expandedGender by remember { mutableStateOf(false) }
 
-    LaunchedEffect(firstName, lastName, email, phoneNumber) {
+    LaunchedEffect(firstName, lastName, phoneNumber, gender) {
         firstNameState = firstName
         lastNameState = lastName
-        emailState = email
         phoneNumberState = phoneNumber
+        genderState = gender
+    }
+
+    val genderOptions = listOf(
+        "male" to stringResource(R.string.gender_male),
+        "female" to stringResource(R.string.gender_female),
+        "other" to stringResource(R.string.gender_other)
+    )
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri: Uri? ->
+        uri?.let { onProfilePictureSelected(it) }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -85,20 +105,36 @@ fun ProfileEditScreen(
                     modifier = Modifier.size(90.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.logo_light_icon),
+                    AsyncImage(
+                        model = profilePictureUrl.ifEmpty { R.drawable.logo_light_icon },
                         contentDescription = null,
                         modifier = Modifier
                             .size(90.dp)
                             .clip(CircleShape)
                             .border(
                                 width = 2.dp,
-                                color = if (hasProfilePicture) Color.Transparent else Color(0xFF5A676A),
+                                color = if (hasProfilePicture) Color.Transparent else Color(
+                                    0xFF5A676A
+                                ),
                                 shape = CircleShape
                             )
-                            .clickable { onProfilePictureClick() },
-                        contentScale = ContentScale.Crop
+                            .clickable {
+                                imagePickerLauncher.launch(
+                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                )
+                            },
+                        contentScale = ContentScale.Crop,
+                        placeholder = painterResource(id = R.drawable.logo_light_icon),
+                        error = painterResource(id = R.drawable.logo_light_icon)
                     )
+
+                    if (isUploadingImage) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(90.dp),
+                            color = White,
+                            strokeWidth = 3.dp
+                        )
+                    }
 
                     Box(
                         modifier = Modifier
@@ -107,12 +143,16 @@ fun ProfileEditScreen(
                             .clip(CircleShape)
                             .background(Color(0xFF2D3E4A))
                             .border(2.dp, Color(0xFF1A2634), CircleShape)
-                            .clickable { onProfilePictureClick() },
+                            .clickable {
+                                imagePickerLauncher.launch(
+                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                )
+                            },
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = if (hasProfilePicture) Icons.Default.Edit else Icons.Default.Add,
-                            contentDescription = if (hasProfilePicture) "Edit profile picture" else "Add profile picture",
+                            contentDescription = null,
                             tint = White,
                             modifier = Modifier.size(16.dp)
                         )
@@ -121,7 +161,7 @@ fun ProfileEditScreen(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                Spacer(modifier = Modifier.height(24.dp)) // dodatni spacing prije polja
+                Divider(color = BackgroundNavDark, modifier = Modifier.padding(vertical = 16.dp))
 
                 CustomTextField(
                     value = firstNameState,
@@ -144,16 +184,6 @@ fun ProfileEditScreen(
                 )
 
                 CustomTextField(
-                    value = emailState,
-                    onValueChange = { emailState = it },
-                    label = stringResource(R.string.label_email),
-                    placeholder = stringResource(R.string.placeholder_email),
-                    textStyle = MaterialTheme.typography.labelSmall,
-                    isError = emailError != null,
-                    errorMessage = emailError
-                )
-
-                CustomTextField(
                     value = phoneNumberState,
                     onValueChange = { phoneNumberState = it },
                     label = stringResource(R.string.label_phone),
@@ -163,7 +193,22 @@ fun ProfileEditScreen(
                     errorMessage = phoneNumberError
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                CustomDropdown(
+                    label = stringResource(R.string.label_gender),
+                    value = genderState,
+                    items = listOf("male", "female", "other"),
+                    itemLabel = { code ->
+                        when (code) {
+                            "male" -> stringResource(R.string.gender_male)
+                            "female" -> stringResource(R.string.gender_female)
+                            else -> stringResource(R.string.gender_other)
+                        }
+                    },
+                    placeholder = stringResource(R.string.placeholder_gender),
+                    onItemSelected = { genderState = it },
+                    isError = genderError != null,
+                    errorMessage = genderError
+                )
 
                 if (isLoading) {
                     CircularProgressIndicator(
@@ -172,14 +217,16 @@ fun ProfileEditScreen(
                     )
                 }
 
+                Divider(color = BackgroundNavDark, modifier = Modifier.padding(vertical = 16.dp))
+
                 CustomButton(
                     text = stringResource(R.string.save_button),
                     onClick = {
                         onSave(
                             firstNameState,
                             lastNameState,
-                            emailState,
-                            phoneNumberState
+                            phoneNumberState,
+                            genderState
                         )
                     }
                 )

@@ -75,7 +75,9 @@
     <string name="save_button">Spremi</string>
     <string name="label_gender">Spol</string>
     <string name="placeholder_gender">Odaberite spol</string>
-    <string name="Profile">Profil</string>
+    <string name="gender_male">Muško</string>
+    <string name="gender_female">Žensko</string>
+    <string name="gender_other">Ostalo</string>
 
     <string name="change_password_title">Promjena lozinke</string>
     <string name="old_password_label">Stara lozinka</string>
@@ -100,5 +102,9 @@
     <string name="error_missing_fields">Nisu unesena sva polja</string>
 
     <string name="toast_password_changed">Lozinka uspješno promijenjena</string>
+
+    <string name="welcome_male">Dobrodošao %1$s</string>
+    <string name="welcome_female">Dobrodošla %1$s</string>
+    <string name="welcome_neutral">Dobrodošli %1$s</string>
 
 </resources>

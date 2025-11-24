@@ -25,6 +25,7 @@ sealed class ProfileRoute(val route: String) {
     object ChangePassword : ProfileRoute("profile_change_password")
     object EditProfile : ProfileRoute("profile_edit")
 }
+
 @Composable
 fun ProfileNavHost(
     navController: NavHostController,
@@ -32,6 +33,7 @@ fun ProfileNavHost(
     firstName: String?,
     lastName: String?,
     email: String?,
+    profilePictureUrl: String?,
     onSignOut: () -> Unit,
     onNavigateToLogin: () -> Unit,
     onNavigateToProfileEdit: () -> Unit
@@ -50,6 +52,7 @@ fun ProfileNavHost(
                 firstName = firstName,
                 lastName = lastName,
                 email = email,
+                profilePictureUrl = profilePictureUrl,
                 onSignOut = onSignOut,
                 onNavigateToLogin = onNavigateToLogin,
                 onEdit = { navController.navigate(ProfileRoute.EditProfile.route) },
@@ -92,7 +95,6 @@ fun ProfileNavHost(
             val profileEditViewModel: ProfileEditViewModel = hiltViewModel()
             val profileUiState by profileEditViewModel.uiState.collectAsState()
             val profileEditState by profileEditViewModel.profileEditState.collectAsState()
-            val context = LocalContext.current
 
             LaunchedEffect(profileEditState) {
                 when (profileEditState) {
@@ -116,23 +118,24 @@ fun ProfileNavHost(
             ProfileEditScreen(
                 firstName = profileUiState.firstName,
                 lastName = profileUiState.lastName,
-                email = profileUiState.email,
                 phoneNumber = profileUiState.phoneNumber,
-                hasProfilePicture = false,
+                gender = profileUiState.gender,
+                profilePictureUrl = profileUiState.profilePictureUrl,
+                hasProfilePicture = profileUiState.profilePictureUrl.isNotEmpty(),
                 isLoading = profileUiState.isLoading,
+                isUploadingImage = profileUiState.isUploadingImage,
                 firstNameError = profileUiState.firstNameError,
                 lastNameError = profileUiState.lastNameError,
-                emailError = profileUiState.emailError,
                 phoneNumberError = profileUiState.phoneNumberError,
+                genderError = profileUiState.genderError,
                 onBack = { navController.popBackStack() },
-                onSave = { firstName, lastName, email, phoneNumber ->
-                    profileEditViewModel.updateProfile(firstName, lastName, email, phoneNumber)
+                onSave = { firstName, lastName, phoneNumber, gender ->
+                    profileEditViewModel.updateProfile(firstName, lastName, phoneNumber, gender)
                 },
-                onProfilePictureClick = {
-                    Toast.makeText(context, "Profile picture selection coming soon", Toast.LENGTH_SHORT).show()
+                onProfilePictureSelected = { uri ->
+                    profileEditViewModel.uploadProfilePicture(uri)
                 }
             )
         }
-
     }
 }

@@ -9,6 +9,8 @@ import com.example.core.network.api.ApiClient
 import com.example.core.network.api.ApiService
 import com.example.core.network.interceptor.AuthInterceptor
 import com.example.core.network.token.IUserPrefs
+import com.example.nuviofrontend.feature.profile.data.CloudinaryService
+import com.example.nuviofrontend.feature.profile.data.ProfilePictureRepository
 import com.example.nuviofrontend.feature.profile.data.UserRepository
 import com.example.nuviofrontend.feature.profile.data.UserService
 import dagger.Module
@@ -58,5 +60,20 @@ object AppModule {
         userPrefs: IUserPrefs
     ): UserRepository {
         return UserRepository(userService, userPrefs)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCloudinaryService(@ApplicationContext context: Context): CloudinaryService {
+        return CloudinaryService(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideProfilePictureRepository(
+        apiService: ApiService,
+        cloudinaryService: CloudinaryService
+    ): ProfilePictureRepository {
+        return ProfilePictureRepository(apiService, cloudinaryService)
     }
 }

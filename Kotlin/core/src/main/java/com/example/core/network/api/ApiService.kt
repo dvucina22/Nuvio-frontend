@@ -8,8 +8,11 @@ import com.example.core.auth.dto.RegisterRequest
 import com.example.core.auth.dto.RegisterResponse
 import com.example.core.user.dto.ChangePasswordRequest
 import com.example.core.user.dto.ChangePasswordResponse
+import com.example.core.user.dto.UpdateProfilePictureRequest
+import com.example.core.user.dto.UpdateProfilePictureResponse
 import com.example.core.user.dto.UpdateUserRequest
 import com.example.core.user.dto.UpdateUserResponse
+import com.example.core.user.dto.UploadSignatureResponse
 import com.example.core.user.dto.UserDto
 import retrofit2.Response
 import retrofit2.http.Body
@@ -32,4 +35,11 @@ interface ApiService {
     suspend fun changePassword(@Body request: ChangePasswordRequest): Response<ChangePasswordResponse>
     @POST("accounts/oauth/{provider}/verify")
     suspend fun verifyOAuth(@Path("provider") provider: String, @Body request: OAuthVerifyRequest): Response<OAuthVerifyResponse>
+
+    @GET("accounts/profile-picture/upload-signature")
+    suspend fun getUploadSignature(): Response<UploadSignatureResponse>
+
+    @PUT("accounts/profile-picture/update")
+    suspend fun updateProfilePicture(@Body request: UpdateProfilePictureRequest): Response<UpdateProfilePictureResponse>
+
 }

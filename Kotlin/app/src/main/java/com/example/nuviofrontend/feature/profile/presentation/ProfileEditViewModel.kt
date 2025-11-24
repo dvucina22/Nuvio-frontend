@@ -1,7 +1,9 @@
 package com.example.nuviofrontend.feature.profile.presentation
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.nuviofrontend.feature.profile.data.ProfilePictureRepository
 import com.example.nuviofrontend.feature.profile.data.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,21 +22,23 @@ sealed class ProfileEditState {
 }
 
 data class ProfileEditUiState(
-    val id: String = "",
     val firstName: String = "",
     val lastName: String = "",
-    val email: String = "",
     val phoneNumber: String = "",
+    val gender: String = "",
+    val profilePictureUrl: String = "",
     val isLoading: Boolean = false,
+    val isUploadingImage: Boolean = false,
     val firstNameError: String? = null,
     val lastNameError: String? = null,
-    val emailError: String? = null,
-    val phoneNumberError: String? = null
+    val phoneNumberError: String? = null,
+    val genderError: String? = null
 )
 
 @HiltViewModel
 class ProfileEditViewModel @Inject constructor(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val profilePictureRepository: ProfilePictureRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileEditUiState())
@@ -54,11 +58,11 @@ class ProfileEditViewModel @Inject constructor(
             try {
                 val profile = userRepository.getUserProfile()
                 _uiState.value = _uiState.value.copy(
-                    id = profile.id,
                     firstName = profile.firstName,
                     lastName = profile.lastName,
-                    email = profile.email,
                     phoneNumber = profile.phoneNumber,
+                    gender = profile.gender,
+                    profilePictureUrl = profile.profilePictureUrl,
                     isLoading = false
                 )
             } catch (e: HttpException) {
@@ -74,17 +78,43 @@ class ProfileEditViewModel @Inject constructor(
         }
     }
 
+    fun uploadProfilePicture(imageUri: Uri) {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isUploadingImage = true)
+
+            try {
+                val imageUrl = profilePictureRepository.uploadProfilePicture(imageUri)
+
+                _uiState.value = _uiState.value.copy(
+                    profilePictureUrl = imageUrl,
+                    isUploadingImage = false
+                )
+
+                loadUserProfile()
+            } catch (e: HttpException) {
+                _uiState.value = _uiState.value.copy(isUploadingImage = false)
+                _profileEditState.value = ProfileEditState.Error("Failed to upload image: ${e.message()}")
+            } catch (e: IOException) {
+                _uiState.value = _uiState.value.copy(isUploadingImage = false)
+                _profileEditState.value = ProfileEditState.Error("Network error: ${e.message}")
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(isUploadingImage = false)
+                _profileEditState.value = ProfileEditState.Error("Error: ${e.message}")
+            }
+        }
+    }
+
     fun updateProfile(
         firstName: String,
         lastName: String,
-        email: String,
-        phoneNumber: String
+        phoneNumber: String,
+        gender: String
     ) {
         _uiState.value = _uiState.value.copy(
             firstNameError = null,
             lastNameError = null,
-            emailError = null,
-            phoneNumberError = null
+            phoneNumberError = null,
+            genderError = null
         )
 
         var hasError = false
@@ -99,14 +129,6 @@ class ProfileEditViewModel @Inject constructor(
             hasError = true
         }
 
-        if (email.isBlank()) {
-            _uiState.value = _uiState.value.copy(emailError = "Email is required")
-            hasError = true
-        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            _uiState.value = _uiState.value.copy(emailError = "Invalid email format")
-            hasError = true
-        }
-
         if (hasError) {
             return
         }
@@ -117,19 +139,17 @@ class ProfileEditViewModel @Inject constructor(
 
             try {
                 val profile = userRepository.updateUserProfile(
-                    id = _uiState.value.id, // Pass the stored id
                     firstName = firstName.ifBlank { null },
                     lastName = lastName.ifBlank { null },
-                    email = email.ifBlank { null },
-                    phoneNumber = phoneNumber.ifBlank { null }
+                    phoneNumber = phoneNumber.ifBlank { null },
+                    gender = gender.ifBlank { null }
                 )
 
                 _uiState.value = _uiState.value.copy(
-                    id = profile.id,
                     firstName = profile.firstName,
                     lastName = profile.lastName,
-                    email = profile.email,
                     phoneNumber = profile.phoneNumber,
+                    gender = profile.gender,
                     isLoading = false
                 )
                 _profileEditState.value = ProfileEditState.Success
@@ -150,4 +170,3 @@ class ProfileEditViewModel @Inject constructor(
         _profileEditState.value = ProfileEditState.Idle
     }
 }
-

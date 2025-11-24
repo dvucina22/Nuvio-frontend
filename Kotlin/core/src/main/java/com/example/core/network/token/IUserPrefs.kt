@@ -6,5 +6,6 @@ import kotlinx.coroutines.flow.Flow
 interface IUserPrefs {
     val profileFlow: Flow<UserProfile?>
     suspend fun saveProfile(p: UserProfile)
+    suspend fun getProfile(): UserProfile?
     suspend fun clear()
 }

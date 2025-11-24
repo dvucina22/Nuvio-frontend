@@ -22,24 +22,55 @@ class UserPrefs @Inject constructor(
     private val FIRST = stringPreferencesKey("first_name")
     private val LAST = stringPreferencesKey("last_name")
     private val EMAIL = stringPreferencesKey("email")
+    private val PHONE = stringPreferencesKey("phone_number")
+    private val GENDER = stringPreferencesKey("gender")
+    private val PROFILE_PIC = stringPreferencesKey("profile_picture_url")
+    private val USER_ID = stringPreferencesKey("user_id")
 
     override val profileFlow: Flow<UserProfile?> =
         context.userPrefs.data
             .catch { if (it is IOException) emit(emptyPreferences()) else throw it }
             .map { prefs ->
                 UserProfile(
+                    id = prefs[USER_ID] ?: "",
                     firstName = prefs[FIRST] ?: "",
                     lastName = prefs[LAST] ?: "",
-                    email = prefs[EMAIL] ?: ""
+                    email = prefs[EMAIL] ?: "",
+                    phoneNumber = prefs[PHONE] ?: "",
+                    gender = prefs[GENDER] ?: "",
+                    profilePictureUrl = prefs[PROFILE_PIC] ?: ""
                 )
             }
 
     override suspend fun saveProfile(p: UserProfile) {
         context.userPrefs.edit { e ->
+            e[USER_ID] = p.id
             e[FIRST] = p.firstName
             e[LAST] = p.lastName
             e[EMAIL] = p.email
+            e[PHONE] = p.phoneNumber
+            e[GENDER] = p.gender
+            e[PROFILE_PIC] = p.profilePictureUrl
         }
+    }
+
+    override suspend fun getProfile(): UserProfile? {
+        var profile: UserProfile? = null
+        context.userPrefs.data
+            .catch { if (it is IOException) emit(emptyPreferences()) else throw it }
+            .map { prefs ->
+                UserProfile(
+                    id = prefs[USER_ID] ?: "",
+                    firstName = prefs[FIRST] ?: "",
+                    lastName = prefs[LAST] ?: "",
+                    email = prefs[EMAIL] ?: "",
+                    phoneNumber = prefs[PHONE] ?: "",
+                    gender = prefs[GENDER] ?: "",
+                    profilePictureUrl = prefs[PROFILE_PIC] ?: ""
+                )
+            }
+            .collect { profile = it }
+        return profile
     }
 
     override suspend fun clear() {

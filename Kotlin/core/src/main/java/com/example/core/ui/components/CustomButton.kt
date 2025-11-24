@@ -18,7 +18,7 @@ fun CustomButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    width: Int = 230,
+    width: Int = 250,
     height: Int = 45,
     containerColor: Color = ButtonColorDark
 ) {

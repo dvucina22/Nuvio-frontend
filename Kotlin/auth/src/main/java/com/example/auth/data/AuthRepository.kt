@@ -31,9 +31,13 @@ class AuthRepository(
         tokenStorage.saveAccessToken(response.token)
         userPrefs.saveProfile(
             UserProfile(
+                id = "",
                 firstName = response.firstName.orEmpty(),
                 lastName = response.lastName.orEmpty(),
-                email = response.email.orEmpty()
+                email = response.email.orEmpty(),
+                phoneNumber = "",
+                gender = response.gender.orEmpty(),
+                profilePictureUrl = response.profilePictureURL.orEmpty()
             )
         )
         return true
@@ -45,9 +49,13 @@ class AuthRepository(
         tokenStorage.saveAccessToken(response.token)
         userPrefs.saveProfile(
             UserProfile(
+                id = "",
                 firstName = response.firstName.orEmpty(),
                 lastName = response.lastName.orEmpty(),
-                email = response.email.orEmpty()
+                email = response.email.orEmpty(),
+                phoneNumber = "",
+                gender = response.gender.orEmpty(),
+                profilePictureUrl = response.profilePictureURL.orEmpty()
             )
         )
         return true
@@ -59,9 +67,13 @@ class AuthRepository(
         tokenStorage.saveAccessToken(response.token)
         userPrefs.saveProfile(
             UserProfile(
+                id = "",
                 firstName = response.firstName.orEmpty(),
                 lastName = response.lastName.orEmpty(),
-                email = response.email.orEmpty()
+                email = response.email.orEmpty(),
+                phoneNumber = "",
+                gender = response.gender.orEmpty(),
+                profilePictureUrl = response.profilePictureURL.orEmpty()
             )
         )
         return true

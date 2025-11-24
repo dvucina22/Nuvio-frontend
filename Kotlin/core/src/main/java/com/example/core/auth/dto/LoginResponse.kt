@@ -6,5 +6,7 @@ data class LoginResponse(
     val token: String,
     val firstName: String?,
     val lastName: String?,
-    val email: String?
+    val email: String?,
+    val gender: String?,
+    val profilePictureURL: String?
 )

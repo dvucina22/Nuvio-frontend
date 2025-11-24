@@ -41,6 +41,8 @@ fun MainAppScreen(
     firstName: String?,
     lastName: String?,
     email: String?,
+    gender: String?,
+    profilePictureUrl: String?,
     onSignOut: () -> Unit,
     onNavigateToLogin: () -> Unit,
     onNavigateToProfileEdit: () -> Unit
@@ -64,7 +66,10 @@ fun MainAppScreen(
             tabs.forEach { tab ->
                 composable(tab.name) {
                     when (tab) {
-                        HomeTab.HOME -> HomeScreen(firstName)
+                        HomeTab.HOME -> HomeScreen(
+                            firstName = firstName,
+                            gender = gender
+                        )
                         HomeTab.SEARCH -> SearchScreen()
                         HomeTab.CART -> CartScreen()
                         HomeTab.FAVORITES -> FavoriteScreen()
@@ -74,6 +79,7 @@ fun MainAppScreen(
                             firstName = firstName,
                             lastName = lastName,
                             email = email,
+                            profilePictureUrl = profilePictureUrl,
                             onSignOut = onSignOut,
                             onNavigateToLogin = onNavigateToLogin,
                             onNavigateToProfileEdit = onNavigateToProfileEdit
@@ -95,6 +101,7 @@ fun MainAppScreen(
         )
     }
 }
+
 @Composable
 fun CustomBottomNavBar(
     selectedIndex: Int,
@@ -119,7 +126,7 @@ fun CustomBottomNavBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth(0.90f)
-                .height(68.dp)
+                .height(52.dp)
                 .clip(RoundedCornerShape(12.dp))
                 .background(BackgroundNavDark),
             verticalAlignment = Alignment.CenterVertically,
@@ -128,7 +135,7 @@ fun CustomBottomNavBar(
             items.forEachIndexed { index, icon ->
                 Box(
                     modifier = Modifier
-                        .size(48.dp)
+                        .size(44.dp)
                         .clip(RoundedCornerShape(16.dp))
                         .background(
                             if (selectedIndex == index) SelectedItemBackgroundDark else Color.Transparent

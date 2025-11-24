@@ -1,6 +1,7 @@
 package com.example.core.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,24 +20,33 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 
 
 @Composable
 fun ProfileHeader(
     displayName: String,
-    displayEmail: String
+    displayEmail: String,
+    profilePictureUrl: String = ""
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.logo_light_icon),
+        AsyncImage(
+            model = profilePictureUrl.ifEmpty { R.drawable.logo_light_icon },
             contentDescription = null,
             modifier = Modifier
                 .size(90.dp)
-                .clip(CircleShape),
-            contentScale = ContentScale.Crop
+                .clip(CircleShape)
+                .border(
+                    width = 2.dp,
+                    color = if (profilePictureUrl.isNotEmpty()) Color.Transparent else Color(0xFF5A676A),
+                    shape = CircleShape
+                ),
+            contentScale = ContentScale.Crop,
+            placeholder = painterResource(id = R.drawable.logo_light_icon),
+            error = painterResource(id = R.drawable.logo_light_icon)
         )
 
         Spacer(modifier = Modifier.height(12.dp))

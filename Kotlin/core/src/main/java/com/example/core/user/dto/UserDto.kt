@@ -8,5 +8,6 @@ data class UserDto(
     val lastName: String?,
     val email: String,
     val gender: String?,
-    val profilePictureUrl: String?
+    val profilePictureUrl: String?,
+    val phoneNumber: String?
 )

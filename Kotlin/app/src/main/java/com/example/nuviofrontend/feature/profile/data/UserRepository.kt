@@ -17,7 +17,7 @@ class UserRepository(
             firstName = userDto.firstName ?: "",
             lastName = userDto.lastName ?: "",
             email = userDto.email,
-            phoneNumber = "",
+            phoneNumber = userDto.phoneNumber ?: "",
             gender = userDto.gender ?: "",
             profilePictureUrl = userDto.profilePictureUrl ?: ""
         )
@@ -28,18 +28,18 @@ class UserRepository(
     }
 
     suspend fun updateUserProfile(
-        id: String,
         firstName: String?,
         lastName: String?,
-        email: String?,
-        phoneNumber: String?
+        phoneNumber: String?,
+        gender: String?,
+        profilePictureUrl: String? = null
     ): UserProfile {
         val request = UpdateUserRequest(
-            id = id,
             firstName = firstName,
             lastName = lastName,
-            email = email,
-            phoneNumber = phoneNumber
+            phoneNumber = phoneNumber,
+            gender = gender,
+            profilePictureUrl = profilePictureUrl
         )
 
         val userDto = userService.updateUser(request)
@@ -49,7 +49,7 @@ class UserRepository(
             firstName = userDto.firstName ?: "",
             lastName = userDto.lastName ?: "",
             email = userDto.email,
-            phoneNumber = phoneNumber ?: "",
+            phoneNumber = userDto.phoneNumber ?: "",
             gender = userDto.gender ?: "",
             profilePictureUrl = userDto.profilePictureUrl ?: ""
         )
