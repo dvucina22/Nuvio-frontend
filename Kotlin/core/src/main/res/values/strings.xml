@@ -91,6 +91,7 @@
     <string name="placeholder_new_password">Unesite novu lozinku</string>
     <string name="placeholder_confirm_password">Ponovite novu lozinku</string>
     <string name="button_save">Spremi</string>
+    <string name="error_server_generic2">Pogreška na poslužitelju%s.</string>
 
     <string name="error_old_password_empty">Stara lozinka je obavezna</string>
     <string name="error_new_password_empty">Nova lozinka je obavezna</string>

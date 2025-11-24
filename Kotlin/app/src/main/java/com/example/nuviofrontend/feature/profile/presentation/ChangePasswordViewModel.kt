@@ -88,26 +88,17 @@ class ChangePasswordViewModel @Inject constructor(
             try {
                 userRepository.changePassword(oldPassword.value, newPassword.value)
                 _changePasswordState.value = ChangePasswordState.Success
-
-            } catch (e: HttpException) {
-                val errorBody = e.response()?.errorBody()?.string() ?: ""
-
-                when {
-                    errorBody.contains("password invalid", ignoreCase = true) -> oldPasswordError.value =
-                        app.getString(R.string.error_old_password_invalid)
-                    errorBody.contains("password does not meet security requirements", ignoreCase = true) -> newPasswordError.value =
-                        app.getString(R.string.error_password_complexity)
-                    errorBody.contains("missing required fields", ignoreCase = true) -> generalError.value =
-                        app.getString(R.string.error_missing_fields)
-                    else -> generalError.value =
-                        app.getString(R.string.error_server_generic, e.code())
+            } catch (e: IllegalArgumentException) {
+                when (e.message) {
+                    "password_invalid" -> oldPasswordError.value = app.getString(R.string.error_old_password_invalid)
+                    "password_complexity" -> newPasswordError.value = app.getString(R.string.error_password_complexity)
+                    "missing_fields" -> generalError.value = app.getString(R.string.error_missing_fields)
+                    else -> generalError.value = app.getString(R.string.error_unknown)
                 }
-
-                _changePasswordState.value = ChangePasswordState.Error(generalError.value ?: app.getString(R.string.error_unknown))
+                _changePasswordState.value = ChangePasswordState.Error(generalError.value ?: "")
             } catch (e: Exception) {
-                val message = e.message ?: app.getString(R.string.error_unknown)
-                generalError.value = message
-                _changePasswordState.value = ChangePasswordState.Error(message)
+                generalError.value = app.getString(R.string.error_server_generic2, e.message ?: "")
+                _changePasswordState.value = ChangePasswordState.Error(generalError.value ?: "")
             }
         }
     }

@@ -37,6 +37,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.core.R
+import com.example.core.ui.components.CustomTopBar
+import com.example.core.ui.components.ProfileHeader
 import com.example.core.ui.theme.BackgroundNavDark
 import com.example.core.ui.theme.White
 import com.example.nuviofrontend.core.ui.components.CustomButton
@@ -58,127 +60,63 @@ fun ProfileScreen(
         stringResource(R.string.guest)
     }
 
-
     val displayEmail = if (isLoggedIn && !email.isNullOrBlank()) {
         email
     } else {
         stringResource(R.string.not_logged_in)
     }
 
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
+            .padding(horizontal = 20.dp)
     ) {
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 20.dp)
-        ) {
+        CustomTopBar(
+            title = stringResource(R.string.profile_title),
+            showBack = false
+        )
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 20.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Spacer(modifier = Modifier.weight(1f))
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 20.dp, end = 0.dp, start = 0.dp)
-                        .height(50.dp)
-                ) {
-                    Text(
-                        text = stringResource(R.string.profile_title),
-                        color = White,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
+        Spacer(modifier = Modifier.height(20.dp))
 
-                    Image(
-                        painter = painterResource(id = R.drawable.logo_dark_icon),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(43.dp)
-                            .padding(6.dp)
-                            .align(Alignment.TopEnd),
-                        contentScale = ContentScale.Fit
-                    )
-                }
+        ProfileHeader(displayName = displayName, displayEmail = displayEmail)
 
+        if (isLoggedIn) {
+            CustomButton(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                text = stringResource(R.string.edit_button),
+                onClick = onEdit
+            )
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Divider(color = BackgroundNavDark)
+
+        if (isLoggedIn) {
+            ProfileMenuItem(Icons.Default.Settings, stringResource(R.string.settings))
+            ProfileMenuItem(Icons.Default.CreditCard, stringResource(R.string.saved_cards))
+            ProfileMenuItem(Icons.Default.List, stringResource(R.string.order_history))
+            ProfileMenuItem(Icons.Default.Lock, stringResource(R.string.change_password)) {
+                onChangePassword()
             }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-
-                Image(
-                    painter = painterResource(id = R.drawable.logo_light_icon),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(90.dp)
-                        .clip(CircleShape),
-                    contentScale = ContentScale.Crop
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Text(
-                    text = displayName,
-                    color = White,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Text(
-                    text = displayEmail,
-                    color = Color(0xFF9AA4A6),
-                    style = MaterialTheme.typography.labelSmall,
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                if (isLoggedIn) {
-                    CustomButton(
-                        text = stringResource(R.string.edit_button),
-                        onClick = onEdit
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
             Divider(color = BackgroundNavDark)
+        }
 
-            if (isLoggedIn) {
-                ProfileMenuItem(Icons.Default.Settings, stringResource(R.string.settings))
-                ProfileMenuItem(Icons.Default.CreditCard, stringResource(R.string.saved_cards))
-                ProfileMenuItem(Icons.Default.List, stringResource(R.string.order_history))
-                ProfileMenuItem(Icons.Default.Lock, stringResource(R.string.change_password)){
-                    onChangePassword()
-                }
-                Divider(color = BackgroundNavDark)
+        ProfileMenuItem(Icons.Default.Help, stringResource(R.string.help))
+
+        if (isLoggedIn) {
+            ProfileMenuItem(Icons.Default.ExitToApp, stringResource(R.string.sign_out)) {
+                onSignOut()
             }
-
-            ProfileMenuItem(Icons.Default.Help, stringResource(R.string.help))
-
-            if (isLoggedIn) {
-                ProfileMenuItem(Icons.Default.ExitToApp, stringResource(R.string.sign_out)) {
-                    onSignOut()
-                }
-            } else {
-                ProfileMenuItem(Icons.Default.ExitToApp, stringResource(R.string.login_button)) {
-                    onNavigateToLogin()
-                }
+        } else {
+            ProfileMenuItem(Icons.Default.ExitToApp, stringResource(R.string.login_button)) {
+                onNavigateToLogin()
             }
         }
     }
 }
+
 
 @Composable
 fun ProfileMenuItem(

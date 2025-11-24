@@ -47,7 +47,7 @@ val AppTypography = Typography(
     titleSmall = TextStyle(
         fontFamily = MontserratRegular,
         fontWeight = FontWeight.Normal,
-        fontSize = 17.sp,
+        fontSize = 15.sp,
         letterSpacing = 0.5.sp
     ),
 )

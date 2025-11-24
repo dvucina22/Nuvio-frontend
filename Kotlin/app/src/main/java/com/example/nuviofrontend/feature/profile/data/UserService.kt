@@ -37,18 +37,20 @@ class UserService(private val api: ApiService) {
             return response.body()?.message ?: "Password updated successfully"
         }
 
-        val code = response.code()
         val errorBody = response.errorBody()?.string() ?: ""
 
         when {
-            code == 401 || errorBody.contains("password invalid", ignoreCase = true) -> {
-                throw IllegalArgumentException("Kriva stara lozinka")
+            errorBody.contains("password invalid", ignoreCase = true) -> {
+                throw IllegalArgumentException("password_invalid")
             }
-            code == 400 || errorBody.contains("password does not meet security requirements", ignoreCase = true) -> {
-                throw IllegalArgumentException("Lozinka mora imati najmanje 8 znakova, jedno veliko slovo i jedan broj")
+            errorBody.contains("password does not meet security requirements", ignoreCase = true) -> {
+                throw IllegalArgumentException("password_complexity")
+            }
+            errorBody.contains("missing required fields", ignoreCase = true) -> {
+                throw IllegalArgumentException("missing_fields")
             }
             else -> {
-                throw Exception("Server error: $code")
+                throw Exception("server_error")
             }
         }
     }
