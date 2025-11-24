@@ -1,5 +1,6 @@
 package com.example.auth.data
 
+import com.example.core.auth.IAuthService
 import com.example.core.auth.dto.LoginRequest
 import com.example.core.auth.dto.LoginResponse
 import com.example.core.auth.dto.OAuthVerifyRequest
@@ -10,9 +11,9 @@ import com.example.core.network.api.ApiService
 import retrofit2.HttpException
 import java.io.IOException
 
-class AuthService(private val api: ApiService) {
+class AuthService(private val api: ApiService): IAuthService {
 
-    suspend fun register(request: RegisterRequest): RegisterResponse {
+    override suspend fun register(request: RegisterRequest): RegisterResponse {
         val response = api.register(request)
         if (response.isSuccessful) {
             return response.body() ?: throw IOException("Empty response body")
@@ -20,7 +21,7 @@ class AuthService(private val api: ApiService) {
         throw HttpException(response)
     }
 
-    suspend fun login(request: LoginRequest): LoginResponse {
+    override suspend fun login(request: LoginRequest): LoginResponse {
         val response = api.login(request)
         if (response.isSuccessful) {
             return response.body() ?: throw IOException("Empty response body")
@@ -28,7 +29,7 @@ class AuthService(private val api: ApiService) {
         throw HttpException(response)
     }
 
-    suspend fun verifyOAuth(provider: String, idToken: String): OAuthVerifyResponse {
+    override suspend fun verifyOAuth(provider: String, idToken: String): OAuthVerifyResponse {
         val body = OAuthVerifyRequest(idToken)
         val response = api.verifyOAuth(provider, body)
         if (response.isSuccessful) {

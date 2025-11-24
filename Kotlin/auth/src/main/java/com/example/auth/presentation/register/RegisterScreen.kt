@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -14,6 +15,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.core.ui.theme.Error
@@ -139,7 +141,8 @@ fun RegisterForm(viewModel: RegisterViewModel) {
             label = stringResource(id = AuthR.string.label_email),
             placeholder = stringResource(id = AuthR.string.label_email),
             isError = emailError != null,
-            errorMessage = emailError
+            errorMessage = emailError,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
         )
 
         CustomTextField(

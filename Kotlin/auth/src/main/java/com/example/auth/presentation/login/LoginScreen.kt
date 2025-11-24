@@ -7,6 +7,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -19,6 +20,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -138,7 +140,8 @@ fun LoginForm(
             placeholder = stringResource(id = AuthR.string.placeholder_email),
             textStyle = MaterialTheme.typography.labelSmall,
             isError = emailError != null,
-            errorMessage = emailError
+            errorMessage = emailError,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
         )
 
         CustomTextField(
@@ -167,7 +170,9 @@ fun LoginForm(
 
         CustomButton(
             text = stringResource(id = AuthR.string.button_login_google),
-            onClick = onGoogleLoginClick
+            onClick = onGoogleLoginClick,
+            iconRes = CoreR.drawable.google_icon,
+            iconSize = 40
         )
 
         Spacer(modifier = Modifier.height(8.dp))
