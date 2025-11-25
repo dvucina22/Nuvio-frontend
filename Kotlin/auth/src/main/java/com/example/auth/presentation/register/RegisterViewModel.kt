@@ -26,7 +26,6 @@ class RegisterViewModel @Inject constructor(
     private val app: Application
 ) : ViewModel() {
 
-    // UI state
     val firstName = MutableStateFlow("")
     val lastName = MutableStateFlow("")
     val email = MutableStateFlow("")

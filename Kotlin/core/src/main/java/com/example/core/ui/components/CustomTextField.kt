@@ -1,13 +1,11 @@
-package com.example.nuviofrontend.core.ui.components
+package com.example.core.ui.components
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -59,7 +57,8 @@ fun CustomTextField(
     onPasswordVisibilityChange: (() -> Unit)? = null,
     textStyle: TextStyle = MaterialTheme.typography.labelSmall,
     isError: Boolean = false,
-    errorMessage: String? = null
+    errorMessage: String? = null,
+    visualTransformation: VisualTransformation = if (isPassword && !passwordVisible) PasswordVisualTransformation() else VisualTransformation.None
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -109,7 +108,7 @@ fun CustomTextField(
                     singleLine = true,
                     cursorBrush = SolidColor(White),
                     textStyle = textStyle.copy(color = White, textAlign = TextAlign.Start),
-                    visualTransformation = if (isPassword && !passwordVisible) PasswordVisualTransformation() else VisualTransformation.None,
+                    visualTransformation = visualTransformation,
                     decorationBox = { innerTextField ->
                         Row(
                             modifier = Modifier

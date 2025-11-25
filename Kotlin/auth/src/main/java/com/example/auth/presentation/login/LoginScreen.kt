@@ -23,8 +23,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.nuviofrontend.core.ui.components.CustomButton
-import com.example.nuviofrontend.core.ui.components.CustomTextField
+import com.example.core.ui.components.CustomButton
+import com.example.core.ui.components.CustomTextField
 import com.example.auth.R as AuthR
 import com.example.core.R as CoreR
 import com.example.core.ui.theme.White

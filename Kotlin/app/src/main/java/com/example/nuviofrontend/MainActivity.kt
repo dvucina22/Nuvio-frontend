@@ -29,10 +29,10 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.core.ui.theme.NuvioFrontendTheme
-import com.example.nuviofrontend.core.ui.components.CustomButton
 import com.example.nuviofrontend.navigation.NavigationHost
 import dagger.hilt.android.AndroidEntryPoint
 import com.example.core.R
+import com.example.core.ui.components.CustomButton
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

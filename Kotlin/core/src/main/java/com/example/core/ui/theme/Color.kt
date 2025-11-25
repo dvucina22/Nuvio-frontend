@@ -11,6 +11,7 @@ val BackgroundNavDark = Color(0x6BA2A9AD)
 val IconSelectedTintDark = Color(0xFFEDF2F4)
 val IconUnselectedTintDark = Color(0xFF818E96)
 val SelectedItemBackgroundDark = Color(0x331E2F23)
+val WarningPopUpBackground = Color(0xFF232323)
 val PurpleGrey80 = Color(0xFFCCC2DC)
 val Pink80 = Color(0xFFEFB8C8)
 

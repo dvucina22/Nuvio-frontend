@@ -4,7 +4,6 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -14,7 +13,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -25,16 +23,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.core.R
+import com.example.core.ui.components.CustomButton
 import com.example.core.ui.components.CustomDropdown
+import com.example.core.ui.components.CustomTextField
 import com.example.core.ui.components.CustomTopBar
 import com.example.core.ui.theme.BackgroundNavDark
 import com.example.core.ui.theme.White
-import com.example.nuviofrontend.core.ui.components.CustomButton
-import com.example.nuviofrontend.core.ui.components.CustomTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -107,4 +107,28 @@
     <string name="welcome_female">Dobrodošla %1$s</string>
     <string name="welcome_neutral">Dobrodošli %1$s</string>
 
+    <string name="new_card">Nova kartica</string>
+    <string name="card_number">Broj kartice</string>
+    <string name="card_name">Naziv</string>
+    <string name="cancel">Odustani</string>
+    <string name="month">Mjesec</string>
+    <string name="year">Godina</string>
+    <string name="full_name">Ime i prezime</string>
+    <string name="card_number_empty">Broj kartice ne smije biti prazan</string>
+    <string name="card_number_length">Broj kartice mora imati 16 znamenki</string>
+    <string name="card_name_empty">Naziv kartice ne smije biti prazan</string>
+    <string name="expiry_empty">Datum isteka ne smije biti prazan</string>
+    <string name="full_name_empty">Ime i prezime ne smije biti prazno</string>
+    <string name="due_date">Datum isteka</string>
+
+    <string name="saved_cards_title">Spremljene kartice</string>
+    <string name="no_saved_cards">Nema spremljenih kartica</string>
+    <string name="warning">Upozorenje</string>
+    <string name="delete_card_confirm">Jeste li sigurni da želite obrisati karticu?</string>
+    <string name="delete">Obriši</string>
+    <string name="transactions">Transakcije</string>
+    <string name="set_as_primary">Postavi kao glavnu</string>
+    <string name="card_number_label">Broj kartice</string>
+    <string name="next">Nastavi</string>
+
 </resources>

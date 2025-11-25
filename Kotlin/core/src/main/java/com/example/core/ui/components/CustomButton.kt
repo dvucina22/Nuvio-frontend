@@ -1,4 +1,5 @@
-package com.example.nuviofrontend.core.ui.components
+package com.example.core.ui.components
+
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.padding

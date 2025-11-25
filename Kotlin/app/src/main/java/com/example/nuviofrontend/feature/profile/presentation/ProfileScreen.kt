@@ -30,11 +30,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.core.R
+import com.example.core.ui.components.CustomButton
 import com.example.core.ui.components.CustomTopBar
 import com.example.core.ui.components.ProfileHeader
 import com.example.core.ui.theme.BackgroundNavDark
 import com.example.core.ui.theme.White
-import com.example.nuviofrontend.core.ui.components.CustomButton
 
 @Composable
 fun ProfileScreen(

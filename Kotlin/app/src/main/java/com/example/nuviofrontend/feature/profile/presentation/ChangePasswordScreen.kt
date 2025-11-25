@@ -2,25 +2,20 @@ package com.example.nuviofrontend.feature.profile.presentation
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Divider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.core.R
+import com.example.core.ui.components.CustomButton
+import com.example.core.ui.components.CustomTextField
 import com.example.core.ui.components.CustomTopBar
 import com.example.core.ui.components.ProfileHeader
 import com.example.core.ui.theme.BackgroundNavDark
-import com.example.nuviofrontend.core.ui.components.CustomButton
-import com.example.nuviofrontend.core.ui.components.CustomTextField
 
 @Composable
 fun ChangePasswordScreen(

@@ -16,10 +16,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.core.ui.components.CustomButton
+import com.example.core.ui.components.CustomTextField
 import com.example.core.ui.theme.Error
 import com.example.core.ui.theme.White
-import com.example.nuviofrontend.core.ui.components.CustomButton
-import com.example.nuviofrontend.core.ui.components.CustomTextField
 import com.example.auth.R as AuthR
 import com.example.core.R as CoreR
 
