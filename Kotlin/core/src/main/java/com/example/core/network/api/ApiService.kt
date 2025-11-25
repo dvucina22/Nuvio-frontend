@@ -6,6 +6,11 @@ import com.example.core.auth.dto.OAuthVerifyRequest
 import com.example.core.auth.dto.OAuthVerifyResponse
 import com.example.core.auth.dto.RegisterRequest
 import com.example.core.auth.dto.RegisterResponse
+import com.example.core.cards.dto.AddCardRequest
+import com.example.core.cards.dto.AddCardResponse
+import com.example.core.cards.dto.CardsResponse
+import com.example.core.cards.dto.DeleteCardResponse
+import com.example.core.cards.dto.PrimaryCardResponse
 import com.example.core.user.dto.ChangePasswordRequest
 import com.example.core.user.dto.ChangePasswordResponse
 import com.example.core.user.dto.UpdateProfilePictureRequest
@@ -16,6 +21,7 @@ import com.example.core.user.dto.UploadSignatureResponse
 import com.example.core.user.dto.UserDto
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -42,4 +48,14 @@ interface ApiService {
     @PUT("accounts/profile-picture/update")
     suspend fun updateProfilePicture(@Body request: UpdateProfilePictureRequest): Response<UpdateProfilePictureResponse>
 
+    @GET("transactions/cards")
+    suspend fun getCards(): CardsResponse
+    @POST("transactions/cards")
+    suspend fun addCard(@Body request: AddCardRequest): Response<AddCardResponse>
+    @DELETE("transactions/cards/{card_id}")
+    suspend fun deleteCard(
+        @Path("card_id") cardId: Int
+    ): Response<DeleteCardResponse>
+    @PUT("transactions/cards/{card_id}/primary")
+    suspend fun setPrimaryCard(@Path("card_id") cardId: Int): Response<PrimaryCardResponse>
 }
