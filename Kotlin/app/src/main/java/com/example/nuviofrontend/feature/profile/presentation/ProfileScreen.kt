@@ -46,7 +46,8 @@ fun ProfileScreen(
     onSignOut: () -> Unit = {},
     onEdit: () -> Unit = {},
     onNavigateToLogin: () -> Unit = {},
-    onChangePassword: () -> Unit = {}
+    onChangePassword: () -> Unit = {},
+    onNavigateToSavedCards: () -> Unit = {}
 ) {
     val displayName = if (isLoggedIn && !firstName.isNullOrBlank()) {
         if (!lastName.isNullOrBlank()) "$firstName $lastName" else firstName
@@ -93,7 +94,12 @@ fun ProfileScreen(
 
         if (isLoggedIn) {
             ProfileMenuItem(Icons.Default.Settings, stringResource(R.string.settings))
-            ProfileMenuItem(Icons.Default.CreditCard, stringResource(R.string.saved_cards))
+            ProfileMenuItem(
+                Icons.Default.CreditCard,
+                stringResource(R.string.saved_cards)
+            ) {
+                onNavigateToSavedCards()
+            }
             ProfileMenuItem(Icons.Default.List, stringResource(R.string.order_history))
             ProfileMenuItem(Icons.Default.Lock, stringResource(R.string.change_password)) {
                 onChangePassword()
@@ -125,8 +131,8 @@ fun ProfileMenuItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 16.dp)
-            .clickable { onClick() },
+            .clickable { onClick() }
+            .padding(vertical = 16.dp, horizontal = 5.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(

@@ -12,6 +12,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.nuviofrontend.feature.profile.presentation.CardScreen
+import com.example.nuviofrontend.feature.profile.presentation.CardViewModel
 import com.example.nuviofrontend.feature.profile.presentation.ChangePasswordScreen
 import com.example.nuviofrontend.feature.profile.presentation.ChangePasswordState
 import com.example.nuviofrontend.feature.profile.presentation.ChangePasswordViewModel
@@ -24,6 +26,7 @@ sealed class ProfileRoute(val route: String) {
     object Main : ProfileRoute("profile_main")
     object ChangePassword : ProfileRoute("profile_change_password")
     object EditProfile : ProfileRoute("profile_edit")
+    object SavedCards : ProfileRoute("profile_saved_cards")
 }
 
 @Composable
@@ -56,7 +59,8 @@ fun ProfileNavHost(
                 onSignOut = onSignOut,
                 onNavigateToLogin = onNavigateToLogin,
                 onEdit = { navController.navigate(ProfileRoute.EditProfile.route) },
-                onChangePassword = { navController.navigate(ProfileRoute.ChangePassword.route) }
+                onChangePassword = { navController.navigate(ProfileRoute.ChangePassword.route) },
+                onNavigateToSavedCards = { navController.navigate(ProfileRoute.SavedCards.route) }
             )
         }
 
@@ -135,6 +139,16 @@ fun ProfileNavHost(
                 onProfilePictureSelected = { uri ->
                     profileEditViewModel.uploadProfilePicture(uri)
                 }
+            )
+        }
+
+        composable(ProfileRoute.SavedCards.route) {
+            val viewModel: CardViewModel = hiltViewModel()
+
+            CardScreen(
+                viewModel = viewModel,
+                onViewTransactions = { cardId -> /* to do */ },
+                onBack = { navController.popBackStack() }
             )
         }
     }
