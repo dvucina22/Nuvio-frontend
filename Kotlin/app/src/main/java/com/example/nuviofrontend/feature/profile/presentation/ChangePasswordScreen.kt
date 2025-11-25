@@ -27,6 +27,7 @@ fun ChangePasswordScreen(
     viewModel: ChangePasswordViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
+    val errors by viewModel.errors.collectAsState()
 
     val displayName = if (isLoggedIn && !firstName.isNullOrBlank()) {
         if (!lastName.isNullOrBlank()) "$firstName $lastName" else firstName
@@ -44,9 +45,6 @@ fun ChangePasswordScreen(
     val newPassword by viewModel.newPassword.collectAsState()
     val confirmPassword by viewModel.confirmPassword.collectAsState()
 
-    val oldPasswordError by viewModel.oldPasswordError.collectAsState()
-    val newPasswordError by viewModel.newPasswordError.collectAsState()
-    val confirmPasswordError by viewModel.confirmPasswordError.collectAsState()
     val generalError by viewModel.generalError.collectAsState()
 
     val changePasswordState by viewModel.changePasswordState.collectAsState()
@@ -63,7 +61,6 @@ fun ChangePasswordScreen(
                 onBack()
             }
             is ChangePasswordState.Error -> {
-                Toast.makeText(context, generalError ?: context.getString(R.string.error_unknown), Toast.LENGTH_LONG).show()
                 viewModel.resetState()
             }
             else -> Unit
@@ -94,8 +91,8 @@ fun ChangePasswordScreen(
             value = oldPassword,
             onValueChange = {
                 viewModel.oldPassword.value = it
-                if (viewModel.oldPasswordError.value != null) {
-                    viewModel.oldPasswordError.value = null
+                if (viewModel.errors.value.oldPasswordError != null) {
+                    viewModel.errors.value = viewModel.errors.value.copy(oldPasswordError = null)
                 }
             },
             placeholder = stringResource(R.string.old_password_placeholder),
@@ -103,38 +100,42 @@ fun ChangePasswordScreen(
             isPassword = true,
             passwordVisible = oldPasswordVisible,
             onPasswordVisibilityChange = { oldPasswordVisible = !oldPasswordVisible },
-            isError =  oldPasswordError != null,
-            errorMessage = oldPasswordError
+            isError = viewModel.errors.value.oldPasswordError != null,
+            errorMessage = viewModel.errors.value.oldPasswordError
         )
 
         CustomTextField(
             value = newPassword,
             onValueChange = {
                 viewModel.newPassword.value = it
-                if (viewModel.newPasswordError.value != null) viewModel.newPasswordError.value = null
+                if (viewModel.errors.value.newPasswordError != null) {
+                    viewModel.errors.value = viewModel.errors.value.copy(newPasswordError = null)
+                }
             },
             placeholder = stringResource(R.string.new_password_placeholder),
             label = stringResource(R.string.new_password_label),
             isPassword = true,
             passwordVisible = newPasswordVisible,
             onPasswordVisibilityChange = { newPasswordVisible = !newPasswordVisible },
-            isError =  newPasswordError != null,
-            errorMessage = newPasswordError
+            isError = errors.newPasswordError != null,
+            errorMessage = errors.newPasswordError
         )
 
         CustomTextField(
             value = confirmPassword,
             onValueChange = {
                 viewModel.confirmPassword.value = it
-                if (viewModel.confirmPasswordError.value != null) viewModel.confirmPasswordError.value = null
+                if (viewModel.errors.value.confirmPasswordError != null) {
+                    viewModel.errors.value = viewModel.errors.value.copy(confirmPasswordError = null)
+                }
             },
             placeholder = stringResource(R.string.confirm_password_placeholder),
             label = stringResource(R.string.confirm_password_label),
             isPassword = true,
             passwordVisible = confirmPasswordVisible,
             onPasswordVisibilityChange = { confirmPasswordVisible = !confirmPasswordVisible },
-            isError = confirmPasswordError != null,
-            errorMessage = confirmPasswordError
+            isError = errors.confirmPasswordError != null,
+            errorMessage = errors.confirmPasswordError
         )
 
         Divider(color = BackgroundNavDark, modifier = Modifier.padding(vertical = 16.dp))

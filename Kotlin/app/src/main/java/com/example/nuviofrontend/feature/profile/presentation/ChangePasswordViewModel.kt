@@ -7,9 +7,9 @@ import com.example.core.R
 import com.example.nuviofrontend.feature.profile.data.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
 import javax.inject.Inject
 
 sealed class ChangePasswordState {
@@ -19,11 +19,11 @@ sealed class ChangePasswordState {
     data class Error(val message: String) : ChangePasswordState()
 }
 
-data class ChangePasswordUiState(
+data class ChangePasswordErrors(
     val oldPasswordError: String? = null,
     val newPasswordError: String? = null,
     val confirmPasswordError: String? = null,
-    val isLoading: Boolean = false
+    val generalError: String? = null
 )
 
 @HiltViewModel
@@ -43,6 +43,8 @@ class ChangePasswordViewModel @Inject constructor(
 
     private val _changePasswordState = MutableStateFlow<ChangePasswordState>(ChangePasswordState.Idle)
     val changePasswordState = _changePasswordState.asStateFlow()
+    private val _errors = MutableStateFlow(ChangePasswordErrors())
+    val errors = MutableStateFlow(ChangePasswordErrors())
 
     fun clearErrors() {
         oldPasswordError.value = null
@@ -53,26 +55,26 @@ class ChangePasswordViewModel @Inject constructor(
 
     private fun validate(): Boolean {
         var valid = true
-        clearErrors()
+        errors.value = ChangePasswordErrors()
 
         if (oldPassword.value.isBlank()) {
-            oldPasswordError.value = app.getString(R.string.error_old_password_empty)
+            errors.value = errors.value.copy(oldPasswordError = app.getString(R.string.error_old_password_empty))
             valid = false
         }
 
         if (newPassword.value.isBlank()) {
-            newPasswordError.value = app.getString(R.string.error_new_password_empty)
+            errors.value = errors.value.copy(newPasswordError = app.getString(R.string.error_new_password_empty))
             valid = false
         } else if (newPassword.value.length < 8 || !newPassword.value.any { it.isUpperCase() } || !newPassword.value.any { it.isDigit() }) {
-            newPasswordError.value = app.getString(R.string.error_password_complexity)
+            errors.value = errors.value.copy(newPasswordError = app.getString(R.string.error_password_complexity))
             valid = false
         }
 
         if (confirmPassword.value.isBlank()) {
-            confirmPasswordError.value = app.getString(R.string.error_confirm_password_empty)
+            errors.value = errors.value.copy(confirmPasswordError = app.getString(R.string.error_confirm_password_empty))
             valid = false
         } else if (newPassword.value != confirmPassword.value) {
-            confirmPasswordError.value = app.getString(R.string.error_passwords_mismatch)
+            errors.value = errors.value.copy(confirmPasswordError = app.getString(R.string.error_passwords_mismatch))
             valid = false
         }
 
@@ -89,16 +91,16 @@ class ChangePasswordViewModel @Inject constructor(
                 _changePasswordState.value = ChangePasswordState.Success
             } catch (e: IllegalArgumentException) {
                 when (e.message) {
-                    "old_password_incorrect" -> oldPasswordError.value = app.getString(R.string.error_old_password_invalid)
-                    "password_complexity" -> newPasswordError.value = app.getString(R.string.error_password_complexity)
-                    "missing_fields" -> generalError.value = app.getString(R.string.error_missing_fields)
-                    "user_not_found" -> generalError.value = app.getString(R.string.error_missing_fields)
-                    else -> generalError.value = app.getString(R.string.error_unknown)
+                    "old_password_incorrect" -> errors.value = errors.value.copy(oldPasswordError = app.getString(R.string.error_old_password_invalid))
+                    "password_complexity" -> errors.value = errors.value.copy(newPasswordError = app.getString(R.string.error_password_complexity))
+                    "missing_fields" -> errors.value = errors.value.copy(generalError = app.getString(R.string.error_missing_fields))
+                    "user_not_found" -> errors.value = errors.value.copy(generalError = app.getString(R.string.error_missing_fields))
+                    else -> errors.value = errors.value.copy(generalError = app.getString(R.string.error_unknown))
                 }
-                _changePasswordState.value = ChangePasswordState.Error(generalError.value ?: "")
+                _changePasswordState.value = ChangePasswordState.Error(errors.value.generalError ?: "")
             } catch (e: Exception) {
-                generalError.value = app.getString(R.string.error_server_generic2, e.message ?: "")
-                _changePasswordState.value = ChangePasswordState.Error(generalError.value ?: "")
+                errors.value = errors.value.copy(generalError = app.getString(R.string.error_server_generic2, e.message ?: ""))
+                _changePasswordState.value = ChangePasswordState.Error(errors.value.generalError ?: "")
             }
         }
     }
