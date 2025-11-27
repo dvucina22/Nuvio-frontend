@@ -4,9 +4,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import okhttp3.internal.notify
 import com.example.core.R
 
 val Montserrat = FontFamily(
@@ -30,7 +28,8 @@ val AppTypography = Typography(
         fontFamily = Montserrat,
         fontWeight = FontWeight.SemiBold,
         fontSize = 20.sp,
-        letterSpacing = 0.5.sp
+        letterSpacing = 0.5.sp,
+        lineHeight = 24.sp
     ),
     titleLarge = TextStyle(
         fontFamily = MontserratAlternates,

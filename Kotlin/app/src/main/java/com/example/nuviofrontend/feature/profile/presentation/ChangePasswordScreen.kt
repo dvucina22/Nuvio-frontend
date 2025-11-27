@@ -14,7 +14,6 @@ import com.example.core.R
 import com.example.core.ui.components.CustomButton
 import com.example.core.ui.components.CustomTextField
 import com.example.core.ui.components.CustomTopBar
-import com.example.core.ui.components.ProfileHeader
 import com.example.core.ui.theme.BackgroundNavDark
 
 @Composable
@@ -28,18 +27,6 @@ fun ChangePasswordScreen(
 ) {
     val context = LocalContext.current
     val errors by viewModel.errors.collectAsState()
-
-    val displayName = if (isLoggedIn && !firstName.isNullOrBlank()) {
-        if (!lastName.isNullOrBlank()) "$firstName $lastName" else firstName
-    } else {
-        context.getString(R.string.guest)
-    }
-
-    val displayEmail = if (isLoggedIn && !email.isNullOrBlank()) {
-        email
-    } else {
-        context.getString(R.string.not_logged_in)
-    }
 
     val oldPassword by viewModel.oldPassword.collectAsState()
     val newPassword by viewModel.newPassword.collectAsState()
@@ -79,11 +66,7 @@ fun ChangePasswordScreen(
             onBack = onBack
         )
 
-        Spacer(modifier = Modifier.height(20.dp))
-
-        ProfileHeader(displayName = displayName, displayEmail = displayEmail)
-
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(150.dp))
 
         Divider(color = BackgroundNavDark, modifier = Modifier.padding(vertical = 16.dp))
 
