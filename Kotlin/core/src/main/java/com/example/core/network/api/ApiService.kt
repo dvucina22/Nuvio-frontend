@@ -11,6 +11,9 @@ import com.example.core.cards.dto.AddCardResponse
 import com.example.core.cards.dto.CardsResponse
 import com.example.core.cards.dto.DeleteCardResponse
 import com.example.core.cards.dto.PrimaryCardResponse
+import com.example.core.catalog.dto.Product
+import com.example.core.catalog.dto.ProductFilterRequest
+import com.example.core.catalog.dto.ProductResponse
 import com.example.core.user.dto.ChangePasswordRequest
 import com.example.core.user.dto.ChangePasswordResponse
 import com.example.core.user.dto.UpdateProfilePictureRequest
@@ -58,4 +61,7 @@ interface ApiService {
     ): Response<DeleteCardResponse>
     @PUT("transactions/cards/{card_id}/primary")
     suspend fun setPrimaryCard(@Path("card_id") cardId: Int): Response<PrimaryCardResponse>
+
+    @POST("catalog/products/filter")
+    suspend fun filterProducts(@Body request: ProductFilterRequest): Response<List<Product>>
 }

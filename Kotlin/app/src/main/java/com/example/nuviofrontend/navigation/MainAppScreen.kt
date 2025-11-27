@@ -33,6 +33,7 @@ import com.example.core.ui.theme.IconSelectedTintDark
 import com.example.core.ui.theme.IconUnselectedTintDark
 import com.example.core.ui.theme.SelectedItemBackgroundDark
 import com.example.nuviofrontend.feature.favorite.presentation.FavoriteScreen
+import com.example.nuviofrontend.feature.home.presentation.HomeScreen
 
 
 @Composable
