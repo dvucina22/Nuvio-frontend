@@ -5,17 +5,13 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -25,8 +21,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.core.ui.components.CustomButton
 import com.example.core.ui.components.CustomGenderField
 import com.example.core.ui.components.CustomTextField
-import com.example.core.ui.theme.ButtonColorDark
-import com.example.core.ui.theme.ButtonColorSelected
 import com.example.core.ui.theme.Error
 import com.example.core.ui.theme.White
 import com.example.auth.R as AuthR

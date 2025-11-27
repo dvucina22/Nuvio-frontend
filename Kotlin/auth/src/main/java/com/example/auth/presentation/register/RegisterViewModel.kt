@@ -71,10 +71,6 @@ class RegisterViewModel @Inject constructor(
         genderError.value = null
     }
 
-    fun clearGeneralError() {
-        generalError.value = null
-    }
-
     private fun validate(): Boolean {
         var valid = true
         clearErrors()
