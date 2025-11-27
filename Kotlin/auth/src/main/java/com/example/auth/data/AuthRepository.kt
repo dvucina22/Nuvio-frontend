@@ -1,5 +1,6 @@
 package com.example.auth.data
 
+import com.example.core.auth.IAuthRepository
 import com.example.core.model.UserProfile
 import com.example.core.network.token.IUserPrefs
 import com.example.core.auth.dto.LoginRequest
@@ -10,9 +11,9 @@ class AuthRepository(
     private val authService: AuthService,
     private val tokenStorage: ITokenStorage,
     private val userPrefs: IUserPrefs
-) {
+): IAuthRepository {
 
-    suspend fun register(
+    override suspend fun register(
         firstName: String?,
         lastName: String?,
         email: String,
@@ -24,7 +25,7 @@ class AuthRepository(
         return true
     }
 
-    suspend fun login(email: String, password: String): Boolean {
+    override suspend fun login(email: String, password: String): Boolean {
         val request = LoginRequest(email, password)
         val response = authService.login(request)
 
@@ -43,7 +44,7 @@ class AuthRepository(
         return true
     }
 
-    suspend fun loginWithGoogle(idToken: String): Boolean {
+    override suspend fun loginWithGoogle(idToken: String): Boolean {
         val response = authService.verifyOAuth("google", idToken)
 
         tokenStorage.saveAccessToken(response.token)
@@ -61,7 +62,7 @@ class AuthRepository(
         return true
     }
 
-    suspend fun loginWithProvider(provider: String, idToken: String): Boolean {
+    override suspend fun loginWithProvider(provider: String, idToken: String): Boolean {
         val response = authService.verifyOAuth(provider, idToken)
 
         tokenStorage.saveAccessToken(response.token)
@@ -79,7 +80,7 @@ class AuthRepository(
         return true
     }
 
-    suspend fun logout() {
+    override suspend fun logout() {
         tokenStorage.clear()
         userPrefs.clear()
     }

@@ -10,10 +10,13 @@
 /.idea/material_theme_project_new.xml
 .DS_Store
 /build
+.idea
+/.idea
 /captures
 .externalNativeBuild
 .cxx
 local.properties
+/app/.idea
 /app/.idea/.gitignore
 /.idea/.name
 /.idea/AndroidProjectSystem.xml

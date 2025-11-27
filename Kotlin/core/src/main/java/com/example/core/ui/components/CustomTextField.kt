@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -58,7 +59,8 @@ fun CustomTextField(
     textStyle: TextStyle = MaterialTheme.typography.labelSmall,
     isError: Boolean = false,
     errorMessage: String? = null,
-    visualTransformation: VisualTransformation = if (isPassword && !passwordVisible) PasswordVisualTransformation() else VisualTransformation.None
+    visualTransformation: VisualTransformation = if (isPassword && !passwordVisible) PasswordVisualTransformation() else VisualTransformation.None,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -104,6 +106,7 @@ fun CustomTextField(
                             shape = RoundedCornerShape(8.dp)
                         ),
                     value = value,
+                    keyboardOptions = keyboardOptions,
                     onValueChange = onValueChange,
                     singleLine = true,
                     cursorBrush = SolidColor(White),
