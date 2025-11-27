@@ -21,6 +21,7 @@ import com.example.nuviofrontend.feature.profile.presentation.ProfileEditScreen
 import com.example.nuviofrontend.feature.profile.presentation.ProfileEditState
 import com.example.nuviofrontend.feature.profile.presentation.ProfileEditViewModel
 import com.example.nuviofrontend.feature.profile.presentation.ProfileScreen
+import com.example.nuviofrontend.feature.profile.presentation.ProfileViewModel
 
 sealed class ProfileRoute(val route: String) {
     object Main : ProfileRoute("profile_main")
@@ -50,12 +51,14 @@ fun ProfileNavHost(
         modifier = Modifier.fillMaxSize()
     ) {
         composable(ProfileRoute.Main.route) {
+            val profileViewModel: ProfileViewModel = hiltViewModel()
+
+            LaunchedEffect(Unit) {
+                profileViewModel.loadUserProfileOnce()
+            }
+
             ProfileScreen(
-                isLoggedIn = isLoggedIn,
-                firstName = firstName,
-                lastName = lastName,
-                email = email,
-                profilePictureUrl = profilePictureUrl,
+                viewModel = profileViewModel,
                 onSignOut = onSignOut,
                 onNavigateToLogin = onNavigateToLogin,
                 onEdit = { navController.navigate(ProfileRoute.EditProfile.route) },
