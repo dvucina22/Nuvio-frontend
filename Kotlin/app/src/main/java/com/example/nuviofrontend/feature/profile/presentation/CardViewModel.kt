@@ -112,7 +112,6 @@ class CardViewModel @Inject constructor(
 
     fun setPrimaryCard(cardId: String) {
         viewModelScope.launch {
-            _loading.value = true
             try {
                 cardRepository.setPrimaryCard(cardId.toInt())
                 val selectedId = cardId.toInt()

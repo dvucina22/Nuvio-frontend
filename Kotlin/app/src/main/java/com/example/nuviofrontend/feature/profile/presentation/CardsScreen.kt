@@ -80,37 +80,25 @@ fun CardScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            when {
-                loading -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
-                    }
+            if (loading && uiCards.isEmpty()) {
+                // loader samo na INIT
+                Box(Modifier.fillMaxSize(), Alignment.Center) {
+                    CircularProgressIndicator()
                 }
-                uiCards.isEmpty() -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(
-                            text = stringResource(R.string.no_saved_cards),
-                            color = Color.Gray,
-                            style = MaterialTheme.typography.bodyMedium
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                ) {
+                    items(uiCards, key = { it.id }) { card ->
+                        CardItem(
+                            card = card,
+                            onDelete = { confirmDeleteId = card.id },
+                            onViewTransactions = onViewTransactions,
+                            onSetPrimary = { viewModel.setPrimaryCard(it) }
                         )
-                    }
-                }
-                else -> {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(14.dp),
-                        contentPadding = PaddingValues(bottom = 150.dp)
-                    ) {
-                        items(uiCards, key = { it.id }) { card ->
-                            CardItem(
-                                card = card,
-                                onDelete = { confirmDeleteId = card.id },
-                                onViewTransactions = onViewTransactions,
-                                onSetPrimary = { cardId -> viewModel.setPrimaryCard(cardId.toString()) }
-                            )
-                        }
                     }
                 }
             }
@@ -231,12 +219,12 @@ fun CardItem(
                     style = MaterialTheme.typography.titleSmall,
                 )
                 if (card.isPrimary) {
-                    Spacer(modifier = Modifier.width(4.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
                     Icon(
                         painter = painterResource(id = R.drawable.primary_card),
                         contentDescription = "Primarna kartica",
                         tint = Color.Unspecified,
-                        modifier = Modifier.size(16.dp).alpha(primaryAlpha).scale(primaryScale)
+                        modifier = Modifier.size(13.dp).alpha(primaryAlpha).scale(primaryScale)
                     )
                 }
                 Spacer(modifier = Modifier.weight(1f))
