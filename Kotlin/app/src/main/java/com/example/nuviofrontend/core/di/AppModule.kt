@@ -9,6 +9,8 @@ import com.example.core.network.api.ApiClient
 import com.example.core.network.api.ApiService
 import com.example.core.network.interceptor.AuthInterceptor
 import com.example.core.network.token.IUserPrefs
+import com.example.nuviofrontend.feature.catalog.data.CatalogRepository
+import com.example.nuviofrontend.feature.catalog.data.CatalogService
 import com.example.nuviofrontend.feature.profile.data.CardRepository
 import com.example.nuviofrontend.feature.profile.data.CardService
 import com.example.nuviofrontend.feature.profile.data.CloudinaryService
@@ -92,5 +94,17 @@ object AppModule {
         userPrefs: IUserPrefs
     ): CardRepository {
         return CardRepository(cardService, userPrefs)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCatalogService(apiService: ApiService): CatalogService {
+        return CatalogService(apiService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCatalogRepository(catalogService: CatalogService): CatalogRepository {
+        return CatalogRepository(catalogService)
     }
 }
