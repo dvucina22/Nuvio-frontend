@@ -1,6 +1,9 @@
 package com.example.auth.presentation.register
 
 import android.app.Application
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Base64
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
+import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
 sealed class RegisterState {
@@ -32,11 +36,13 @@ class RegisterViewModel @Inject constructor(
     val phoneNumber = MutableStateFlow("")
     val password = MutableStateFlow("")
     val confirmPassword = MutableStateFlow("")
+    val gender = MutableStateFlow("")
 
     val emailError = MutableStateFlow<String?>(null)
     val passwordError = MutableStateFlow<String?>(null)
     val confirmPasswordError = MutableStateFlow<String?>(null)
     val generalError = MutableStateFlow<String?>(null)
+    val genderError = MutableStateFlow<String?>(null)
 
     private val _registerState = MutableStateFlow<RegisterState>(RegisterState.Idle)
     val registerState = _registerState.asStateFlow()
@@ -45,6 +51,27 @@ class RegisterViewModel @Inject constructor(
         emailError.value = null
         passwordError.value = null
         confirmPasswordError.value = null
+        generalError.value = null
+        genderError.value = null
+    }
+
+    fun clearEmailError() {
+        emailError.value = null
+    }
+
+    fun clearPasswordError() {
+        passwordError.value = null
+    }
+
+    fun clearConfirmPasswordError() {
+        confirmPasswordError.value = null
+    }
+
+    fun clearGenderError() {
+        genderError.value = null
+    }
+
+    fun clearGeneralError() {
         generalError.value = null
     }
 
@@ -76,6 +103,11 @@ class RegisterViewModel @Inject constructor(
             valid = false
         }
 
+        if (gender.value.isBlank()) {
+            genderError.value = app.getString(R.string.error_gender_required)
+            valid = false
+        }
+
         return valid
     }
 
@@ -90,7 +122,9 @@ class RegisterViewModel @Inject constructor(
                     lastName = lastName.value.ifEmpty { null },
                     email = email.value,
                     phoneNumber = phoneNumber.value.ifEmpty { null },
-                    password = password.value
+                    password = password.value,
+                    gender = mappedGender(),
+                    profilePictureUrl = getProfilePictureBase64()
                 )
                 _registerState.value = RegisterState.Success
             } catch (e: HttpException) {
@@ -107,5 +141,21 @@ class RegisterViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun mappedGender(): String? {
+        return when (gender.value) {
+            "M" -> "male"
+            "Ž" -> "female"
+            else -> null
+        }
+    }
+
+    private fun getProfilePictureBase64(): String {
+        val bitmap = BitmapFactory.decodeResource(app.resources, com.example.core.R.drawable.icon_user_profile)
+        val outputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+        val byteArray = outputStream.toByteArray()
+        return Base64.encodeToString(byteArray, Base64.NO_WRAP)
     }
 }

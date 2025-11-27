@@ -30,7 +30,8 @@ val AppTypography = Typography(
         fontFamily = Montserrat,
         fontWeight = FontWeight.SemiBold,
         fontSize = 20.sp,
-        letterSpacing = 0.5.sp
+        letterSpacing = 0.5.sp,
+        lineHeight = 24.sp
     ),
     titleLarge = TextStyle(
         fontFamily = MontserratAlternates,

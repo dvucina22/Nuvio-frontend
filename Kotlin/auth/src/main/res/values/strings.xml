@@ -38,6 +38,8 @@
     <string name="error_password_complexity">Lozinka mora imati najmanje 8 znakova, jedno veliko slovo i jedan broj</string>
     <string name="error_confirm_password_empty">Potvrda lozinke je obavezna</string>
     <string name="error_passwords_mismatch">Lozinke se ne podudaraju</string>
+    <string name="error_gender_required">Odabir spola je obavezan</string>
     <string name="error_email_exists">Email je zauzet</string>
     <string name="error_generic">Greška</string>
+    <string name="label_gender">Spol</string>
 </resources>

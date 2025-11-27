@@ -7,5 +7,7 @@ data class RegisterRequest(
     val lastName: String? = null,
     val email: String,
     val phoneNumber: String? = null,
-    val password: String
+    val password: String,
+    val gender: String? = null,
+    val profilePictureUrl: String? = null
 )

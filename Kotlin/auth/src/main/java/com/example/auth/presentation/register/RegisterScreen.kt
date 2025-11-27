@@ -3,15 +3,19 @@ package com.example.auth.presentation.register
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -19,7 +23,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.core.ui.components.CustomButton
+import com.example.core.ui.components.CustomGenderField
 import com.example.core.ui.components.CustomTextField
+import com.example.core.ui.theme.ButtonColorDark
+import com.example.core.ui.theme.ButtonColorSelected
 import com.example.core.ui.theme.Error
 import com.example.core.ui.theme.White
 import com.example.auth.R as AuthR
@@ -30,7 +37,6 @@ fun RegisterScreen(
     onRegisterSuccess: () -> Unit,
     viewModel: RegisterViewModel = hiltViewModel()
 ) {
-    val scrollState = rememberScrollState()
     val registerState by viewModel.registerState.collectAsState()
     val context = LocalContext.current
     val registerSuccessful = stringResource(id = AuthR.string.register_successful)
@@ -53,8 +59,10 @@ fun RegisterScreen(
     }
 
     Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        modifier = Modifier
+            .fillMaxSize()
+            .navigationBarsPadding(),
+        contentAlignment = Alignment.TopCenter
     ) {
         Image(
             painter = painterResource(id = CoreR.drawable.background_dark),
@@ -63,23 +71,37 @@ fun RegisterScreen(
             contentScale = ContentScale.Crop
         )
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 32.dp, vertical = 55.dp)
-                .verticalScroll(scrollState),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                painter = painterResource(id = CoreR.drawable.logo_dark_full),
-                contentDescription = "logo_dark_full",
-                modifier = Modifier.size(200.dp)
-            )
+        val lazyListState = rememberLazyListState()
 
-            RegisterForm(viewModel)
+        LazyColumn(
+            state = lazyListState,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp, vertical = 24.dp)
+        ) {
+            item {
+                Image(
+                    painter = painterResource(id = CoreR.drawable.logo_dark_full),
+                    contentDescription = "logo_dark_full",
+                    modifier = Modifier.size(200.dp)
+                )
+
+                Text(
+                    text = stringResource(id = AuthR.string.registration_title),
+                    color = White,
+                    style = MaterialTheme.typography.displayLarge,
+                    modifier = Modifier.offset(y = (-50).dp)
+                )
+            }
+
+            item {
+                RegisterForm(viewModel)
+            }
         }
     }
 }
+
 
 @Composable
 fun RegisterForm(viewModel: RegisterViewModel) {
@@ -89,25 +111,22 @@ fun RegisterForm(viewModel: RegisterViewModel) {
     val phoneNumber by viewModel.phoneNumber.collectAsState()
     val password by viewModel.password.collectAsState()
     val confirmPassword by viewModel.confirmPassword.collectAsState()
+    val gender by viewModel.gender.collectAsState()
 
     val emailError by viewModel.emailError.collectAsState()
     val passwordError by viewModel.passwordError.collectAsState()
     val confirmPasswordError by viewModel.confirmPasswordError.collectAsState()
     val generalError by viewModel.generalError.collectAsState()
+    val genderError by viewModel.genderError.collectAsState()
 
     var passwordVisible by remember { mutableStateOf(false) }
     var confirmPasswordVisible by remember { mutableStateOf(false) }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxWidth()
+        verticalArrangement = Arrangement.Top,
+        modifier = Modifier.fillMaxWidth().offset(y = (-30).dp)
     ) {
-        Text(
-            text = stringResource(id = AuthR.string.registration_title),
-            color = White,
-            style = MaterialTheme.typography.displayLarge
-        )
-
         generalError?.let {
             Text(text = it, color = Error)
         }
@@ -116,7 +135,6 @@ fun RegisterForm(viewModel: RegisterViewModel) {
             value = firstName,
             onValueChange = {
                 viewModel.firstName.value = it
-                viewModel.clearErrors()
             },
             label = stringResource(id = AuthR.string.label_first_name),
             placeholder = stringResource(id = AuthR.string.label_first_name)
@@ -126,7 +144,6 @@ fun RegisterForm(viewModel: RegisterViewModel) {
             value = lastName,
             onValueChange = {
                 viewModel.lastName.value = it
-                viewModel.clearErrors()
             },
             label = stringResource(id = AuthR.string.label_last_name),
             placeholder = stringResource(id = AuthR.string.label_last_name)
@@ -136,7 +153,7 @@ fun RegisterForm(viewModel: RegisterViewModel) {
             value = email,
             onValueChange = {
                 viewModel.email.value = it
-                viewModel.clearErrors()
+                viewModel.clearEmailError()
             },
             label = stringResource(id = AuthR.string.label_email),
             placeholder = stringResource(id = AuthR.string.label_email),
@@ -149,7 +166,6 @@ fun RegisterForm(viewModel: RegisterViewModel) {
             value = phoneNumber,
             onValueChange = {
                 viewModel.phoneNumber.value = it
-                viewModel.clearErrors()
             },
             label = stringResource(id = AuthR.string.label_phone_number),
             placeholder = stringResource(id = AuthR.string.label_phone_number)
@@ -159,7 +175,7 @@ fun RegisterForm(viewModel: RegisterViewModel) {
             value = password,
             onValueChange = {
                 viewModel.password.value = it
-                viewModel.clearErrors()
+                viewModel.clearPasswordError()
             },
             label = stringResource(id = AuthR.string.label_password),
             placeholder = stringResource(id = AuthR.string.label_password),
@@ -174,7 +190,7 @@ fun RegisterForm(viewModel: RegisterViewModel) {
             value = confirmPassword,
             onValueChange = {
                 viewModel.confirmPassword.value = it
-                viewModel.clearErrors()
+                viewModel.clearConfirmPasswordError()
             },
             label = stringResource(id = AuthR.string.label_confirm_password),
             placeholder = stringResource(id = AuthR.string.label_confirm_password),
@@ -185,7 +201,17 @@ fun RegisterForm(viewModel: RegisterViewModel) {
             errorMessage = confirmPasswordError
         )
 
-        Spacer(modifier = Modifier.height(15.dp))
+        CustomGenderField(
+            gender = gender,
+            onGenderSelected = {
+                viewModel.gender.value = it
+                viewModel.clearGenderError()
+            },
+            label = stringResource(id = AuthR.string.label_gender),
+            isError = genderError != null,
+            errorMessage = genderError
+        )
+
 
         CustomButton(
             text = stringResource(id = AuthR.string.registration_title),
