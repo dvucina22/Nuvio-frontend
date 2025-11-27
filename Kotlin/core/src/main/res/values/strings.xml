@@ -131,4 +131,22 @@
     <string name="card_number_label">Broj kartice</string>
     <string name="next">Nastavi</string>
 
+    <string name="search_products">Pretraži proizvode...</string>
+    <string name="dismiss">Odbaci</string>
+    <string name="no_results">Nema rezultata.</string>
+    <string name="filter">Filteri</string>
+    <string name="sort_by">Sortiraj prema</string>
+    <string name="reset">Poništi</string>
+    <string name="apply">Primijeni</string>
+    <string name="category">Kategorija</string>
+    <string name="brand">Brend</string>
+    <string name="price_range">Raspon cijene</string>
+    <string name="ram">RAM</string>
+    <string name="processor">Procesor</string>
+    <string name="storage">Pohrana</string>
+    <string name="only_in_stock">Samo artikli na zalihi</string>
+    <string name="only_favorites">Samo favoriti</string>
+    <string name="sort_newest">Najnovije</string>
+    <string name="sort_price_asc">Cijena: Rastuće</string>
+    <string name="sort_price_desc">Cijena: Padajuće</string>
 </resources>

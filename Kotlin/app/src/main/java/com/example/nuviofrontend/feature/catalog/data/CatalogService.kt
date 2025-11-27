@@ -58,11 +58,12 @@ class CatalogService @Inject constructor(
         return filterProducts(request)
     }
 
-    suspend fun searchProducts(query: String, limit: Int = 20, sort: String = "newest"): List<Product> {
+    suspend fun searchProducts(query: String, limit: Int = 20, offset: Int = 0, sort: String = "newest"): List<Product> {
         val request = ProductFilterRequest(
             search = query,
             sort = sort,
             limit = limit,
+            offset = offset,
             isActive = true
         )
         return filterProducts(request)

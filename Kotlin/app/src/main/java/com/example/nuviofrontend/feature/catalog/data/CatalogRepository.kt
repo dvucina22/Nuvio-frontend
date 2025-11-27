@@ -35,9 +35,9 @@ class CatalogRepository @Inject constructor(
         }
     }
 
-    suspend fun searchProducts(query: String, limit: Int = 20, sort: String = "newest"): Result<List<Product>> {
+    suspend fun searchProducts(query: String, limit: Int = 20, offset: Int = 0, sort: String = "newest"): Result<List<Product>> {
         return try {
-            val products = catalogService.searchProducts(query, limit, sort)
+            val products = catalogService.searchProducts(query, limit, offset, sort)
             Result.success(products)
         } catch (e: Exception) {
             Result.failure(e)
