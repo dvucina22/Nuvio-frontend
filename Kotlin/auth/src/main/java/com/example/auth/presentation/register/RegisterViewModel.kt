@@ -67,10 +67,6 @@ class RegisterViewModel @Inject constructor(
         confirmPasswordError.value = null
     }
 
-    fun clearGenderError() {
-        genderError.value = null
-    }
-
     private fun validate(): Boolean {
         var valid = true
         clearErrors()
@@ -99,11 +95,6 @@ class RegisterViewModel @Inject constructor(
             valid = false
         }
 
-        if (gender.value.isBlank()) {
-            genderError.value = app.getString(R.string.error_gender_required)
-            valid = false
-        }
-
         return valid
     }
 
@@ -119,8 +110,7 @@ class RegisterViewModel @Inject constructor(
                     email = email.value,
                     phoneNumber = phoneNumber.value.ifEmpty { null },
                     password = password.value,
-                    gender = mappedGender(),
-                    profilePictureUrl = getProfilePictureBase64()
+                    gender = mappedGender()
                 )
                 _registerState.value = RegisterState.Success
             } catch (e: HttpException) {
@@ -145,13 +135,5 @@ class RegisterViewModel @Inject constructor(
             "Ž" -> "female"
             else -> null
         }
-    }
-
-    private fun getProfilePictureBase64(): String {
-        val bitmap = BitmapFactory.decodeResource(app.resources, com.example.core.R.drawable.icon_user_profile)
-        val outputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-        val byteArray = outputStream.toByteArray()
-        return Base64.encodeToString(byteArray, Base64.NO_WRAP)
     }
 }

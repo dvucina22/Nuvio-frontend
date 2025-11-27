@@ -8,7 +8,6 @@ interface IAuthRepository {
         phoneNumber: String?,
         password: String,
         gender: String?,
-        profilePictureUrl: String?
     ): Boolean
 
     suspend fun login(email: String, password: String): Boolean

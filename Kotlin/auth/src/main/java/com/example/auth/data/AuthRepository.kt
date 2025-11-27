@@ -20,7 +20,6 @@ class AuthRepository(
         phoneNumber: String?,
         password: String,
         gender: String?,
-        profilePictureUrl: String?
     ): Boolean {
         val request = RegisterRequest(firstName, lastName, email, phoneNumber, password)
         authService.register(request)

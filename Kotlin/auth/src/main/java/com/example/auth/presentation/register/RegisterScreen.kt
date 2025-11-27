@@ -111,7 +111,6 @@ fun RegisterForm(viewModel: RegisterViewModel) {
     val passwordError by viewModel.passwordError.collectAsState()
     val confirmPasswordError by viewModel.confirmPasswordError.collectAsState()
     val generalError by viewModel.generalError.collectAsState()
-    val genderError by viewModel.genderError.collectAsState()
 
     var passwordVisible by remember { mutableStateOf(false) }
     var confirmPasswordVisible by remember { mutableStateOf(false) }
@@ -196,14 +195,11 @@ fun RegisterForm(viewModel: RegisterViewModel) {
         )
 
         CustomGenderField(
+            label = stringResource(id = AuthR.string.label_gender),
             gender = gender,
             onGenderSelected = {
                 viewModel.gender.value = it
-                viewModel.clearGenderError()
-            },
-            label = stringResource(id = AuthR.string.label_gender),
-            isError = genderError != null,
-            errorMessage = genderError
+            }
         )
 
 
