@@ -57,25 +57,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.core.R
+import com.example.core.catalog.dto.AttributeFilter
+import com.example.core.catalog.dto.Brand
+import com.example.core.catalog.dto.Category
 import com.example.core.catalog.dto.Product
 import com.example.core.ui.components.CustomRangeSlider
+import com.example.core.ui.components.ProductCard
 import com.example.core.ui.components.SearchField
 import com.example.core.ui.theme.BackgroundNavDark
 import com.example.core.ui.theme.IconSelectedTintDark
 import com.example.core.ui.theme.SelectedItemBackgroundDark
 import com.example.core.ui.theme.White
-import com.example.nuviofrontend.feature.home.presentation.ProductCard
 import kotlinx.coroutines.launch
-
-data class FilterState(
-    val sortBy: String = "newest",
-    val selectedCategories: Set<Long> = emptySet(),
-    val selectedBrands: Set<Long> = emptySet(),
-    val priceRange: ClosedFloatingPointRange<Float> = 0f..5000f,
-    val inStockOnly: Boolean = false,
-    val favoritesOnly: Boolean = false,
-    val selectedAttributes: Map<String, Set<String>> = emptyMap()
-)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -87,6 +80,12 @@ fun SearchScreen(
     var showFilterSheet by remember { mutableStateOf(false) }
     var filterState by remember { mutableStateOf(FilterState()) }
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(showFilterSheet) {
+        if (showFilterSheet) {
+            viewModel.ensureFilterDataLoaded()
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -145,7 +144,9 @@ fun SearchScreen(
                     }
                 }
 
-                state.results.isEmpty() && state.query.isNotBlank() && state.error == null -> {
+                state.results.isEmpty() &&
+                        state.query.isNotBlank() &&
+                        state.error == null -> {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -163,7 +164,11 @@ fun SearchScreen(
                     SearchResultsGrid(
                         products = state.results,
                         isLoadingMore = state.isLoadingMore,
-                        onLoadMore = { viewModel.loadMore() }
+                        favoriteProductIds = state.favoriteProductIds,
+                        onLoadMore = { viewModel.loadMore() },
+                        onToggleFavorite = { productId, shouldBeFavorite ->
+                            viewModel.setFavorite(productId, shouldBeFavorite)
+                        }
                     )
                 }
             }
@@ -194,10 +199,15 @@ fun SearchScreen(
                 SearchFilterSheetContent(
                     sheetState = sheetState,
                     filterState = filterState,
+                    categories = state.categories,
+                    brands = state.brands,
+                    attributes = state.attributes,
+                    isLoadingInitialData = state.isFilterDataLoading,
                     onFilterStateChange = { filterState = it },
                     onReset = {
-                        filterState = FilterState()
-                        viewModel.applyFilters(FilterState())
+                        val reset = FilterState()
+                        filterState = reset
+                        viewModel.applyFilters(reset)
                         scope.launch {
                             sheetState.hide()
                         }.invokeOnCompletion {
@@ -222,7 +232,9 @@ fun SearchScreen(
 private fun SearchResultsGrid(
     products: List<Product>,
     isLoadingMore: Boolean,
-    onLoadMore: () -> Unit
+    favoriteProductIds: Set<Long>,
+    onLoadMore: () -> Unit,
+    onToggleFavorite: (productId: Long, shouldBeFavorite: Boolean) -> Unit
 ) {
     val rows = products.chunked(2)
 
@@ -246,9 +258,14 @@ private fun SearchResultsGrid(
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .height(220.dp)
                     ) {
-                        ProductCard(product = product)
+                        ProductCard(
+                            product = product,
+                            isFavorite = favoriteProductIds.contains(product.id),
+                            onFavoriteChange = { shouldBeFavorite ->
+                                onToggleFavorite(product.id, shouldBeFavorite)
+                            }
+                        )
                     }
                 }
                 if (rowProducts.size == 1) {
@@ -281,6 +298,10 @@ private fun SearchResultsGrid(
 private fun SearchFilterSheetContent(
     sheetState: SheetState,
     filterState: FilterState,
+    categories: List<Category>,
+    brands: List<Brand>,
+    attributes: List<AttributeFilter>,
+    isLoadingInitialData: Boolean,
     onFilterStateChange: (FilterState) -> Unit,
     onReset: () -> Unit,
     onApply: () -> Unit
@@ -293,24 +314,15 @@ private fun SearchFilterSheetContent(
         "price_desc" to stringResource(id = R.string.sort_price_desc)
     )
 
-    val categories = listOf(
-        1L to "Gaming",
-        2L to "Multimedia",
-        3L to "Business"
-    )
+    val categoryPairs = categories.map { it.id to it.name }
+    val brandPairs = brands.map { it.id to it.name }
 
-    val brands = listOf(
-        1L to "Apple",
-        2L to "Dell",
-        3L to "HP",
-        4L to "Lenovo",
-        5L to "Asus",
-        6L to "MSI"
-    )
-
-    val ramOptions = listOf("8 GB", "16 GB", "32 GB", "64 GB")
-    val cpuOptions = listOf("i5", "i7", "i9", "Ryzen 5", "Ryzen 7", "Ryzen 9")
-    val storageOptions = listOf("256 GB", "512 GB", "1 TB", "2 TB")
+    val usedAttributes = attributes
+        .mapNotNull { attr ->
+            val name = attr.name ?: return@mapNotNull null
+            attr.copy(name = name)
+        }
+        .filter { it.name != "brand" && it.name != "category" }
 
     Column(
         modifier = Modifier
@@ -332,200 +344,159 @@ private fun SearchFilterSheetContent(
 
         Text(
             text = stringResource(id = R.string.filter),
-            color = Color(0xFF1A1A1A),
+            color = White,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        FilterSection(title = stringResource(id = R.string.sort_by)) {
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+        if (isLoadingInitialData && categoryPairs.isEmpty() && brandPairs.isEmpty() && usedAttributes.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(120.dp),
+                contentAlignment = Alignment.Center
             ) {
-                sortOptions.forEach { (value, label) ->
-                    FilterChip(
-                        label = label,
-                        selected = filterState.sortBy == value,
-                        onClick = { onFilterStateChange(filterState.copy(sortBy = value)) }
-                    )
+                CircularProgressIndicator(color = IconSelectedTintDark)
+            }
+        } else {
+            FilterSection(title = stringResource(id = R.string.sort_by)) {
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    sortOptions.forEach { (value, label) ->
+                        FilterChip(
+                            label = label,
+                            selected = filterState.sortBy == value,
+                            onClick = { onFilterStateChange(filterState.copy(sortBy = value)) }
+                        )
+                    }
                 }
             }
-        }
 
-        Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-        FilterSection(title = stringResource(id = R.string.category)) {
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                categories.forEach { (id, name) ->
-                    FilterChip(
-                        label = name,
-                        selected = filterState.selectedCategories.contains(id),
-                        onClick = {
-                            val newCategories = if (filterState.selectedCategories.contains(id)) {
-                                filterState.selectedCategories - id
-                            } else {
-                                filterState.selectedCategories + id
+            FilterSection(title = stringResource(id = R.string.category)) {
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    categoryPairs.forEach { (id, name) ->
+                        FilterChip(
+                            label = name,
+                            selected = filterState.selectedCategories.contains(id),
+                            onClick = {
+                                val newCategories =
+                                    if (filterState.selectedCategories.contains(id)) {
+                                        filterState.selectedCategories - id
+                                    } else {
+                                        filterState.selectedCategories + id
+                                    }
+                                onFilterStateChange(filterState.copy(selectedCategories = newCategories))
                             }
-                            onFilterStateChange(filterState.copy(selectedCategories = newCategories))
-                        }
-                    )
+                        )
+                    }
                 }
             }
-        }
 
-        Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-        FilterSection(title = stringResource(id = R.string.brand)) {
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                brands.forEach { (id, name) ->
-                    FilterChip(
-                        label = name,
-                        selected = filterState.selectedBrands.contains(id),
-                        onClick = {
-                            val newBrands = if (filterState.selectedBrands.contains(id)) {
-                                filterState.selectedBrands - id
-                            } else {
-                                filterState.selectedBrands + id
+            FilterSection(title = stringResource(id = R.string.brand)) {
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    brandPairs.forEach { (id, name) ->
+                        FilterChip(
+                            label = name,
+                            selected = filterState.selectedBrands.contains(id),
+                            onClick = {
+                                val newBrands =
+                                    if (filterState.selectedBrands.contains(id)) {
+                                        filterState.selectedBrands - id
+                                    } else {
+                                        filterState.selectedBrands + id
+                                    }
+                                onFilterStateChange(filterState.copy(selectedBrands = newBrands))
                             }
-                            onFilterStateChange(filterState.copy(selectedBrands = newBrands))
-                        }
-                    )
+                        )
+                    }
                 }
             }
-        }
 
-        Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-        FilterSection(title = stringResource(id = R.string.price_range)) {
-            CustomRangeSlider(
-                value = filterState.priceRange,
-                onValueChange = { onFilterStateChange(filterState.copy(priceRange = it)) },
-                valueRange = 0f..5000f
+            FilterSection(title = stringResource(id = R.string.price_range)) {
+                CustomRangeSlider(
+                    value = filterState.priceRange,
+                    onValueChange = { onFilterStateChange(filterState.copy(priceRange = it)) },
+                    valueRange = 0f..5000f
+                )
+            }
+
+            usedAttributes.forEach { attribute ->
+                val attrName = attribute.name ?: return@forEach
+                val selectedValues = filterState.selectedAttributes[attrName] ?: emptySet()
+
+                if (attribute.values.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    FilterSection(title = attributeSectionTitle(attrName)) {
+                        FlowRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            attribute.values.forEach { rawValue ->
+                                val isSelected = selectedValues.contains(rawValue)
+                                FilterChip(
+                                    label = attributeValueLabel(attrName, rawValue),
+                                    selected = isSelected,
+                                    onClick = {
+                                        val newValues =
+                                            if (isSelected) selectedValues - rawValue
+                                            else selectedValues + rawValue
+                                        val newAttrs =
+                                            filterState.selectedAttributes.toMutableMap()
+                                        if (newValues.isEmpty()) {
+                                            newAttrs.remove(attrName)
+                                        } else {
+                                            newAttrs[attrName] = newValues
+                                        }
+                                        onFilterStateChange(
+                                            filterState.copy(
+                                                selectedAttributes = newAttrs
+                                            )
+                                        )
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            FilterSwitchRow(
+                label = stringResource(id = R.string.only_in_stock),
+                checked = filterState.inStockOnly,
+                onCheckedChange = { onFilterStateChange(filterState.copy(inStockOnly = it)) }
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            FilterSwitchRow(
+                label = stringResource(id = R.string.only_favorites),
+                checked = filterState.favoritesOnly,
+                onCheckedChange = { onFilterStateChange(filterState.copy(favoritesOnly = it)) }
             )
         }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        FilterSection(title = stringResource(id = R.string.ram)) {
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                ramOptions.forEach { ram ->
-                    val ramAttrs = filterState.selectedAttributes["RAM"] ?: emptySet()
-                    FilterChip(
-                        label = ram,
-                        selected = ramAttrs.contains(ram),
-                        onClick = {
-                            val newRam = if (ramAttrs.contains(ram)) {
-                                ramAttrs - ram
-                            } else {
-                                ramAttrs + ram
-                            }
-                            val newAttrs = filterState.selectedAttributes.toMutableMap()
-                            if (newRam.isEmpty()) {
-                                newAttrs.remove("RAM")
-                            } else {
-                                newAttrs["RAM"] = newRam
-                            }
-                            onFilterStateChange(filterState.copy(selectedAttributes = newAttrs))
-                        }
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        FilterSection(title = stringResource(id = R.string.processor)) {
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                cpuOptions.forEach { cpu ->
-                    val cpuAttrs = filterState.selectedAttributes["CPU"] ?: emptySet()
-                    FilterChip(
-                        label = cpu,
-                        selected = cpuAttrs.contains(cpu),
-                        onClick = {
-                            val newCpu = if (cpuAttrs.contains(cpu)) {
-                                cpuAttrs - cpu
-                            } else {
-                                cpuAttrs + cpu
-                            }
-                            val newAttrs = filterState.selectedAttributes.toMutableMap()
-                            if (newCpu.isEmpty()) {
-                                newAttrs.remove("CPU")
-                            } else {
-                                newAttrs["CPU"] = newCpu
-                            }
-                            onFilterStateChange(filterState.copy(selectedAttributes = newAttrs))
-                        }
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        FilterSection(title = stringResource(id = R.string.storage)) {
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                storageOptions.forEach { storage ->
-                    val storageAttrs = filterState.selectedAttributes["Storage"] ?: emptySet()
-                    FilterChip(
-                        label = storage,
-                        selected = storageAttrs.contains(storage),
-                        onClick = {
-                            val newStorage = if (storageAttrs.contains(storage)) {
-                                storageAttrs - storage
-                            } else {
-                                storageAttrs + storage
-                            }
-                            val newAttrs = filterState.selectedAttributes.toMutableMap()
-                            if (newStorage.isEmpty()) {
-                                newAttrs.remove("Storage")
-                            } else {
-                                newAttrs["Storage"] = newStorage
-                            }
-                            onFilterStateChange(filterState.copy(selectedAttributes = newAttrs))
-                        }
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        FilterSwitchRow(
-            label = stringResource(id = R.string.only_in_stock),
-            checked = filterState.inStockOnly,
-            onCheckedChange = { onFilterStateChange(filterState.copy(inStockOnly = it)) }
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        FilterSwitchRow(
-            label = stringResource(id = R.string.only_favorites),
-            checked = filterState.favoritesOnly,
-            onCheckedChange = { onFilterStateChange(filterState.copy(favoritesOnly = it)) }
-        )
 
         Spacer(modifier = Modifier.height(32.dp))
 
@@ -575,7 +546,7 @@ private fun FilterSection(
     Column {
         Text(
             text = title,
-            color = Color(0xFF2A2A2A),
+            color = White,
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold
         )
@@ -641,6 +612,57 @@ private fun FilterSwitchRow(
             )
         )
     }
+}
+
+@Composable
+private fun attributeSectionTitle(name: String): String {
+    return when (name) {
+        "os" -> stringResource(id = R.string.attribute_os)
+        "display_size" -> stringResource(id = R.string.attribute_display_size)
+        "display_resolution" -> stringResource(id = R.string.attribute_display_resolution)
+        "color" -> stringResource(id = R.string.attribute_color)
+        "build_material" -> stringResource(id = R.string.attribute_build_material)
+        "weight_kg" -> stringResource(id = R.string.attribute_weight)
+        "battery_wh" -> stringResource(id = R.string.attribute_battery)
+        else -> name
+    }
+}
+
+@Composable
+private fun attributeValueLabel(attributeName: String, value: String): String {
+    return when (attributeName) {
+        "os" -> when (value) {
+            "macos" -> stringResource(id = R.string.os_macos)
+            "windows_11" -> stringResource(id = R.string.os_windows_11)
+            else -> value
+        }
+
+        "color" -> when (value) {
+            "black" -> stringResource(id = R.string.color_black)
+            "midnight" -> stringResource(id = R.string.color_midnight)
+            "platinum" -> stringResource(id = R.string.color_platinum)
+            "silver" -> stringResource(id = R.string.color_silver)
+            "space_gray" -> stringResource(id = R.string.color_space_gray)
+            else -> value
+        }
+
+        "build_material" -> when (value) {
+            "aluminum" -> stringResource(id = R.string.material_aluminum)
+            "carbon_fiber" -> stringResource(id = R.string.material_carbon_fiber)
+            "plastic" -> stringResource(id = R.string.material_plastic)
+            else -> value
+        }
+
+        "display_size" -> "${normalizeNumericUnderscore(value)}\""
+        "weight_kg" -> "${normalizeNumericUnderscore(value)} kg"
+        "battery_wh" -> "$value Wh"
+        "display_resolution" -> value.replace("x", " x ")
+        else -> value
+    }
+}
+
+private fun normalizeNumericUnderscore(raw: String): String {
+    return raw.replace("_", ".")
 }
 
 @Preview

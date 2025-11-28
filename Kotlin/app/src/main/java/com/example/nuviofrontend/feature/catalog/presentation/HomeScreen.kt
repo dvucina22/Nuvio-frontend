@@ -12,25 +12,38 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Business
+import androidx.compose.material.icons.filled.Movie
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.SportsEsports
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.AsyncImage
 import com.example.core.R
 import com.example.core.catalog.dto.Product
+import com.example.core.ui.components.ProductCard
 import com.example.core.ui.theme.White
 import com.example.nuviofrontend.feature.catalog.presentation.HomeViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -129,7 +142,7 @@ fun HomeScreen(
                         fontSize = 14.sp
                     )
                 }
-                IconButton(onClick = { /* TODO: Notifications */ }) {
+                IconButton(onClick = { }) {
                     Icon(
                         imageVector = Icons.Default.Notifications,
                         contentDescription = "Notifications",
@@ -158,14 +171,20 @@ fun HomeScreen(
             SectionHeader(
                 title = "Flash Deals",
                 actionText = "See All",
-                onActionClick = { /* TODO: Navigate to deals */ }
+                onActionClick = { }
             )
             Spacer(modifier = Modifier.height(12.dp))
 
             if (state.isLoading && state.flashDeals.isEmpty()) {
                 LoadingRow()
             } else if (state.flashDeals.isNotEmpty()) {
-                FlashDealsRow(products = state.flashDeals)
+                FlashDealsRow(
+                    products = state.flashDeals,
+                    favoriteIds = state.favoriteProductIds,
+                    onToggleFavorite = { id, newValue ->
+                        viewModel.setFavorite(id, newValue)
+                    }
+                )
             } else {
                 EmptyStateRow("No deals available")
             }
@@ -175,14 +194,20 @@ fun HomeScreen(
             SectionHeader(
                 title = "Latest Arrivals",
                 actionText = "See All",
-                onActionClick = { /* TODO: Navigate to latest */ }
+                onActionClick = { }
             )
             Spacer(modifier = Modifier.height(12.dp))
 
             if (state.isLoading && state.latestProducts.isEmpty()) {
                 LoadingRow()
             } else if (state.latestProducts.isNotEmpty()) {
-                LatestProductsRow(products = state.latestProducts)
+                LatestProductsRow(
+                    products = state.latestProducts,
+                    favoriteIds = state.favoriteProductIds,
+                    onToggleFavorite = { id, newValue ->
+                        viewModel.setFavorite(id, newValue)
+                    }
+                )
             } else {
                 EmptyStateRow("No products available")
             }
@@ -192,8 +217,7 @@ fun HomeScreen(
             SectionHeader(title = "Popular Brands")
             Spacer(modifier = Modifier.height(12.dp))
             PopularBrandsRow(
-                onBrandClick = { brandName ->
-                }
+                onBrandClick = { _ -> }
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -201,14 +225,20 @@ fun HomeScreen(
             SectionHeader(
                 title = "Recommended for You",
                 actionText = "See All",
-                onActionClick = { /* TODO: Navigate to recommended */ }
+                onActionClick = { }
             )
             Spacer(modifier = Modifier.height(12.dp))
 
             if (state.isLoading && state.recommendedProducts.isEmpty()) {
                 LoadingGrid()
             } else if (state.recommendedProducts.isNotEmpty()) {
-                RecommendedProductsGrid(products = state.recommendedProducts)
+                RecommendedProductsGrid(
+                    products = state.recommendedProducts,
+                    favoriteIds = state.favoriteProductIds,
+                    onToggleFavorite = { id, newValue ->
+                        viewModel.setFavorite(id, newValue)
+                    }
+                )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -322,7 +352,10 @@ fun PromotionalBanner(banners: List<Banner>) {
                 Box(
                     modifier = Modifier
                         .padding(horizontal = 4.dp)
-                        .size(if (pagerState.currentPage == index) 24.dp else 8.dp, 8.dp)
+                        .size(
+                            if (pagerState.currentPage == index) 24.dp else 8.dp,
+                            8.dp
+                        )
                         .clip(CircleShape)
                         .background(
                             if (pagerState.currentPage == index) Color(0xFF667EEA)
@@ -345,7 +378,7 @@ fun BannerCard(banner: Banner) {
                     colors = listOf(Color(0xFF667EEA), Color(0xFF764BA2))
                 )
             )
-            .clickable { /* TODO: Navigate to banner offer */ }
+            .clickable { }
             .padding(20.dp)
     ) {
         Column(
@@ -365,7 +398,7 @@ fun BannerCard(banner: Banner) {
             )
             Spacer(modifier = Modifier.height(16.dp))
             Button(
-                onClick = { /* TODO */ },
+                onClick = { },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = White,
                     contentColor = Color(0xFF667EEA)
@@ -458,162 +491,47 @@ fun CategoryCard(
 }
 
 @Composable
-fun FlashDealsRow(products: List<Product>) {
+fun FlashDealsRow(
+    products: List<Product>,
+    favoriteIds: Set<Long>,
+    onToggleFavorite: (Long, Boolean) -> Unit
+) {
     LazyRow(
         contentPadding = PaddingValues(horizontal = 20.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(products) { product ->
-            FlashDealCard(product = product)
-        }
-    }
-}
-
-@Composable
-fun FlashDealCard(product: Product) {
-    Box(
-        modifier = Modifier
-            .width(160.dp)
-            .height(240.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .background(Color(0xFF1E2A38))
-            .clickable { /* TODO: Navigate to product details */ }
-    ) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(140.dp)
-                    .background(Color(0xFF2D3E4A))
-            ) {
-                AsyncImage(
-                    model = product.imageUrl.ifEmpty { R.drawable.logo_light_icon },
-                    contentDescription = product.name,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
-
-                if (product.quantity != null && product.quantity!! < 10) {
-                    Surface(
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(8.dp),
-                        color = Color(0xFFFF4757),
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        Text(
-                            text = "Only ${product.quantity} left",
-                            color = White,
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                        )
-                    }
+            val isFavorite = favoriteIds.contains(product.id)
+            ProductCard(
+                product = product,
+                isFavorite = isFavorite,
+                onFavoriteChange = { newValue ->
+                    onToggleFavorite(product.id, newValue)
                 }
-            }
-
-            Column(modifier = Modifier.padding(12.dp)) {
-                Text(
-                    text = product.name,
-                    color = White,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = product.brand,
-                    color = Color(0xFF9AA4A6),
-                    fontSize = 12.sp
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "$${product.basePrice}",
-                    color = Color(0xFF667EEA),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+            )
         }
     }
 }
 
 @Composable
-fun LatestProductsRow(products: List<Product>) {
+fun LatestProductsRow(
+    products: List<Product>,
+    favoriteIds: Set<Long>,
+    onToggleFavorite: (Long, Boolean) -> Unit
+) {
     LazyRow(
         contentPadding = PaddingValues(horizontal = 20.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(products) { product ->
-            ProductCard(product = product)
-        }
-    }
-}
-
-@Composable
-fun ProductCard(product: Product) {
-    Box(
-        modifier = Modifier
-            .width(160.dp)
-            .height(220.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .background(Color(0xFF1E2A38))
-            .clickable { /* TODO: Navigate to product details */ }
-    ) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(140.dp)
-                    .background(Color(0xFF2D3E4A))
-            ) {
-                AsyncImage(
-                    model = product.imageUrl.ifEmpty { R.drawable.logo_light_icon },
-                    contentDescription = product.name,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
-
-                IconButton(
-                    onClick = { /* TODO: Toggle favorite */ },
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(8.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.FavoriteBorder,
-                        contentDescription = "Favorite",
-                        tint = White
-                    )
+            val isFavorite = favoriteIds.contains(product.id)
+            ProductCard(
+                product = product,
+                isFavorite = isFavorite,
+                onFavoriteChange = { newValue ->
+                    onToggleFavorite(product.id, newValue)
                 }
-            }
-
-            Column(modifier = Modifier.padding(12.dp)) {
-                Text(
-                    text = product.name,
-                    color = White,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = product.brand,
-                    color = Color(0xFF9AA4A6),
-                    fontSize = 12.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "$${product.basePrice}",
-                    color = Color(0xFF667EEA),
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+            )
         }
     }
 }
@@ -659,7 +577,11 @@ fun BrandCard(
 }
 
 @Composable
-fun RecommendedProductsGrid(products: List<Product>) {
+fun RecommendedProductsGrid(
+    products: List<Product>,
+    favoriteIds: Set<Long>,
+    onToggleFavorite: (Long, Boolean) -> Unit
+) {
     Column(
         modifier = Modifier.padding(horizontal = 20.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -670,8 +592,15 @@ fun RecommendedProductsGrid(products: List<Product>) {
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 rowProducts.forEach { product ->
+                    val isFavorite = favoriteIds.contains(product.id)
                     Box(modifier = Modifier.weight(1f)) {
-                        ProductCard(product = product)
+                        ProductCard(
+                            product = product,
+                            isFavorite = isFavorite,
+                            onFavoriteChange = { newValue ->
+                                onToggleFavorite(product.id, newValue)
+                            }
+                        )
                     }
                 }
                 if (rowProducts.size == 1) {

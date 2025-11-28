@@ -26,6 +26,7 @@ data class HomeState(
     val latestProducts: List<Product> = emptyList(),
     val flashDeals: List<Product> = emptyList(),
     val recommendedProducts: List<Product> = emptyList(),
+    val favoriteProductIds: Set<Long> = emptySet(),
     val error: String? = null
 )
 
@@ -87,7 +88,7 @@ class HomeViewModel @Inject constructor(
 
             val result = catalogRepository.getCategoryProducts(categoryId, limit = 20)
 
-            result.onSuccess { products ->
+            result.onSuccess {
                 _state.value = _state.value.copy(isLoading = false)
             }.onFailure { e ->
                 _state.value = _state.value.copy(
@@ -104,7 +105,7 @@ class HomeViewModel @Inject constructor(
 
             val result = catalogRepository.searchProducts(query, limit = 20)
 
-            result.onSuccess { products ->
+            result.onSuccess {
                 _state.value = _state.value.copy(isLoading = false)
             }.onFailure { e ->
                 _state.value = _state.value.copy(
@@ -121,12 +122,35 @@ class HomeViewModel @Inject constructor(
 
             val result = catalogRepository.getBrandProducts(brandId, limit = 20)
 
-            result.onSuccess { products ->
+            result.onSuccess {
                 _state.value = _state.value.copy(isLoading = false)
             }.onFailure { e ->
                 _state.value = _state.value.copy(
                     isLoading = false,
                     error = "Failed to load brand: ${e.message}"
+                )
+            }
+        }
+    }
+
+    fun setFavorite(productId: Long, shouldBeFavorite: Boolean) {
+        viewModelScope.launch {
+            val previous = _state.value.favoriteProductIds
+            val updated =
+                if (shouldBeFavorite) previous + productId else previous - productId
+
+            _state.value = _state.value.copy(favoriteProductIds = updated)
+
+            try {
+                if (shouldBeFavorite) {
+                    catalogRepository.addFavoriteProduct(productId)
+                } else {
+                    catalogRepository.removeFavoriteProduct(productId)
+                }
+            } catch (e: Exception) {
+                _state.value = _state.value.copy(
+                    favoriteProductIds = previous,
+                    error = "Failed to update favorites: ${e.message}"
                 )
             }
         }
