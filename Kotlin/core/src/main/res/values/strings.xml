@@ -131,4 +131,50 @@
     <string name="card_number_label">Broj kartice</string>
     <string name="next">Nastavi</string>
 
+    <string name="search_products">Pretraži proizvode...</string>
+    <string name="dismiss">Odbaci</string>
+    <string name="no_results">Nema rezultata.</string>
+    <string name="filter">Filteri</string>
+    <string name="sort_by">Sortiraj prema</string>
+    <string name="reset">Poništi</string>
+    <string name="apply">Primijeni</string>
+    <string name="category">Kategorija</string>
+    <string name="brand">Brend</string>
+    <string name="price_range">Raspon cijene</string>
+    <string name="ram">RAM</string>
+    <string name="processor">Procesor</string>
+    <string name="storage">Pohrana</string>
+    <string name="only_in_stock">Samo artikli na zalihi</string>
+    <string name="only_favorites">Samo favoriti</string>
+    <string name="sort_newest">Najnovije</string>
+    <string name="sort_price_asc">Cijena: Rastuće</string>
+    <string name="sort_price_desc">Cijena: Padajuće</string>
+
+    <string name="favorites_title">Favoriti</string>
+    <string name="favorites_empty_message">Nema zabilježenih favorita.</string>
+    <string name="favorites_dismiss">Odustani</string>
+
+    <string name="favorites_error_load">Greška u dohvaćanju favorita</string>
+    <string name="favorites_error_update">Greška kod ažuriranja favorita</string>
+
+    <string name="attribute_os">Operacijski sustav</string>
+    <string name="attribute_display_size">Veličina zaslona</string>
+    <string name="attribute_display_resolution">Rezolucija zaslona</string>
+    <string name="attribute_color">Boja</string>
+    <string name="attribute_build_material">Materijal izrade</string>
+    <string name="attribute_weight">Masa</string>
+    <string name="attribute_battery">Kapacitet baterije</string>
+
+    <string name="os_macos">macOS</string>
+    <string name="os_windows_11">Windows 11</string>
+
+    <string name="color_black">Crna</string>
+    <string name="color_midnight">Midnight</string>
+    <string name="color_platinum">Platinum</string>
+    <string name="color_silver">Srebrna</string>
+    <string name="color_space_gray">Space Gray</string>
+
+    <string name="material_aluminum">Aluminij</string>
+    <string name="material_carbon_fiber">Karbon</string>
+    <string name="material_plastic">Plastika</string>
 </resources>

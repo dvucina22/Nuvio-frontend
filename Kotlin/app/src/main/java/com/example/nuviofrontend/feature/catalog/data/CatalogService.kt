@@ -1,5 +1,9 @@
 package com.example.nuviofrontend.feature.catalog.data
 
+import com.example.core.catalog.dto.AttributeFilter
+import com.example.core.catalog.dto.Brand
+import com.example.core.catalog.dto.Category
+import com.example.core.catalog.dto.FavoriteRequest
 import com.example.core.catalog.dto.Product
 import com.example.core.catalog.dto.ProductFilterRequest
 import com.example.core.network.api.ApiService
@@ -58,11 +62,12 @@ class CatalogService @Inject constructor(
         return filterProducts(request)
     }
 
-    suspend fun searchProducts(query: String, limit: Int = 20, sort: String = "newest"): List<Product> {
+    suspend fun searchProducts(query: String, limit: Int = 20, offset: Int = 0, sort: String = "newest"): List<Product> {
         val request = ProductFilterRequest(
             search = query,
             sort = sort,
             limit = limit,
+            offset = offset,
             isActive = true
         )
         return filterProducts(request)
@@ -103,5 +108,87 @@ class CatalogService @Inject constructor(
             limit = limit
         )
         return filterProducts(request)
+    }
+
+    suspend fun getAllBrands(): List<Brand> {
+        try {
+            val response = apiService.getAllBrands()
+            if (!response.isSuccessful) {
+                throw HttpException(response)
+            }
+            return response.body() ?: emptyList()
+        }
+        catch (e: HttpException) {
+            throw IOException("API error: ${e.code()} ${e.message()}")
+        }
+        catch (e: IOException) {
+            throw IOException("Network error: ${e.message}")
+        }
+    }
+
+    suspend fun getAllCategories(): List<Category> {
+        try {
+            val response = apiService.getAllCategories()
+            if (!response.isSuccessful) {
+                throw HttpException(response)
+            }
+            return response.body() ?: emptyList()
+        }
+        catch (e: HttpException) {
+            throw IOException("API error: ${e.code()} ${e.message()}")
+        }
+        catch (e: IOException) {
+            throw IOException("Network error: ${e.message}")
+        }
+    }
+
+    suspend fun getAttributes(): List<AttributeFilter> {
+        try {
+            val response = apiService.getAttributes()
+            if (!response.isSuccessful) {
+                throw HttpException(response)
+            }
+            return response.body() ?: emptyList()
+        }
+        catch (e: HttpException) {
+            throw IOException("API error: ${e.code()} ${e.message()}")
+        }
+        catch (e: IOException) {
+            throw IOException("Network error: ${e.message}")
+        }
+    }
+
+    suspend fun addFavoriteProduct(productId: Long) {
+        try {
+            val response = apiService.addFavoriteProduct(
+                FavoriteRequest(productId = productId)
+            )
+            if (!response.isSuccessful) {
+                throw HttpException(response)
+            }
+        }
+        catch (e: HttpException) {
+            throw IOException("API error: ${e.code()} ${e.message()}")
+        }
+        catch (e: IOException) {
+            throw IOException("Network error: ${e.message}")
+        }
+    }
+
+    suspend fun removeFavoriteProduct(productId: Long) {
+        try {
+            val response = apiService.removeFavoriteProduct(
+                FavoriteRequest(productId = productId)
+            )
+            if (!response.isSuccessful) {
+                throw HttpException(response)
+            }
+        }
+        catch (e: HttpException) {
+            throw IOException("API error: ${e.code()} ${e.message()}")
+        }
+        catch (e: IOException) {
+            throw IOException("Network error: ${e.message}")
+        }
     }
 }
