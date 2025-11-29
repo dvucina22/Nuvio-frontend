@@ -1,5 +1,6 @@
 package com.example.auth.presentation.register
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -198,6 +199,7 @@ fun RegisterForm(viewModel: RegisterViewModel) {
             label = stringResource(id = AuthR.string.label_gender),
             gender = gender,
             onGenderSelected = {
+                Log.d("Register", "Gender clicked: $it")
                 viewModel.gender.value = it
             }
         )

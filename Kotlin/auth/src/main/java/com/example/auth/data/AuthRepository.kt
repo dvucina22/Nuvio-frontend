@@ -21,7 +21,7 @@ class AuthRepository(
         password: String,
         gender: String?,
     ): Boolean {
-        val request = RegisterRequest(firstName, lastName, email, phoneNumber, password)
+        val request = RegisterRequest(firstName, lastName, email, phoneNumber, password, gender)
         authService.register(request)
         return true
     }

@@ -23,12 +23,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.core.R
 import com.example.core.ui.components.CustomButton
 import com.example.core.ui.components.CustomTopBar
@@ -38,28 +41,21 @@ import com.example.core.ui.theme.White
 
 @Composable
 fun ProfileScreen(
-    isLoggedIn: Boolean,
-    firstName: String?,
-    lastName: String? = null,
-    email: String? = null,
-    profilePictureUrl: String? = null,
+    viewModel: ProfileViewModel = hiltViewModel(),
     onSignOut: () -> Unit = {},
     onEdit: () -> Unit = {},
     onNavigateToLogin: () -> Unit = {},
     onChangePassword: () -> Unit = {},
     onNavigateToSavedCards: () -> Unit = {}
 ) {
-    val displayName = if (isLoggedIn && !firstName.isNullOrBlank()) {
-        if (!lastName.isNullOrBlank()) "$firstName $lastName" else firstName
-    } else {
-        stringResource(R.string.guest)
-    }
+    val profileState by viewModel.profileState.collectAsState()
+    val isLoggedIn = profileState.isLoaded && profileState.email.isNotBlank()
 
-    val displayEmail = if (isLoggedIn && !email.isNullOrBlank()) {
-        email
-    } else {
-        stringResource(R.string.not_logged_in)
-    }
+    val displayName = if (isLoggedIn) {
+        listOfNotNull(profileState.firstName, profileState.lastName).joinToString(" ")
+    } else stringResource(R.string.guest)
+
+    val displayEmail = if (isLoggedIn) profileState.email else stringResource(R.string.not_logged_in)
 
     Column(
         modifier = Modifier
@@ -77,7 +73,7 @@ fun ProfileScreen(
         ProfileHeader(
             displayName = displayName,
             displayEmail = displayEmail,
-            profilePictureUrl = profilePictureUrl ?: ""
+            profilePictureUrl =  profileState.profilePictureUrl ?: ""
         )
 
         if (isLoggedIn) {

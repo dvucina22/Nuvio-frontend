@@ -1,18 +1,15 @@
 package com.example.core.ui.components
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,56 +29,53 @@ fun CustomGenderField(
     label: String,
     modifier: Modifier = Modifier
 ) {
-    Column(
+    Row(
         modifier = modifier
-            .padding(bottom = 12.dp)
-            .fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
+            .fillMaxWidth()
+            .padding(bottom = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = label,
             color = White,
             style = MaterialTheme.typography.labelSmall,
             modifier = Modifier
-                .width(304.dp)
-                .padding(bottom = 4.dp),
+                .padding(start = 32.dp, bottom = 4.dp, top = 4.dp)
         )
 
-        Row(
-            modifier = Modifier
-                .width(304.dp)
-                .height(40.dp)
-                .clip(RoundedCornerShape(6.dp)),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
-        ) {
-            val options = listOf("M", "Ž")
-            options.forEach { option ->
-                val isSelected = gender == option
+        Spacer(modifier = Modifier.width(12.dp))
+
+        val options = listOf("M", "Ž")
+
+        options.forEach { option ->
+            val isSelected = gender == option
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .clickable { onGenderSelected(option) }
+            ) {
 
                 Box(
                     modifier = Modifier
-                        .width(60.dp)
-                        .height(32.dp)
-                ) {
-                    Button(
-                        onClick = { onGenderSelected(option) },
-                        modifier = Modifier.fillMaxSize(),
-                        colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                            containerColor = if (isSelected) ButtonColorSelected else ButtonColorDark,
-                            contentColor = White
-                        ),
-                        shape = RoundedCornerShape(6.dp),
-                        contentPadding = PaddingValues(0.dp)
-                    ) {
-                        Text(option)
-                    }
-                }
+                        .size(18.dp)
+                        .clip(RoundedCornerShape(50))
+                        .background(
+                            if (isSelected) ButtonColorSelected else ButtonColorDark
+                        )
+                )
 
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(6.dp))
+
+                Text(
+                    text = option,
+                    color = White,
+                    style = MaterialTheme.typography.labelSmall
+                )
             }
+
+            Spacer(modifier = Modifier.width(20.dp))
         }
     }
 }
-
 
