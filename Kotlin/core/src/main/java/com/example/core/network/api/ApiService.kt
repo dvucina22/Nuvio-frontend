@@ -11,6 +11,7 @@ import com.example.core.cards.dto.AddCardResponse
 import com.example.core.cards.dto.CardsResponse
 import com.example.core.cards.dto.DeleteCardResponse
 import com.example.core.cards.dto.PrimaryCardResponse
+import com.example.core.cart.dto.CartItemDto
 import com.example.core.catalog.dto.AttributeFilter
 import com.example.core.catalog.dto.Brand
 import com.example.core.catalog.dto.Category
@@ -84,4 +85,11 @@ interface ApiService {
 
     @GET("catalog/attributes")
     suspend fun getAttributes(): Response<List<AttributeFilter>>
+
+    @GET("catalog/products/cart")
+    suspend fun getCartItems(): Response<List<CartItemDto>>
+    @POST("catalog/products/cart/{id}")
+    suspend fun addCartItem(@Path("id") productId: Int): Response<Unit>
+    @DELETE("catalog/products/cart/{id}")
+    suspend fun deleteCartItem(@Path("id") productId: Int): Response<Unit>
 }

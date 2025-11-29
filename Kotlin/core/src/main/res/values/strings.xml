@@ -177,4 +177,16 @@
     <string name="material_aluminum">Aluminij</string>
     <string name="material_carbon_fiber">Karbon</string>
     <string name="material_plastic">Plastika</string>
+
+    <string name="cart_title">Košarica</string>
+    <string name="delete_item_confirm">Jeste li sigurni da želite obrisati ovaj proizvod?</string>
+    <string name="loading_message">Učitavanje...</string>
+    <string name="cart_empty_message">Nemate ni jedan proizvod u košarici</string>
+    <string name="error_label">Greška: %1$s</string>
+    <string name="checkout_button_text">Nastavi na plaćanje</string>
+    <string name="summary_total">Ukupno</string>
+    <string name="summary_delivery">Dostava</string>
+    <string name="summary_discount">Popust</string>
+    <string name="summary_total_with_discount">Ukupno s popustom</string>
+
 </resources>

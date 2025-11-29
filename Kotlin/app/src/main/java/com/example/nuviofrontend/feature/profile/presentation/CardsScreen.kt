@@ -81,7 +81,6 @@ fun CardScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             if (loading && uiCards.isEmpty()) {
-                // loader samo na INIT
                 Box(Modifier.fillMaxSize(), Alignment.Center) {
                     CircularProgressIndicator()
                 }

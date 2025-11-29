@@ -9,6 +9,8 @@ import com.example.core.network.api.ApiClient
 import com.example.core.network.api.ApiService
 import com.example.core.network.interceptor.AuthInterceptor
 import com.example.core.network.token.IUserPrefs
+import com.example.nuviofrontend.feature.cart.data.CartRepository
+import com.example.nuviofrontend.feature.cart.data.CartService
 import com.example.nuviofrontend.feature.catalog.data.CatalogRepository
 import com.example.nuviofrontend.feature.catalog.data.CatalogService
 import com.example.nuviofrontend.feature.profile.data.CardRepository
@@ -106,5 +108,17 @@ object AppModule {
     @Singleton
     fun provideCatalogRepository(catalogService: CatalogService): CatalogRepository {
         return CatalogRepository(catalogService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCartService(apiService: ApiService): CartService {
+        return CartService(apiService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCartRepository(cartService: CartService) : CartRepository {
+        return CartRepository(cartService)
     }
 }
