@@ -27,7 +27,8 @@ import com.example.core.ui.theme.White
 
 @Composable
 fun FavoriteScreen(
-    viewModel: FavoriteViewModel = hiltViewModel()
+    viewModel: FavoriteViewModel = hiltViewModel(),
+    onProductClick: (Long) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -84,6 +85,9 @@ fun FavoriteScreen(
                         },
                         onLoadMore = {
                             viewModel.loadMore()
+                        },
+                        onProductClick = { productId ->
+                            onProductClick(productId)
                         }
                     )
                 }
@@ -113,7 +117,8 @@ private fun FavoriteResultsGrid(
     favoriteProductIds: Set<Long>,
     isLoadingMore: Boolean,
     onToggleFavorite: (productId: Long, shouldBeFavorite: Boolean) -> Unit,
-    onLoadMore: () -> Unit
+    onLoadMore: () -> Unit,
+    onProductClick: (Long) -> Unit
 ) {
     val rows = products.chunked(2)
 
@@ -147,7 +152,8 @@ private fun FavoriteResultsGrid(
                             isFavorite = isFavorite,
                             onFavoriteChange = { shouldBeFavorite ->
                                 onToggleFavorite(product.id, shouldBeFavorite)
-                            }
+                            },
+                            onClick = { onProductClick(product.id) }
                         )
                     }
                 }
@@ -175,10 +181,4 @@ private fun FavoriteResultsGrid(
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun FavoriteScreenPreview() {
-    FavoriteScreen()
 }

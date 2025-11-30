@@ -1,4 +1,4 @@
-package com.example.nuviofrontend.feature.home.presentation
+package com.example.nuviofrontend.feature.catalog.presentation
 
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -45,7 +45,6 @@ import com.example.core.R
 import com.example.core.catalog.dto.Product
 import com.example.core.ui.components.ProductCard
 import com.example.core.ui.theme.White
-import com.example.nuviofrontend.feature.catalog.presentation.HomeViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -71,7 +70,8 @@ data class Banner(
 fun HomeScreen(
     firstName: String?,
     gender: String? = null,
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel(),
+    onProductClick: (Long) -> Unit
 ) {
     val scrollState = rememberScrollState()
     val state by viewModel.state.collectAsState()
@@ -183,7 +183,8 @@ fun HomeScreen(
                     favoriteIds = state.favoriteProductIds,
                     onToggleFavorite = { id, newValue ->
                         viewModel.setFavorite(id, newValue)
-                    }
+                    },
+                    onProductClick = { productId -> onProductClick(productId) }
                 )
             } else {
                 EmptyStateRow("No deals available")
@@ -206,7 +207,8 @@ fun HomeScreen(
                     favoriteIds = state.favoriteProductIds,
                     onToggleFavorite = { id, newValue ->
                         viewModel.setFavorite(id, newValue)
-                    }
+                    },
+                    onProductClick = { productId -> onProductClick(productId) }
                 )
             } else {
                 EmptyStateRow("No products available")
@@ -237,7 +239,8 @@ fun HomeScreen(
                     favoriteIds = state.favoriteProductIds,
                     onToggleFavorite = { id, newValue ->
                         viewModel.setFavorite(id, newValue)
-                    }
+                    },
+                    onProductClick = { productId -> onProductClick(productId) }
                 )
             }
 
@@ -494,7 +497,8 @@ fun CategoryCard(
 fun FlashDealsRow(
     products: List<Product>,
     favoriteIds: Set<Long>,
-    onToggleFavorite: (Long, Boolean) -> Unit
+    onToggleFavorite: (Long, Boolean) -> Unit,
+    onProductClick: (Long) -> Unit
 ) {
     LazyRow(
         contentPadding = PaddingValues(horizontal = 20.dp),
@@ -507,7 +511,8 @@ fun FlashDealsRow(
                 isFavorite = isFavorite,
                 onFavoriteChange = { newValue ->
                     onToggleFavorite(product.id, newValue)
-                }
+                },
+                onClick = { onProductClick(product.id) }
             )
         }
     }
@@ -517,7 +522,8 @@ fun FlashDealsRow(
 fun LatestProductsRow(
     products: List<Product>,
     favoriteIds: Set<Long>,
-    onToggleFavorite: (Long, Boolean) -> Unit
+    onToggleFavorite: (Long, Boolean) -> Unit,
+    onProductClick: (Long) -> Unit
 ) {
     LazyRow(
         contentPadding = PaddingValues(horizontal = 20.dp),
@@ -530,7 +536,8 @@ fun LatestProductsRow(
                 isFavorite = isFavorite,
                 onFavoriteChange = { newValue ->
                     onToggleFavorite(product.id, newValue)
-                }
+                },
+                onClick = { onProductClick(product.id) }
             )
         }
     }
@@ -580,7 +587,8 @@ fun BrandCard(
 fun RecommendedProductsGrid(
     products: List<Product>,
     favoriteIds: Set<Long>,
-    onToggleFavorite: (Long, Boolean) -> Unit
+    onToggleFavorite: (Long, Boolean) -> Unit,
+    onProductClick: (Long) -> Unit
 ) {
     Column(
         modifier = Modifier.padding(horizontal = 20.dp),
@@ -599,7 +607,8 @@ fun RecommendedProductsGrid(
                             isFavorite = isFavorite,
                             onFavoriteChange = { newValue ->
                                 onToggleFavorite(product.id, newValue)
-                            }
+                            },
+                            onClick = { onProductClick(product.id) }
                         )
                     }
                 }

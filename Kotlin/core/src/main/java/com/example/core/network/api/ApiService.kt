@@ -17,6 +17,7 @@ import com.example.core.catalog.dto.Brand
 import com.example.core.catalog.dto.Category
 import com.example.core.catalog.dto.FavoriteRequest
 import com.example.core.catalog.dto.Product
+import com.example.core.catalog.dto.ProductDetail
 import com.example.core.catalog.dto.ProductFilterRequest
 import com.example.core.catalog.dto.ProductResponse
 import com.example.core.user.dto.ChangePasswordRequest
@@ -85,6 +86,9 @@ interface ApiService {
 
     @GET("catalog/attributes")
     suspend fun getAttributes(): Response<List<AttributeFilter>>
+    @GET("catalog/products/{id}")
+    suspend fun getProductById(@Path("id") id: Long): Response<ProductDetail>
+
 
     @GET("catalog/products/cart")
     suspend fun getCartItems(): Response<List<CartItemDto>>

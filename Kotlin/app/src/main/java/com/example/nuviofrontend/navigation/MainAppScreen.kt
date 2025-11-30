@@ -26,14 +26,14 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.nuviofrontend.feature.cart.presentation.CartScreen
 import com.example.nuviofrontend.feature.search.presentation.SearchScreen
-import com.example.nuviofrontend.feature.home.presentation.HomeScreen
 import com.example.core.R
 import com.example.core.ui.theme.BackgroundNavDark
 import com.example.core.ui.theme.IconSelectedTintDark
 import com.example.core.ui.theme.IconUnselectedTintDark
 import com.example.core.ui.theme.SelectedItemBackgroundDark
+import com.example.nuviofrontend.feature.catalog.presentation.DetailProductScreen
+import com.example.nuviofrontend.feature.catalog.presentation.HomeScreen
 import com.example.nuviofrontend.feature.favorite.presentation.FavoriteScreen
-import com.example.nuviofrontend.feature.home.presentation.HomeScreen
 
 
 @Composable
@@ -69,11 +69,26 @@ fun MainAppScreen(
                     when (tab) {
                         HomeTab.HOME -> HomeScreen(
                             firstName = firstName,
-                            gender = gender
+                            gender = gender,
+                            onProductClick = { productId ->
+                                navController.navigate("product/$productId")
+                            }
                         )
-                        HomeTab.SEARCH -> SearchScreen()
-                        HomeTab.CART -> CartScreen()
-                        HomeTab.FAVORITES -> FavoriteScreen()
+                        HomeTab.SEARCH -> SearchScreen(
+                            onProductClick = { productId ->
+                                navController.navigate("product/$productId")
+                            }
+                        )
+                        HomeTab.CART -> CartScreen(
+                            onProductClick = { productId ->
+                                navController.navigate("product/$productId")
+                            }
+                        )
+                        HomeTab.FAVORITES -> FavoriteScreen(
+                            onProductClick = { productId ->
+                                navController.navigate("product/$productId")
+                            }
+                        )
                         HomeTab.PROFILE -> ProfileNavHost(
                             navController = rememberNavController(),
                             isLoggedIn = isLoggedIn,
@@ -87,6 +102,12 @@ fun MainAppScreen(
                         )
                     }
                 }
+            }
+            composable("product/{id}") { backStackEntry ->
+                val productId = backStackEntry.arguments?.getString("id")?.toLong() ?: 0L
+                DetailProductScreen(
+                    onBack = { navController.popBackStack() }
+                )
             }
         }
 

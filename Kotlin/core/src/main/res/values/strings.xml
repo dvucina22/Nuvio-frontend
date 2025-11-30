@@ -189,4 +189,7 @@
     <string name="summary_discount">Popust</string>
     <string name="summary_total_with_discount">Ukupno s popustom</string>
 
+    <string name="product_details_title">Detalji proizvoda</string>
+    <string name="attributes_title">Atributi</string>
+
 </resources>

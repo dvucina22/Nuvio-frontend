@@ -40,7 +40,10 @@ import com.example.core.ui.theme.CardBorder
 import com.example.core.ui.theme.CardItemBackground
 import com.example.core.R
 @Composable
-fun CartScreen(viewModel: CartViewModel = hiltViewModel()) {
+fun CartScreen(
+    viewModel: CartViewModel = hiltViewModel(),
+    onProductClick: (Long) -> Unit
+) {
     val cartItems by viewModel.cartItems.collectAsState()
     val error by viewModel.error.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -119,7 +122,8 @@ fun CartScreen(viewModel: CartViewModel = hiltViewModel()) {
                         item = item,
                         onIncrease = { viewModel.increaseQuantity(item.id) },
                         onDecrease = { viewModel.decreaseQuantity(item.id) },
-                        onFavorite = { viewModel.toggleFavorite(item.id) }
+                        onFavorite = { viewModel.toggleFavorite(item.id) },
+                        onClick = { onProductClick(item.id.toLong()) }
                     )
                 }
 
@@ -139,13 +143,6 @@ fun CartScreen(viewModel: CartViewModel = hiltViewModel()) {
         }
     }
 }
-
-@Preview
-@Composable
-fun CartScreenPreview(){
-    CartScreen()
-}
-
 
 @Composable
 fun SummarySection(

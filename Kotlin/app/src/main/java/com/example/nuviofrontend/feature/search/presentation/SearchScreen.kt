@@ -73,7 +73,8 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
-    viewModel: SearchViewModel = hiltViewModel()
+    viewModel: SearchViewModel = hiltViewModel(),
+    onProductClick: (Long) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -168,6 +169,9 @@ fun SearchScreen(
                         onLoadMore = { viewModel.loadMore() },
                         onToggleFavorite = { productId, shouldBeFavorite ->
                             viewModel.setFavorite(productId, shouldBeFavorite)
+                        },
+                        onProductClick = { productId ->
+                            onProductClick(productId)
                         }
                     )
                 }
@@ -234,7 +238,8 @@ private fun SearchResultsGrid(
     isLoadingMore: Boolean,
     favoriteProductIds: Set<Long>,
     onLoadMore: () -> Unit,
-    onToggleFavorite: (productId: Long, shouldBeFavorite: Boolean) -> Unit
+    onToggleFavorite: (productId: Long, shouldBeFavorite: Boolean) -> Unit,
+    onProductClick: (Long) -> Unit
 ) {
     val rows = products.chunked(2)
 
@@ -264,7 +269,8 @@ private fun SearchResultsGrid(
                             isFavorite = favoriteProductIds.contains(product.id),
                             onFavoriteChange = { shouldBeFavorite ->
                                 onToggleFavorite(product.id, shouldBeFavorite)
-                            }
+                            },
+                            onClick = { onProductClick(product.id) }
                         )
                     }
                 }
@@ -665,8 +671,3 @@ private fun normalizeNumericUnderscore(raw: String): String {
     return raw.replace("_", ".")
 }
 
-@Preview
-@Composable
-fun SearchScreenPreview() {
-    SearchScreen()
-}

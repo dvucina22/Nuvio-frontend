@@ -56,7 +56,8 @@ fun ProductItemCard(
     item: CartItemDto,
     onIncrease: (() -> Unit)? = null,
     onDecrease: (() -> Unit)? = null,
-    onFavorite: () -> Unit
+    onFavorite: () -> Unit,
+    onClick: (() -> Unit)? = null
 ) {
     Card(
         modifier = Modifier
@@ -67,7 +68,8 @@ fun ProductItemCard(
                 width = 0.5.dp,
                 color = CardBorder,
                 shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
-            ),
+            )
+            .clickable(enabled = onClick != null) { onClick?.invoke() },
         shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(
             containerColor = CardItemBackground
