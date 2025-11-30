@@ -13,6 +13,14 @@ val IconSelectedTintDark = Color(0xFFEDF2F4)
 val IconUnselectedTintDark = Color(0xFF818E96)
 val SelectedItemBackgroundDark = Color(0x331E2F23)
 val WarningPopUpBackground = Color(0xFF232323)
+val CardItemBackground = Color(0xCC232323)
+val SpecsText = Color(0xFF818E96)
+val QuantityBackground = Color(0xFF535557)
+val CardBorder = Color(0x4DD5DFE5)
+
+
+
+
 val PurpleGrey80 = Color(0xFFCCC2DC)
 val Pink80 = Color(0xFFEFB8C8)
 
