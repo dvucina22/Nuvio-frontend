@@ -39,7 +39,6 @@ import com.example.core.cart.dto.CartItemDto
 import com.example.core.ui.theme.CardBorder
 import com.example.core.ui.theme.CardItemBackground
 import com.example.core.ui.theme.QuantityBackground
-import com.example.core.ui.theme.SpecsText
 import kotlin.collections.filter
 import kotlin.collections.find
 import kotlin.collections.joinToString
@@ -105,7 +104,7 @@ fun ProductItemCard(
                     modifier = Modifier
                         .padding(6.dp)
                         .background(
-                            SpecsText,
+                            CardItemBackground,
                             androidx.compose.foundation.shape.RoundedCornerShape(4.dp)
                         )
                         .padding(horizontal = 6.dp, vertical = 2.dp)
@@ -133,13 +132,13 @@ fun ProductItemCard(
                         .padding(6.dp)
                         .align(Alignment.BottomStart)
                         .background(
-                            SpecsText,
+                            CardItemBackground,
                             androidx.compose.foundation.shape.RoundedCornerShape(4.dp)
                         )
                         .padding(horizontal = 4.dp, vertical = 2.dp)
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("Boja: ", color = Color.White, fontSize = 10.sp)
+                        Text("boja: ", color = Color.White, fontSize = 10.sp)
                         Spacer(Modifier.width(2.dp))
                         Box(
                             modifier = Modifier

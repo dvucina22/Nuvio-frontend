@@ -191,5 +191,7 @@
 
     <string name="product_details_title">Detalji proizvoda</string>
     <string name="attributes_title">Atributi</string>
+    <string name="product_description">Opis proizvoda</string>
+    <string name="product_info">Informacije o proizvodu</string>
 
 </resources>
