@@ -12,6 +12,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.Notifications
@@ -44,6 +46,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.core.R
 import com.example.core.catalog.dto.Product
 import com.example.core.ui.components.ProductCard
+import com.example.core.ui.theme.BackgroundBehindButton
+import com.example.core.ui.theme.BackgroundNavDark
+import com.example.core.ui.theme.Black
+import com.example.core.ui.theme.CardItemBackground
 import com.example.core.ui.theme.White
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -71,7 +77,8 @@ fun HomeScreen(
     firstName: String?,
     gender: String? = null,
     viewModel: HomeViewModel = hiltViewModel(),
-    onProductClick: (Long) -> Unit
+    onProductClick: (Long) -> Unit,
+    onAddProductClick: () -> Unit
 ) {
     val scrollState = rememberScrollState()
     val state by viewModel.state.collectAsState()
@@ -142,12 +149,31 @@ fun HomeScreen(
                         fontSize = 14.sp
                     )
                 }
-                IconButton(onClick = { }) {
-                    Icon(
-                        imageVector = Icons.Default.Notifications,
-                        contentDescription = "Notifications",
-                        tint = White
-                    )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(7.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = { /* akcija za Notifications */ }) {
+                        Icon(
+                            imageVector = Icons.Default.Notifications,
+                            contentDescription = "Notifications",
+                            tint = White
+                        )
+                    }
+                    Box(
+                        modifier = Modifier
+                            .size(35.dp)
+                            .background(color = BackgroundBehindButton, shape = RoundedCornerShape(5.dp))
+                            .clickable { onAddProductClick() },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.AddCircleOutline,
+                            contentDescription = "Add",
+                            tint = Black,
+                            modifier = Modifier.size(23.dp)
+                        )
+                    }
                 }
             }
 

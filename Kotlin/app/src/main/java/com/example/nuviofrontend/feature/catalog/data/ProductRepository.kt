@@ -1,5 +1,6 @@
 package com.example.nuviofrontend.feature.catalog.data
 
+import com.example.core.catalog.dto.AddProductRequest
 import com.example.core.catalog.dto.Product
 import com.example.core.catalog.dto.ProductDetail
 import javax.inject.Inject
@@ -19,4 +20,21 @@ class ProductRepository @Inject constructor(
             Result.failure(e)
         }
     }
+
+    suspend fun createProduct(request: AddProductRequest): Result<String> {
+        return try {
+            val response = productService.addProduct(request)
+            if (response.isSuccessful) {
+                Result.success(response.body()?.message ?: "Product created")
+            } else {
+                Result.failure(Exception("Error: ${response.errorBody()?.string()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun loadBrands() = productService.getBrands()
+    suspend fun loadCategories() = productService.getCategories()
+    suspend fun loadAttributes() = productService.getAttributes()
 }

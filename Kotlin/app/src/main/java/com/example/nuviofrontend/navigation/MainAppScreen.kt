@@ -31,6 +31,7 @@ import com.example.core.ui.theme.BackgroundNavDark
 import com.example.core.ui.theme.IconSelectedTintDark
 import com.example.core.ui.theme.IconUnselectedTintDark
 import com.example.core.ui.theme.SelectedItemBackgroundDark
+import com.example.nuviofrontend.feature.catalog.presentation.AddNewProductScreen
 import com.example.nuviofrontend.feature.catalog.presentation.DetailProductScreen
 import com.example.nuviofrontend.feature.catalog.presentation.HomeScreen
 import com.example.nuviofrontend.feature.favorite.presentation.FavoriteScreen
@@ -72,6 +73,9 @@ fun MainAppScreen(
                             gender = gender,
                             onProductClick = { productId ->
                                 navController.navigate("product/$productId")
+                            },
+                            onAddProductClick = {
+                                navController.navigate("add_product")
                             }
                         )
                         HomeTab.SEARCH -> SearchScreen(
@@ -107,6 +111,11 @@ fun MainAppScreen(
                 val productId = backStackEntry.arguments?.getString("id")?.toLong() ?: 0L
                 DetailProductScreen(
                     onBack = { navController.popBackStack() }
+                )
+            }
+            composable("add_product") {
+                AddNewProductScreen(
+                    onBackClick = { navController.popBackStack() }
                 )
             }
         }

@@ -17,6 +17,7 @@ val CardItemBackground = Color(0xCC232323)
 val SpecsText = Color(0xFF818E96)
 val QuantityBackground = Color(0xFF535557)
 val CardBorder = Color(0x4DD5DFE5)
+val BackgroundBehindButton = Color(0x598A8A8A)
 
 
 
