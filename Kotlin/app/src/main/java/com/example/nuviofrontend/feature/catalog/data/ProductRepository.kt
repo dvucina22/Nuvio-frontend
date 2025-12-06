@@ -37,4 +37,17 @@ class ProductRepository @Inject constructor(
     suspend fun loadBrands() = productService.getBrands()
     suspend fun loadCategories() = productService.getCategories()
     suspend fun loadAttributes() = productService.getAttributes()
+
+    suspend fun removeProduct(productId: Long): Result<String> {
+        return try {
+            val response = productService.deleteProduct(productId)
+            if (response != null) {
+                Result.success(response.message)
+            } else {
+                Result.failure(Exception("Failed to delete product"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

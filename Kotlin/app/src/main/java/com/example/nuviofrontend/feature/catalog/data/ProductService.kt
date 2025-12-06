@@ -4,6 +4,7 @@ import com.example.core.catalog.dto.AddProductRequest
 import com.example.core.catalog.dto.AddProductResponse
 import com.example.core.catalog.dto.Product
 import com.example.core.catalog.dto.ProductDetail
+import com.example.core.catalog.dto.SuccessfulDeleteResponse
 import com.example.core.network.api.ApiService
 import retrofit2.Response
 import javax.inject.Inject
@@ -23,4 +24,9 @@ class ProductService @Inject constructor(
     suspend fun getCategories() = apiService.getAllCategories()
 
     suspend fun getAttributes() = apiService.getAttributes()
+
+    suspend fun deleteProduct(productId: Long): SuccessfulDeleteResponse? {
+        val response = apiService.deleteProduct(productId)
+        return if (response.isSuccessful) response.body() else null
+    }
 }

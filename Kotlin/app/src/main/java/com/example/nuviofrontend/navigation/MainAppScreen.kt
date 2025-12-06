@@ -115,6 +115,7 @@ fun MainAppScreen(
             }
             composable("add_product") {
                 AddNewProductScreen(
+                    navController = navController,
                     onBackClick = { navController.popBackStack() }
                 )
             }

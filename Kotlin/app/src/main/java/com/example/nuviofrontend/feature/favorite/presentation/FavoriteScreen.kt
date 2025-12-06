@@ -153,7 +153,8 @@ private fun FavoriteResultsGrid(
                             onFavoriteChange = { shouldBeFavorite ->
                                 onToggleFavorite(product.id, shouldBeFavorite)
                             },
-                            onClick = { onProductClick(product.id) }
+                            onClick = { onProductClick(product.id) },
+                            showMenu = false
                         )
                     }
                 }

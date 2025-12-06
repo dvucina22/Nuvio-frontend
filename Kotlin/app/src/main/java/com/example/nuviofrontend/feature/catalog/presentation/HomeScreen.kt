@@ -1,5 +1,6 @@
 package com.example.nuviofrontend.feature.catalog.presentation
 
+import android.widget.Toast
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -12,7 +13,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.Movie
@@ -32,12 +32,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -45,11 +49,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.core.R
 import com.example.core.catalog.dto.Product
+import com.example.core.ui.components.CustomPopupWarning
 import com.example.core.ui.components.ProductCard
 import com.example.core.ui.theme.BackgroundBehindButton
-import com.example.core.ui.theme.BackgroundNavDark
 import com.example.core.ui.theme.Black
-import com.example.core.ui.theme.CardItemBackground
 import com.example.core.ui.theme.White
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -77,11 +80,29 @@ fun HomeScreen(
     firstName: String?,
     gender: String? = null,
     viewModel: HomeViewModel = hiltViewModel(),
+    productManagementViewModel: ProductManagementViewModel = hiltViewModel(),
     onProductClick: (Long) -> Unit,
-    onAddProductClick: () -> Unit
+    onAddProductClick: () -> Unit,
 ) {
     val scrollState = rememberScrollState()
     val state by viewModel.state.collectAsState()
+    val context = LocalContext.current
+
+    var showDeletePopup by remember { mutableStateOf(false) }
+    var productIdToDelete by remember { mutableStateOf<Long?>(null) }
+
+    val onDeleteProduct: (Long) -> Unit = { productId ->
+        productIdToDelete = productId
+        showDeletePopup = true
+    }
+    val successMessage = productManagementViewModel.successMessage
+    LaunchedEffect(successMessage) {
+        if (!successMessage.isNullOrBlank()) {
+            Toast.makeText(context, successMessage, Toast.LENGTH_SHORT).show()
+            viewModel.refreshData()
+            productManagementViewModel.successMessage = null
+        }
+    }
 
     val greeting = when (gender?.lowercase()) {
         "male" -> stringResource(R.string.welcome_male, firstName ?: "")
@@ -210,7 +231,10 @@ fun HomeScreen(
                     onToggleFavorite = { id, newValue ->
                         viewModel.setFavorite(id, newValue)
                     },
-                    onProductClick = { productId -> onProductClick(productId) }
+                    onProductClick = { productId -> onProductClick(productId) },
+                    onDeleteProduct = { productId ->
+                        onDeleteProduct(productId)
+                    }
                 )
             } else {
                 EmptyStateRow("No deals available")
@@ -234,7 +258,10 @@ fun HomeScreen(
                     onToggleFavorite = { id, newValue ->
                         viewModel.setFavorite(id, newValue)
                     },
-                    onProductClick = { productId -> onProductClick(productId) }
+                    onProductClick = { productId -> onProductClick(productId) },
+                    onDeleteProduct = { productId ->
+                        onDeleteProduct(productId)
+                    }
                 )
             } else {
                 EmptyStateRow("No products available")
@@ -266,7 +293,10 @@ fun HomeScreen(
                     onToggleFavorite = { id, newValue ->
                         viewModel.setFavorite(id, newValue)
                     },
-                    onProductClick = { productId -> onProductClick(productId) }
+                    onProductClick = { productId -> onProductClick(productId) },
+                    onDeleteProduct = { productId ->
+                        onDeleteProduct(productId)
+                    }
                 )
             }
 
@@ -294,6 +324,26 @@ fun HomeScreen(
                     .fillMaxWidth()
                     .align(Alignment.TopCenter),
                 color = Color(0xFF667EEA)
+            )
+        }
+
+        if (showDeletePopup && productIdToDelete != null) {
+            CustomPopupWarning(
+                title = "Upozorenje",
+                message = "Jeste li sigurni da želite obrisati proizvod?",
+                confirmText = "Nastavi",
+                dismissText = "Odustani",
+                onDismiss = {
+                    showDeletePopup = false
+                    productIdToDelete = null
+                },
+                onConfirm = {
+                    productIdToDelete?.let { id ->
+                        productManagementViewModel.deleteProduct(id)
+                    }
+                    showDeletePopup = false
+                    productIdToDelete = null
+                }
             )
         }
     }
@@ -524,7 +574,8 @@ fun FlashDealsRow(
     products: List<Product>,
     favoriteIds: Set<Long>,
     onToggleFavorite: (Long, Boolean) -> Unit,
-    onProductClick: (Long) -> Unit
+    onProductClick: (Long) -> Unit,
+    onDeleteProduct: (Long) -> Unit
 ) {
     LazyRow(
         contentPadding = PaddingValues(horizontal = 20.dp),
@@ -538,7 +589,11 @@ fun FlashDealsRow(
                 onFavoriteChange = { newValue ->
                     onToggleFavorite(product.id, newValue)
                 },
-                onClick = { onProductClick(product.id) }
+                onClick = { onProductClick(product.id) },
+                showMenu = true,
+                onDelete = { productId ->
+                    onDeleteProduct(productId)
+                }
             )
         }
     }
@@ -549,7 +604,8 @@ fun LatestProductsRow(
     products: List<Product>,
     favoriteIds: Set<Long>,
     onToggleFavorite: (Long, Boolean) -> Unit,
-    onProductClick: (Long) -> Unit
+    onProductClick: (Long) -> Unit,
+    onDeleteProduct: (Long) -> Unit
 ) {
     LazyRow(
         contentPadding = PaddingValues(horizontal = 20.dp),
@@ -563,7 +619,11 @@ fun LatestProductsRow(
                 onFavoriteChange = { newValue ->
                     onToggleFavorite(product.id, newValue)
                 },
-                onClick = { onProductClick(product.id) }
+                onClick = { onProductClick(product.id) },
+                showMenu = true,
+                onDelete = { productId ->
+                    onDeleteProduct(productId)
+                }
             )
         }
     }
@@ -614,7 +674,8 @@ fun RecommendedProductsGrid(
     products: List<Product>,
     favoriteIds: Set<Long>,
     onToggleFavorite: (Long, Boolean) -> Unit,
-    onProductClick: (Long) -> Unit
+    onProductClick: (Long) -> Unit,
+    onDeleteProduct: (Long) -> Unit
 ) {
     Column(
         modifier = Modifier.padding(horizontal = 20.dp),
@@ -634,7 +695,11 @@ fun RecommendedProductsGrid(
                             onFavoriteChange = { newValue ->
                                 onToggleFavorite(product.id, newValue)
                             },
-                            onClick = { onProductClick(product.id) }
+                            onClick = { onProductClick(product.id) },
+                            showMenu = true,
+                            onDelete = { productId ->
+                                onDeleteProduct(productId)
+                            }
                         )
                     }
                 }

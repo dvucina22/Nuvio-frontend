@@ -12,11 +12,12 @@ import com.example.core.catalog.dto.Category
 import com.example.core.catalog.dto.ProductAttributeDto
 import com.example.nuviofrontend.feature.catalog.data.ProductRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AddNewProductViewModel @Inject constructor(
+class ProductManagementViewModel @Inject constructor(
     private val repository: ProductRepository
 ) : ViewModel() {
 
@@ -28,6 +29,7 @@ class AddNewProductViewModel @Inject constructor(
     var errorMessage by mutableStateOf<String?>(null)
     var successMessage by mutableStateOf<String?>(null)
     var fieldErrors by mutableStateOf<Map<String, String>>(emptyMap())
+    var productAdded by mutableStateOf(false)
 
     init {
         loadInitialData()
@@ -83,6 +85,7 @@ class AddNewProductViewModel @Inject constructor(
 
             result.onSuccess {
                 successMessage = it
+                productAdded = true
             }.onFailure {
                 errorMessage = it.message
             }
@@ -120,5 +123,26 @@ class AddNewProductViewModel @Inject constructor(
 
         fieldErrors = errors
         return errors.isEmpty()
+    }
+
+    fun deleteProduct(productId: Long) {
+        viewModelScope.launch {
+            isLoading = true
+            errorMessage = null
+            successMessage = null
+
+            try {
+                val result = repository.removeProduct(productId)
+                result.onSuccess { message ->
+                    successMessage = "Uspješno obrisan proizvod"
+                }.onFailure { e ->
+                    errorMessage = e.message ?: "Failed to delete product"
+                }
+            } catch (e: Exception) {
+                errorMessage = e.message ?: "Failed to delete product"
+            } finally {
+                isLoading = false
+            }
+        }
     }
 }

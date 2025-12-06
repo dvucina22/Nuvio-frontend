@@ -22,6 +22,7 @@ import com.example.core.catalog.dto.Product
 import com.example.core.catalog.dto.ProductDetail
 import com.example.core.catalog.dto.ProductFilterRequest
 import com.example.core.catalog.dto.ProductResponse
+import com.example.core.catalog.dto.SuccessfulDeleteResponse
 import com.example.core.user.dto.ChangePasswordRequest
 import com.example.core.user.dto.ChangePasswordResponse
 import com.example.core.user.dto.UpdateProfilePictureRequest
@@ -92,6 +93,8 @@ interface ApiService {
     suspend fun getProductById(@Path("id") id: Long): Response<ProductDetail>
     @POST("catalog/products")
     suspend fun addNewProduct(@Body request: AddProductRequest): Response<AddProductResponse>
+    @DELETE("catalog/products/{id}")
+    suspend fun deleteProduct(@Path("id") id: Long): Response<SuccessfulDeleteResponse>
 
     @GET("catalog/products/cart")
     suspend fun getCartItems(): Response<List<CartItemDto>>

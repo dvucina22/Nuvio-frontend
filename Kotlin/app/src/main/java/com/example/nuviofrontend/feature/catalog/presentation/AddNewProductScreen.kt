@@ -1,5 +1,6 @@
 package com.example.nuviofrontend.feature.catalog.presentation
 
+import android.widget.Toast
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -35,6 +36,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +48,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -55,6 +58,8 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.core.R
 import com.example.core.catalog.dto.AttributeFilter
 import com.example.core.ui.components.CustomButton
@@ -68,11 +73,13 @@ import com.example.core.ui.theme.CardItemBackground
 import com.example.core.ui.theme.ColorInput
 import com.example.core.ui.theme.Error
 import com.example.core.ui.theme.White
+import com.example.nuviofrontend.navigation.HomeTab
 
 @Composable
 fun AddNewProductScreen(
+    navController: NavHostController,
     onBackClick: () -> Unit = {},
-    viewModel: AddNewProductViewModel = hiltViewModel()
+    viewModel: ProductManagementViewModel = hiltViewModel()
 ){
     var productName by remember { mutableStateOf("") }
     var price by remember { mutableStateOf("") }
@@ -93,6 +100,15 @@ fun AddNewProductScreen(
     val brands = viewModel.brands
     val categories = viewModel.categories
 
+    val context = LocalContext.current
+
+    LaunchedEffect(viewModel.productAdded) {
+        if (viewModel.productAdded) {
+            Toast.makeText(context, "Proizvod je dodan!", Toast.LENGTH_SHORT).show()
+            navController.popBackStack(HomeTab.HOME.name, false)
+            viewModel.productAdded = false
+        }
+    }
 
     fun removeAttribute(attribute: AttributeFilter) {
         addedAttributes = addedAttributes.filter { it.attributeId != attribute.attributeId }

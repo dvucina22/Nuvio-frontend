@@ -1,26 +1,38 @@
 package com.example.core.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Popup
 import coil.compose.AsyncImage
 import com.example.core.R
 import com.example.core.catalog.dto.Product
@@ -32,8 +44,12 @@ fun ProductCard(
     modifier: Modifier = Modifier,
     isFavorite: Boolean = false,
     onFavoriteChange: (Boolean) -> Unit = {},
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    onEdit: (Long) -> Unit = {},
+    onDelete: (Long) -> Unit = {},
+    showMenu: Boolean = false
 ) {
+    var menuOpen by remember { mutableStateOf(false) }
     Box(
         modifier = modifier
             .width(170.dp)
@@ -116,7 +132,7 @@ fun ProductCard(
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
@@ -129,8 +145,84 @@ fun ProductCard(
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Bold
                     )
+
+                    if (showMenu) {
+                        Box {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = "More",
+                                tint = Color.White,
+                                modifier = Modifier
+                                    .size(20.dp)
+                                    .clickable { menuOpen = true }
+                            )
+
+                            if (menuOpen) {
+                                Popup(
+                                    alignment = Alignment.TopEnd,
+                                    onDismissRequest = { menuOpen = false }
+                                ) {
+                                    Column(
+                                        modifier = Modifier
+                                            .background(Color(0xFF232323), RoundedCornerShape(6.dp))
+                                            .border(
+                                                width = 1.dp,
+                                                color = Color(0xFF444444),
+                                                shape = RoundedCornerShape(6.dp)
+                                            )
+                                            .width(IntrinsicSize.Max)
+                                    ) {
+                                        MenuItem(
+                                            icon = Icons.Default.Edit,
+                                            label = "Uredi"
+                                        ) {
+                                            menuOpen = false
+                                            onEdit(product.id)
+                                        }
+
+                                        MenuItem(
+                                            icon = Icons.Default.Delete,
+                                            label = "Obriši"
+                                        ) {
+                                            menuOpen = false
+                                            onDelete(product.id)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
+    }
+}
+
+
+@Composable
+fun MenuItem(icon: ImageVector, label: String, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp, vertical = 6.dp)
+            .clickable(
+                onClick = onClick,
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = label,
+            tint = Color.White,
+            modifier = Modifier.size(13.dp)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            text = label,
+            color = Color.White,
+            fontSize = 12.sp
+        )
     }
 }
