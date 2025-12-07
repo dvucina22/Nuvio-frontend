@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,9 +24,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material.icons.filled.CameraAlt
-import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -38,7 +35,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -59,60 +55,85 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.core.R
 import com.example.core.catalog.dto.AttributeFilter
+import com.example.core.catalog.dto.Brand
+import com.example.core.catalog.dto.Category
 import com.example.core.ui.components.CustomButton
 import com.example.core.ui.components.CustomTextField
 import com.example.core.ui.components.CustomTopBar
 import com.example.core.ui.theme.BackgroundBehindButton
 import com.example.core.ui.theme.BackgroundColorInput
 import com.example.core.ui.theme.BackgroundNavDark
-import com.example.core.ui.theme.Black
 import com.example.core.ui.theme.CardItemBackground
 import com.example.core.ui.theme.ColorInput
 import com.example.core.ui.theme.Error
 import com.example.core.ui.theme.White
-import com.example.nuviofrontend.navigation.HomeTab
+import kotlin.collections.contains
+import kotlin.collections.forEach
+import kotlin.collections.set
 
 @Composable
-fun AddNewProductScreen(
+fun EditProductScreen(
     navController: NavHostController,
     onBackClick: () -> Unit = {},
-    viewModel: ProductManagementViewModel = hiltViewModel()
+    productId: Long,
+    viewModel: ProductManagementViewModel = hiltViewModel(),
+    homeViewModel: HomeViewModel = hiltViewModel()
 ){
-    var productName by remember { mutableStateOf("") }
-    var price by remember { mutableStateOf("") }
-    var quantity by remember { mutableStateOf("") }
-    var modelNumber by remember { mutableStateOf("") }
-    var sku by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-
-    var selectedBrand by remember { mutableStateOf<String?>(null) }
-
-    var selectedCategory by remember { mutableStateOf<String?>(null) }
-
-    val allAttributes = viewModel.attributes
-    var addedAttributes by remember { mutableStateOf(listOf<AttributeFilter>()) }
-    var selectedAttribute by remember { mutableStateOf<AttributeFilter?>(null) }
-    val attributeValuesMap = remember { mutableStateMapOf<String, String?>() }
-
-    val brands = viewModel.brands
-    val categories = viewModel.categories
-
     val context = LocalContext.current
 
-    LaunchedEffect(viewModel.productAdded) {
-        if (viewModel.productAdded) {
-            Toast.makeText(context, "Proizvod je dodan!", Toast.LENGTH_SHORT).show()
-            navController.popBackStack(HomeTab.HOME.name, false)
-            viewModel.productAdded = false
+    var productName by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+    var modelNumber by remember { mutableStateOf("") }
+    var sku by remember { mutableStateOf("") }
+    var price by remember { mutableStateOf("") }
+    var quantity by remember { mutableStateOf("") }
+
+    var selectedBrand by remember { mutableStateOf<Brand??>(null) }
+    var selectedCategory by remember { mutableStateOf<Category?>(null) }
+
+    var addedAttributes by remember { mutableStateOf<List<AttributeFilter>>(emptyList()) }
+    var selectedAttribute by remember { mutableStateOf<AttributeFilter?>(null) }
+    var attributeValuesMap by remember { mutableStateOf(mutableMapOf<String, String?>()) }
+
+    val fieldErrors by viewModel::fieldErrors
+
+    LaunchedEffect(productId, viewModel.categories) {
+        if (viewModel.categories.isEmpty()) return@LaunchedEffect
+
+        val result = viewModel.loadProduct(productId)
+
+        result.onSuccess { product ->
+            productName = product.name
+            description = product.description ?: ""
+            modelNumber = product.modelNumber ?: ""
+            sku = product.sku ?: ""
+            price = product.basePrice.toString()
+            quantity = product.quantity?.toString() ?: "0"
+
+            selectedBrand = viewModel.brands.find { it.id == product.brand.id }
+            selectedCategory = viewModel.categories.find { it.id == product.category.id }
+
+            val allAttrs = viewModel.attributes
+            val productAttrNames = product.attributes?.map { it.name } ?: emptyList()
+
+            addedAttributes = allAttrs.filter { productAttrNames.contains(it.name) }
+            attributeValuesMap = mutableMapOf<String, String?>().apply {
+                product.attributes?.forEach { attr ->
+                    this[attr.name] = attr.value
+                }
+            }
         }
     }
 
-    fun removeAttribute(attribute: AttributeFilter) {
-        addedAttributes = addedAttributes.filter { it.attributeId != attribute.attributeId }
-        attributeValuesMap.remove(attribute.name)
+    LaunchedEffect(viewModel.productUpdated) {
+        if (viewModel.productUpdated) {
+            Toast.makeText(context, "Proizvod ažuriran!", Toast.LENGTH_SHORT).show()
+            viewModel.productUpdated = false
+            homeViewModel.refreshData()
+            navController.popBackStack()
+        }
     }
 
     Column(
@@ -121,12 +142,10 @@ fun AddNewProductScreen(
             .padding(horizontal = 20.dp),
     ){
         CustomTopBar(
-            title = stringResource(R.string.add_new_product_title),
+            title = stringResource(R.string.edit_product_title),
             showBack = true,
             onBack = onBackClick
         )
-        Spacer(modifier = Modifier.height(16.dp))
-
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -183,104 +202,80 @@ fun AddNewProductScreen(
 
                         CustomTextField(
                             value = productName,
-                            onValueChange = {
-                                productName = it
-                                viewModel.fieldErrors = viewModel.fieldErrors - "productName"
-                            },
-                            placeholder = stringResource(R.string.placeholder_product_name),
+                            onValueChange = { productName = it },
                             label = stringResource(R.string.label_product_name),
-                            isError = viewModel.fieldErrors.containsKey("productName"),
-                            errorMessage = viewModel.fieldErrors["productName"]
+                            placeholder = "",
+                            isError = fieldErrors.containsKey("productName"),
+                            errorMessage = fieldErrors["productName"]
                         )
 
                         CustomTextField(
                             value = price,
-                            onValueChange = {
-                                price = it
-                                viewModel.fieldErrors = viewModel.fieldErrors - "price"
-                            },
-                            placeholder = stringResource(R.string.placeholder_price),
+                            onValueChange = { price = it },
                             label = stringResource(R.string.label_price),
-                            isError = viewModel.fieldErrors.containsKey("price"),
-                            errorMessage = viewModel.fieldErrors["price"],
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            placeholder = "",
+                            isError = fieldErrors.containsKey("price"),
+                            errorMessage = fieldErrors["price"]
                         )
 
-                        CustomDropdownAddProduct(
+                        CustomDropdownEditProduct(
                             label = stringResource(R.string.brand),
-                            value = selectedBrand?.let { mapAttributeValue("brand", it) },
-                            items = brands.map { it.name },
-                            itemLabel = { mapAttributeValue("brand", it) },
+                            value = selectedBrand,
+                            items = viewModel.brands,
+                            itemLabel = { mapAttributeValue("brand", it.name) },
                             placeholder = stringResource(R.string.placeholder_brand),
-                            onItemSelected = {
-                                selectedBrand = it
-                                viewModel.fieldErrors = viewModel.fieldErrors - "brand"
-                            },
-                            isError = viewModel.fieldErrors.containsKey("brand"),
-                            errorMessage = viewModel.fieldErrors["brand"]
+                            onItemSelected = { selectedBrand = it },
+                            isError = fieldErrors.containsKey("brand"),
+                            errorMessage = fieldErrors["brand"]
                         )
 
-                        CustomDropdownAddProduct(
+
+                        CustomDropdownEditProduct(
                             label = stringResource(R.string.category),
-                            value = selectedCategory?.let { mapAttributeValue("category", it) },
-                            items = categories.map { it.name },
-                            itemLabel = { mapAttributeValue("category", it) },
+                            value = selectedCategory,
+                            items = viewModel.categories,
+                            itemLabel = { mapAttributeValue("category", it.name) },
                             placeholder = stringResource(R.string.placeholder_category),
-                            onItemSelected = {
-                                selectedCategory = it
-                                viewModel.fieldErrors = viewModel.fieldErrors - "category"
-                            },
-                            isError = viewModel.fieldErrors.containsKey("category"),
-                            errorMessage = viewModel.fieldErrors["category"]
+                            onItemSelected = { selectedCategory = it },
+                            isError = fieldErrors.containsKey("category"),
+                            errorMessage = fieldErrors["category"]
                         )
 
                         CustomTextField(
                             value = quantity,
-                            onValueChange = {
-                                quantity = it
-                                viewModel.fieldErrors = viewModel.fieldErrors - "quantity"
-                            },
-                            placeholder = stringResource(R.string.placeholder_quantity),
+                            onValueChange = { quantity = it },
                             label = stringResource(R.string.label_quantity),
-                            isError = viewModel.fieldErrors.containsKey("quantity"),
-                            errorMessage = viewModel.fieldErrors["quantity"],
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                            placeholder = "",
+                            isError = fieldErrors.containsKey("quantity"),
+                            errorMessage = fieldErrors["quantity"]
                         )
 
                         CustomTextField(
                             value = modelNumber,
-                            onValueChange = {
-                                modelNumber = it
-                                viewModel.fieldErrors = viewModel.fieldErrors - "modelNumber"
-                            },
-                            placeholder = stringResource(R.string.placeholder_model_number),
+                            onValueChange = { modelNumber = it },
                             label = stringResource(R.string.label_model_number),
-                            isError = viewModel.fieldErrors.containsKey("modelNumber"),
-                            errorMessage = viewModel.fieldErrors["modelNumber"]
+                            placeholder = "",
+                            isError = fieldErrors.containsKey("modelNumber"),
+                            errorMessage = fieldErrors["modelNumber"]
                         )
 
                         CustomTextField(
                             value = sku,
-                            onValueChange = {
-                                sku = it
-                                viewModel.fieldErrors = viewModel.fieldErrors - "sku"
-                            },
-                            placeholder = stringResource(R.string.placeholder_sku),
+                            onValueChange = { sku = it },
                             label = stringResource(R.string.label_sku),
-                            isError = viewModel.fieldErrors.containsKey("sku"),
-                            errorMessage = viewModel.fieldErrors["sku"]
+                            placeholder = "",
+                            isError = fieldErrors.containsKey("sku"),
+                            errorMessage = fieldErrors["sku"]
                         )
 
                         CustomTextField(
                             value = description,
-                            onValueChange = {
-                                description = it
-                                viewModel.fieldErrors = viewModel.fieldErrors - "description"
-                            },
-                            placeholder = stringResource(R.string.placeholder_description),
+                            onValueChange = { description = it },
                             label = stringResource(R.string.label_description),
-                            isError = viewModel.fieldErrors.containsKey("description"),
-                            errorMessage = viewModel.fieldErrors["description"]
+                            placeholder = "",
+                            isError = fieldErrors.containsKey("description"),
+                            errorMessage = fieldErrors["description"]
                         )
                     }
                 }
@@ -289,17 +284,19 @@ fun AddNewProductScreen(
 
             item {
                 AdditionalSpecificationsCard(
-                    allAttributes = allAttributes,
+                    allAttributes = viewModel.attributes,
                     addedAttributes = addedAttributes,
-                    onAddAttribute = { attr ->
-                        addedAttributes = addedAttributes + attr
-                        selectedAttribute = null
+                    onAddAttribute = { addedAttributes = addedAttributes + it },
+                    onRemoveAttribute = { attr ->
+                        addedAttributes = addedAttributes - attr
+                        attributeValuesMap.remove(attr.name)
                     },
                     selectedAttribute = selectedAttribute,
                     onSelectedAttributeChange = { selectedAttribute = it },
                     attributeValuesMap = attributeValuesMap,
-                    onAttributeValueChange = { attr, value -> attributeValuesMap[attr] = value },
-                    onRemoveAttribute = { attr -> removeAttribute(attr) },
+                    onAttributeValueChange = { name, value ->
+                        attributeValuesMap[name] = value
+                    }
                 )
             }
 
@@ -313,37 +310,31 @@ fun AddNewProductScreen(
                     CustomButton(
                         text = stringResource(R.string.save_button),
                         onClick = {
-                            val brandId = brands.find { it.name == selectedBrand }?.id
-                            val categoryId = categories.find { it.name == selectedCategory }?.id
-
-                            val isValid = viewModel.validateFields(
+                            val valid = viewModel.validateFields(
                                 productName = productName,
                                 price = price,
-                                brandId = brandId,
-                                categoryId = categoryId,
+                                brandId = selectedBrand?.id,
+                                categoryId = selectedCategory?.id,
                                 quantity = quantity,
                                 modelNumber = modelNumber,
                                 sku = sku,
                                 description = description
                             )
 
-                            if (isValid) {
-                                val basePrice = price.toDouble()
-                                val qty = quantity.toInt()
-                                val filteredAttributes = attributeValuesMap.filter { it.value != null }
+                            if (!valid) return@CustomButton
 
-                                viewModel.addProduct(
-                                    name = productName,
-                                    description = description,
-                                    modelNumber = modelNumber,
-                                    sku = sku,
-                                    basePrice = basePrice,
-                                    brandId = brandId!!,
-                                    categoryId = categoryId!!,
-                                    quantity = qty,
-                                    selectedAttributes = filteredAttributes.mapValues { it.value!! }
-                                )
-                            }
+                            viewModel.updateProduct(
+                                id = productId,
+                                name = productName,
+                                description = description,
+                                modelNumber = modelNumber,
+                                sku = sku,
+                                basePrice = price.toDoubleOrNull(),
+                                brandId = selectedBrand?.id,
+                                categoryId = selectedCategory?.id,
+                                quantity = quantity.toIntOrNull(),
+                                selectedAttributes = attributeValuesMap.filterValues { it != null }.mapValues { it.value!! }
+                            )
                         },
                         width = 304
                     )
@@ -356,151 +347,7 @@ fun AddNewProductScreen(
 }
 
 @Composable
-fun AdditionalSpecificationsCard(
-    allAttributes: List<AttributeFilter>,
-    addedAttributes: List<AttributeFilter>,
-    onAddAttribute: (AttributeFilter) -> Unit,
-    onRemoveAttribute: (AttributeFilter) -> Unit,
-    selectedAttribute: AttributeFilter?,
-    onSelectedAttributeChange: (AttributeFilter?) -> Unit,
-    attributeValuesMap: Map<String, String?>,
-    onAttributeValueChange: (String, String?) -> Unit
-) {
-    val basicAttributes = listOf("category", "brand")
-
-    val remainingAttributes = allAttributes
-        .filter { attr ->
-            addedAttributes.none { it.name == attr.name } &&
-                    !basicAttributes.contains(attr.name?.lowercase())
-        }
-
-    val selectedAttributeName = selectedAttribute?.name
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(CardItemBackground, RoundedCornerShape(6.dp))
-            .padding(start = 10.dp)
-    ) {
-        Text(
-            text = stringResource(R.string.additional_specifications_title),
-            fontSize = 16.sp,
-            color = Color.White,
-            modifier = Modifier.padding(start = 16.dp, bottom = 10.dp, top = 10.dp)
-        )
-        Divider(color = BackgroundNavDark)
-        Spacer(modifier = Modifier.height(8.dp))
-
-        addedAttributes.forEach { attribute ->
-            val values = attribute.values
-            val selectedValue = attributeValuesMap[attribute.name]
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 28.dp)
-            ) {
-                Box(
-                    modifier = Modifier.weight(0.70f)
-                ) {
-                    CustomDropdownAddProduct(
-                        label = mapAttributeName(attribute.name ?: ""),
-                        value = selectedValue?.let { mapAttributeValue(attribute.name ?: "", it) },
-                        items = values,
-                        itemLabel = { mapAttributeValue(attribute.name ?: "", it) },
-                        placeholder = stringResource(R.string.placeholder_select_attribute),
-                        onItemSelected = { value -> onAttributeValueChange(attribute.name ?: "", value) },
-                        modifier = Modifier.width(250.dp)
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(5.dp))
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(30.dp)
-                        .padding(top = 10.dp)
-                        .background(BackgroundBehindButton, RoundedCornerShape(5.dp)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    IconButton(
-                        onClick = { onRemoveAttribute(attribute) },
-                        modifier = Modifier.size(30.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.DeleteOutline,
-                            contentDescription = "",
-                            tint = Black,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(6.dp))
-        }
-
-        if (remainingAttributes.isNotEmpty()) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 28.dp)
-            ) {
-                Box(
-                    modifier = Modifier.weight(0.70f)
-                ) {
-                    CustomDropdownAddProduct(
-                        label = stringResource(R.string.placeholder_add_attribute),
-                        value = selectedAttributeName?.let { mapAttributeName(it) },
-                        items = remainingAttributes.map { it.name ?: "" },
-                        itemLabel = { mapAttributeName(it) },
-                        placeholder = stringResource(R.string.placeholder_add_attribute),
-                        onItemSelected = { selectedName ->
-                            val attribute = allAttributes.find { it.name == selectedName }
-                            if (attribute != null) {
-                                onSelectedAttributeChange(attribute)
-                            }
-                        },
-                        modifier = Modifier.width(250.dp)
-                    )
-                }
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(30.dp)
-                        .padding(top = 10.dp)
-                        .background(BackgroundBehindButton, RoundedCornerShape(5.dp)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    IconButton(
-                        onClick = {
-                            selectedAttribute?.let {
-                                onAddAttribute(it)
-                                onSelectedAttributeChange(null)
-                            }
-                        },
-                        modifier = Modifier.size(30.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.AddCircleOutline,
-                            contentDescription = "",
-                            tint = Black,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-
-@Composable
-fun <T> CustomDropdownAddProduct(
+fun <T> CustomDropdownEditProduct(
     modifier: Modifier = Modifier,
     label: String? = null,
     value: T?,
@@ -658,19 +505,6 @@ private fun formatProductName(name: String): String {
         .joinToString(" ") { it.replaceFirstChar { c -> c.uppercase() } }
 }
 
-private fun mapAttributeName(name: String): String {
-    return when (name.lowercase()) {
-        "display_size" -> "Veličina ekrana"
-        "display_resolution" -> "Rezolucija"
-        "color" -> "Boja"
-        "os" -> "Operativni sustav"
-        "build_material" -> "Materijal kućišta"
-        "weight_kg" -> "Težina"
-        "battery_wh" -> "Baterija"
-        else -> name.replace("_", " ").replaceFirstChar { it.uppercase() }
-    }
-}
-
 private fun mapAttributeValue(attribute: String, value: String): String {
     return when (attribute.lowercase()) {
         "weight_kg" -> {
@@ -696,3 +530,5 @@ private fun mapAttributeValue(attribute: String, value: String): String {
         else -> formatProductName(value)
     }
 }
+
+

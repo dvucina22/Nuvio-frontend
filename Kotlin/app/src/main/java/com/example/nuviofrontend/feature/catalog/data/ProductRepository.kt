@@ -3,10 +3,11 @@ package com.example.nuviofrontend.feature.catalog.data
 import com.example.core.catalog.dto.AddProductRequest
 import com.example.core.catalog.dto.Product
 import com.example.core.catalog.dto.ProductDetail
+import com.example.core.catalog.dto.UpdateProductRequest
 import javax.inject.Inject
 
 class ProductRepository @Inject constructor(
-    private val productService: ProductService
+    public val productService: ProductService
 ) {
     suspend fun fetchProduct(id: Long): Result<ProductDetail> {
         return try {
@@ -45,6 +46,18 @@ class ProductRepository @Inject constructor(
                 Result.success(response.message)
             } else {
                 Result.failure(Exception("Failed to delete product"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    suspend fun updateProduct(id: Long, request: UpdateProductRequest): Result<String>{
+        return try {
+            val response = productService.updateProduct(id, request)
+            if (response.isSuccessful) {
+                Result.success(response.body()?.message ?: "Product updated")
+            } else {
+                Result.failure(Exception(response.errorBody()?.string() ?: "Unknown error"))
             }
         } catch (e: Exception) {
             Result.failure(e)

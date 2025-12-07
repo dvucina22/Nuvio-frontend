@@ -223,4 +223,6 @@
     <string name="additional_specifications_title">Dodatne informacije o proizvodu</string>
     <string name="add_image_text">Dodirnite za dodavanje slike</string>
 
+    <string name="edit_product_title">Uredi prozivod</string>
+    <string name="edit_product_done">Proizvod ažuriran!</string>
 </resources>

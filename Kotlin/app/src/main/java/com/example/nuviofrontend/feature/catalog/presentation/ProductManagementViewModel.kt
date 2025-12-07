@@ -10,9 +10,10 @@ import com.example.core.catalog.dto.AttributeFilter
 import com.example.core.catalog.dto.Brand
 import com.example.core.catalog.dto.Category
 import com.example.core.catalog.dto.ProductAttributeDto
+import com.example.core.catalog.dto.ProductDetail
+import com.example.core.catalog.dto.UpdateProductRequest
 import com.example.nuviofrontend.feature.catalog.data.ProductRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,6 +31,8 @@ class ProductManagementViewModel @Inject constructor(
     var successMessage by mutableStateOf<String?>(null)
     var fieldErrors by mutableStateOf<Map<String, String>>(emptyMap())
     var productAdded by mutableStateOf(false)
+    var productUpdated by mutableStateOf(false)
+
 
     init {
         loadInitialData()
@@ -144,5 +147,65 @@ class ProductManagementViewModel @Inject constructor(
                 isLoading = false
             }
         }
+    }
+
+    fun updateProduct(
+        id: Long,
+        name: String? = null,
+        description: String? = null,
+        modelNumber: String? = null,
+        sku: String? = null,
+        basePrice: Double? = null,
+        brandId: Long? = null,
+        categoryId: Long? = null,
+        quantity: Int? = null,
+        selectedAttributes: Map<String, String>? = null
+    ) {
+        viewModelScope.launch {
+            isLoading = true
+            errorMessage = null
+            successMessage = null
+
+            val existingProduct = repository.fetchProduct(id).getOrNull()
+            if (existingProduct == null) {
+                isLoading = false
+                errorMessage = "Product not found"
+                return@launch
+            }
+
+            val attributeDtos: List<ProductAttributeDto> = selectedAttributes?.map { (name, value) ->
+                val attr = attributes.firstOrNull { it.name == name }
+                ProductAttributeDto(
+                    attributeId = attr?.attributeId?.toLong() ?: 0L,
+                    value = value
+                )
+            } ?: existingProduct.attributes?.map { it as ProductAttributeDto } ?: emptyList()
+
+            val req = UpdateProductRequest(
+                name = name ?: existingProduct.name,
+                description = description ?: existingProduct.description.orEmpty(),
+                modelNumber = modelNumber ?: existingProduct.modelNumber.orEmpty(),
+                sku = sku ?: existingProduct.sku.orEmpty(),
+                basePrice = basePrice ?: existingProduct.basePrice,
+                brandId = brandId?.toInt() ?: existingProduct.brand.id!!.toInt(),
+                categoryId = categoryId?.toInt() ?: existingProduct.category.id!!.toInt(),
+                quantity = quantity ?: existingProduct.quantity?.toInt() ?: 0,
+                attributes = attributeDtos
+            )
+
+            val result = repository.updateProduct(id, req)
+            isLoading = false
+
+            result.onSuccess {
+                successMessage = it
+                productUpdated = true
+            }.onFailure {
+                errorMessage = it.message
+            }
+        }
+    }
+
+    suspend fun loadProduct(productId: Long): Result<ProductDetail> {
+        return repository.fetchProduct(productId)
     }
 }

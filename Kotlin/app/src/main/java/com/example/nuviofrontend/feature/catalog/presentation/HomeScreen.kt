@@ -83,6 +83,7 @@ fun HomeScreen(
     productManagementViewModel: ProductManagementViewModel = hiltViewModel(),
     onProductClick: (Long) -> Unit,
     onAddProductClick: () -> Unit,
+    onEditProductClick: (Long) -> Unit
 ) {
     val scrollState = rememberScrollState()
     val state by viewModel.state.collectAsState()
@@ -234,6 +235,9 @@ fun HomeScreen(
                     onProductClick = { productId -> onProductClick(productId) },
                     onDeleteProduct = { productId ->
                         onDeleteProduct(productId)
+                    },
+                    onEditProduct = { productId ->
+                        onEditProductClick(productId)
                     }
                 )
             } else {
@@ -575,7 +579,8 @@ fun FlashDealsRow(
     favoriteIds: Set<Long>,
     onToggleFavorite: (Long, Boolean) -> Unit,
     onProductClick: (Long) -> Unit,
-    onDeleteProduct: (Long) -> Unit
+    onDeleteProduct: (Long) -> Unit,
+    onEditProduct: (Long) -> Unit
 ) {
     LazyRow(
         contentPadding = PaddingValues(horizontal = 20.dp),
@@ -593,6 +598,9 @@ fun FlashDealsRow(
                 showMenu = true,
                 onDelete = { productId ->
                     onDeleteProduct(productId)
+                },
+                onEdit = {productId ->
+                    onEditProduct(productId)
                 }
             )
         }
