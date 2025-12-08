@@ -1,5 +1,7 @@
 package com.example.nuviofrontend.feature.catalog.presentation
 
+import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -9,9 +11,9 @@ import com.example.core.catalog.dto.AddProductRequest
 import com.example.core.catalog.dto.AttributeFilter
 import com.example.core.catalog.dto.Brand
 import com.example.core.catalog.dto.Category
-import com.example.core.catalog.dto.ProductAttributeDto
 import com.example.core.catalog.dto.ProductDetail
 import com.example.core.catalog.dto.UpdateProductRequest
+import com.example.nuviofrontend.feature.catalog.data.CatalogRepository
 import com.example.nuviofrontend.feature.catalog.data.ProductRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -19,7 +21,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProductManagementViewModel @Inject constructor(
-    private val repository: ProductRepository
+    private val repository: ProductRepository,
+    private val catalogRepository: CatalogRepository,
+    private val cloudinaryService:
 ) : ViewModel() {
 
     var brands by mutableStateOf<List<Brand>>(emptyList())
@@ -42,7 +46,17 @@ class ProductManagementViewModel @Inject constructor(
         viewModelScope.launch {
             brands = repository.loadBrands().body() ?: emptyList()
             categories = repository.loadCategories().body() ?: emptyList()
-            attributes = repository.loadAttributes().body() ?: emptyList()
+            val attributesResult = catalogRepository.getAttributes()
+            attributesResult.onSuccess { list ->
+                attributes = list
+                attributes.forEach { attr ->
+                    attr.items.forEach { item ->
+                        Log.d("ATTR_DEBUG123", "Attribute loaded ADD PRODUCT: name=${attr.name} value=${item.value} id=${item.id}")
+                    }
+                }
+            }.onFailure { e ->
+                errorMessage = e.message
+            }
         }
     }
 
@@ -55,19 +69,17 @@ class ProductManagementViewModel @Inject constructor(
         brandId: Long,
         categoryId: Long,
         quantity: Int,
-        selectedAttributes: Map<String, String>
+        selectedAttributes: List<AttributeFilter>,
+        attributeValuesMap: Map<String, String?>
     ) {
         viewModelScope.launch {
             isLoading = true
+            errorMessage = null
+            successMessage = null
 
-            val attributeDtos = selectedAttributes.map { (attributeName, value) ->
-
-                val attribute = attributes.first { it.name == attributeName }
-
-                ProductAttributeDto(
-                    attributeId = attribute.attributeId!!.toLong(),
-                    value = value
-                )
+            val attributeIds: List<Long> = selectedAttributes.mapNotNull { attr ->
+                val selectedValue = attributeValuesMap[attr.name]
+                attr.items.firstOrNull { it.value == selectedValue }?.id
             }
 
             val req = AddProductRequest(
@@ -79,11 +91,10 @@ class ProductManagementViewModel @Inject constructor(
                 brandId = brandId.toInt(),
                 categoryId = categoryId.toInt(),
                 quantity = quantity,
-                attributes = attributeDtos
+                attributeIds = attributeIds
             )
 
             val result = repository.createProduct(req)
-
             isLoading = false
 
             result.onSuccess {
@@ -159,7 +170,8 @@ class ProductManagementViewModel @Inject constructor(
         brandId: Long? = null,
         categoryId: Long? = null,
         quantity: Int? = null,
-        selectedAttributes: Map<String, String>? = null
+        selectedAttributes: List<AttributeFilter>? = null,
+        attributeValuesMap: Map<String, String?> = emptyMap()
     ) {
         viewModelScope.launch {
             isLoading = true
@@ -173,13 +185,10 @@ class ProductManagementViewModel @Inject constructor(
                 return@launch
             }
 
-            val attributeDtos: List<ProductAttributeDto> = selectedAttributes?.map { (name, value) ->
-                val attr = attributes.firstOrNull { it.name == name }
-                ProductAttributeDto(
-                    attributeId = attr?.attributeId?.toLong() ?: 0L,
-                    value = value
-                )
-            } ?: existingProduct.attributes?.map { it as ProductAttributeDto } ?: emptyList()
+            val attributeIds: List<Long> = selectedAttributes?.mapNotNull { attr ->
+                val selectedValue = attributeValuesMap[attr.name]
+                attr.items.firstOrNull { it.value == selectedValue }?.id
+            } ?: existingProduct.attributes?.map { it.id.toLong() } ?: emptyList()
 
             val req = UpdateProductRequest(
                 name = name ?: existingProduct.name,
@@ -190,7 +199,7 @@ class ProductManagementViewModel @Inject constructor(
                 brandId = brandId?.toInt() ?: existingProduct.brand.id!!.toInt(),
                 categoryId = categoryId?.toInt() ?: existingProduct.category.id!!.toInt(),
                 quantity = quantity ?: existingProduct.quantity?.toInt() ?: 0,
-                attributes = attributeDtos
+                attributeIds = attributeIds
             )
 
             val result = repository.updateProduct(id, req)
@@ -208,4 +217,33 @@ class ProductManagementViewModel @Inject constructor(
     suspend fun loadProduct(productId: Long): Result<ProductDetail> {
         return repository.fetchProduct(productId)
     }
-}
+
+    fun uploadProductImage(imageUri: Uri, onResult: (String?) -> Unit) {
+        viewModelScope.launch {
+            try {
+                _isUploadingImage.value = true
+                // Pretpostavimo da imaš repository za upload slika proizvoda
+                val imageUrl = repository.uploadProductImage(imageUri)
+                _isUploadingImage.value = false
+                onResult(imageUrl)
+            } catch (e: Exception) {
+                _isUploadingImage.value = false
+                onResult(null)
+            }
+        }
+    }
+    fun uploadProductImages(imageUris: List<Uri>, onResult: (List<String>) -> Unit) {
+        viewModelScope.launch {
+            val urls = mutableListOf<String>()
+            _isUploadingImage.value = true
+            imageUris.forEach { uri ->
+                try {
+                    val url = repository.uploadProductImage(uri)
+                    urls.add(url)
+                } catch (_: Exception) {}
+            }
+            _isUploadingImage.value = false
+            onResult(urls)
+        }
+
+    }

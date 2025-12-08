@@ -12,10 +12,6 @@ data class AddProductRequest(
     val brandId: Int,
     val categoryId: Int,
     val quantity: Int,
-    val attributes: List<ProductAttributeDto>
-)
-@JsonClass(generateAdapter = true)
-data class ProductAttributeDto(
-    val attributeId: Long,
-    val value: String
+    val attributeIds: List<Long>,
+    val imageUrls: List<String> = emptyList()
 )

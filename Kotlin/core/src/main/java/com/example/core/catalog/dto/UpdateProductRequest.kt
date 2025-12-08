@@ -12,5 +12,6 @@ data class UpdateProductRequest(
     val brandId: Int,
     val categoryId: Int,
     val quantity: Int,
-    val attributes: List<ProductAttributeDto>
+    val attributeIds: List<Long>,
+    val imageUrls: List<String> = emptyList()
 )

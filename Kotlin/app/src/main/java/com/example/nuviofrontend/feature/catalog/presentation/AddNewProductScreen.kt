@@ -1,5 +1,6 @@
 package com.example.nuviofrontend.feature.catalog.presentation
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -42,6 +43,7 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -93,6 +95,14 @@ fun AddNewProductScreen(
     var selectedCategory by remember { mutableStateOf<String?>(null) }
 
     val allAttributes = viewModel.attributes
+    LaunchedEffect(allAttributes) {
+        allAttributes.forEach { attr ->
+            attr.items.forEach { item ->
+                Log.d("ATTR_DEBUG", "Attribute loaded: name=${attr.name} value=${item.value} id=${item.id}")
+            }
+        }
+    }
+
     var addedAttributes by remember { mutableStateOf(listOf<AttributeFilter>()) }
     var selectedAttribute by remember { mutableStateOf<AttributeFilter?>(null) }
     val attributeValuesMap = remember { mutableStateMapOf<String, String?>() }
@@ -111,7 +121,7 @@ fun AddNewProductScreen(
     }
 
     fun removeAttribute(attribute: AttributeFilter) {
-        addedAttributes = addedAttributes.filter { it.attributeId != attribute.attributeId }
+        addedAttributes = addedAttributes.filter { it.name != attribute.name }
         attributeValuesMap.remove(attribute.name)
     }
 
@@ -330,7 +340,12 @@ fun AddNewProductScreen(
                             if (isValid) {
                                 val basePrice = price.toDouble()
                                 val qty = quantity.toInt()
-                                val filteredAttributes = attributeValuesMap.filter { it.value != null }
+                                val filteredAttributes = addedAttributes
+
+                                Log.d(
+                                    "ATTR_DEBUG",
+                                    "Attributes to send: ${filteredAttributes.map { it.name to it.items.map { item -> item.id } }}"
+                                )
 
                                 viewModel.addProduct(
                                     name = productName,
@@ -341,7 +356,8 @@ fun AddNewProductScreen(
                                     brandId = brandId!!,
                                     categoryId = categoryId!!,
                                     quantity = qty,
-                                    selectedAttributes = filteredAttributes.mapValues { it.value!! }
+                                    selectedAttributes = filteredAttributes,
+                                    attributeValuesMap = attributeValuesMap
                                 )
                             }
                         },
@@ -363,7 +379,7 @@ fun AdditionalSpecificationsCard(
     onRemoveAttribute: (AttributeFilter) -> Unit,
     selectedAttribute: AttributeFilter?,
     onSelectedAttributeChange: (AttributeFilter?) -> Unit,
-    attributeValuesMap: Map<String, String?>,
+    attributeValuesMap: SnapshotStateMap<String, String?>,
     onAttributeValueChange: (String, String?) -> Unit
 ) {
     val basicAttributes = listOf("category", "brand")
@@ -373,8 +389,6 @@ fun AdditionalSpecificationsCard(
             addedAttributes.none { it.name == attr.name } &&
                     !basicAttributes.contains(attr.name?.lowercase())
         }
-
-    val selectedAttributeName = selectedAttribute?.name
 
     Column(
         modifier = Modifier
@@ -392,7 +406,7 @@ fun AdditionalSpecificationsCard(
         Spacer(modifier = Modifier.height(8.dp))
 
         addedAttributes.forEach { attribute ->
-            val values = attribute.values
+            val values = attribute.items.map { it.value }
             val selectedValue = attributeValuesMap[attribute.name]
 
             Row(
@@ -401,44 +415,33 @@ fun AdditionalSpecificationsCard(
                     .fillMaxWidth()
                     .padding(start = 16.dp, end = 28.dp)
             ) {
-                Box(
-                    modifier = Modifier.weight(0.70f)
-                ) {
+                Box(modifier = Modifier.weight(0.7f)) {
                     CustomDropdownAddProduct(
                         label = mapAttributeName(attribute.name ?: ""),
-                        value = selectedValue?.let { mapAttributeValue(attribute.name ?: "", it) },
+                        value = attributeValuesMap[attribute.name],
                         items = values,
                         itemLabel = { mapAttributeValue(attribute.name ?: "", it) },
                         placeholder = stringResource(R.string.placeholder_select_attribute),
-                        onItemSelected = { value -> onAttributeValueChange(attribute.name ?: "", value) },
+                        onItemSelected = { value ->
+                            attributeValuesMap[attribute.name ?: ""] = value // update state map direktno
+                        },
                         modifier = Modifier.width(250.dp)
                     )
                 }
 
                 Spacer(modifier = Modifier.width(5.dp))
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(30.dp)
-                        .padding(top = 10.dp)
-                        .background(BackgroundBehindButton, RoundedCornerShape(5.dp)),
-                    contentAlignment = Alignment.Center
+                IconButton(
+                    onClick = { onRemoveAttribute(attribute) },
+                    modifier = Modifier.size(30.dp)
                 ) {
-                    IconButton(
-                        onClick = { onRemoveAttribute(attribute) },
-                        modifier = Modifier.size(30.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.DeleteOutline,
-                            contentDescription = "",
-                            tint = Black,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
+                    Icon(
+                        imageVector = Icons.Default.DeleteOutline,
+                        contentDescription = "",
+                        tint = Black
+                    )
                 }
             }
-
             Spacer(modifier = Modifier.height(6.dp))
         }
 
@@ -449,54 +452,41 @@ fun AdditionalSpecificationsCard(
                     .fillMaxWidth()
                     .padding(start = 16.dp, end = 28.dp)
             ) {
-                Box(
-                    modifier = Modifier.weight(0.70f)
-                ) {
+                Box(modifier = Modifier.weight(0.7f)) {
                     CustomDropdownAddProduct(
                         label = stringResource(R.string.placeholder_add_attribute),
-                        value = selectedAttributeName?.let { mapAttributeName(it) },
+                        value = selectedAttribute?.name?.let { mapAttributeName(it) },
                         items = remainingAttributes.map { it.name ?: "" },
                         itemLabel = { mapAttributeName(it) },
                         placeholder = stringResource(R.string.placeholder_add_attribute),
                         onItemSelected = { selectedName ->
-                            val attribute = allAttributes.find { it.name == selectedName }
-                            if (attribute != null) {
-                                onSelectedAttributeChange(attribute)
-                            }
+                            val attr = allAttributes.find { it.name == selectedName }
+                            if (attr != null) onSelectedAttributeChange(attr)
                         },
                         modifier = Modifier.width(250.dp)
                     )
                 }
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(30.dp)
-                        .padding(top = 10.dp)
-                        .background(BackgroundBehindButton, RoundedCornerShape(5.dp)),
-                    contentAlignment = Alignment.Center
+                IconButton(
+                    onClick = {
+                        selectedAttribute?.let {
+                            onAddAttribute(it)
+                            onSelectedAttributeChange(null)
+                        }
+                    },
+                    modifier = Modifier.size(30.dp)
                 ) {
-                    IconButton(
-                        onClick = {
-                            selectedAttribute?.let {
-                                onAddAttribute(it)
-                                onSelectedAttributeChange(null)
-                            }
-                        },
-                        modifier = Modifier.size(30.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.AddCircleOutline,
-                            contentDescription = "",
-                            tint = Black,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
+                    Icon(
+                        imageVector = Icons.Default.AddCircleOutline,
+                        contentDescription = "",
+                        tint = Black
+                    )
                 }
             }
         }
     }
 }
+
 
 
 @Composable

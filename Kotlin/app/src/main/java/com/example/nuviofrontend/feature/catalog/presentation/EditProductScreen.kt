@@ -35,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -95,9 +96,10 @@ fun EditProductScreen(
 
     var addedAttributes by remember { mutableStateOf<List<AttributeFilter>>(emptyList()) }
     var selectedAttribute by remember { mutableStateOf<AttributeFilter?>(null) }
-    var attributeValuesMap by remember { mutableStateOf(mutableMapOf<String, String?>()) }
+    val attributeValuesMap = remember { mutableStateMapOf<String, String?>() }
 
     val fieldErrors by viewModel::fieldErrors
+    val allAttributes = viewModel.attributes
 
     LaunchedEffect(productId, viewModel.categories) {
         if (viewModel.categories.isEmpty()) return@LaunchedEffect
@@ -119,11 +121,11 @@ fun EditProductScreen(
             val productAttrNames = product.attributes?.map { it.name } ?: emptyList()
 
             addedAttributes = allAttrs.filter { productAttrNames.contains(it.name) }
-            attributeValuesMap = mutableMapOf<String, String?>().apply {
-                product.attributes?.forEach { attr ->
-                    this[attr.name] = attr.value
-                }
+            attributeValuesMap.clear()
+            product.attributes?.forEach { attr ->
+                attributeValuesMap[attr.name] = attr.value
             }
+            selectedAttribute = null
         }
     }
 
@@ -284,18 +286,19 @@ fun EditProductScreen(
 
             item {
                 AdditionalSpecificationsCard(
-                    allAttributes = viewModel.attributes,
+                    allAttributes = allAttributes,
                     addedAttributes = addedAttributes,
-                    onAddAttribute = { addedAttributes = addedAttributes + it },
-                    onRemoveAttribute = { attr ->
-                        addedAttributes = addedAttributes - attr
-                        attributeValuesMap.remove(attr.name)
+                    onAddAttribute = { attr ->
+                        addedAttributes = addedAttributes + attr
+                        selectedAttribute = null
                     },
                     selectedAttribute = selectedAttribute,
                     onSelectedAttributeChange = { selectedAttribute = it },
                     attributeValuesMap = attributeValuesMap,
-                    onAttributeValueChange = { name, value ->
-                        attributeValuesMap[name] = value
+                    onAttributeValueChange = { attr, value -> attributeValuesMap[attr] = value },
+                    onRemoveAttribute = { attr ->
+                        addedAttributes = addedAttributes - attr
+                        attributeValuesMap.remove(attr.name)
                     }
                 )
             }
@@ -333,7 +336,8 @@ fun EditProductScreen(
                                 brandId = selectedBrand?.id,
                                 categoryId = selectedCategory?.id,
                                 quantity = quantity.toIntOrNull(),
-                                selectedAttributes = attributeValuesMap.filterValues { it != null }.mapValues { it.value!! }
+                                selectedAttributes = addedAttributes,
+                                attributeValuesMap = attributeValuesMap
                             )
                         },
                         width = 304
@@ -509,11 +513,11 @@ private fun mapAttributeValue(attribute: String, value: String): String {
     return when (attribute.lowercase()) {
         "weight_kg" -> {
             val formatted = value.replace("_", ",").replace(",", ",")
-            if (formatted.lowercase().endsWith("kg")) formatted else "$formatted kg"
+            if (value.lowercase().endsWith("kg")) formatted else "$formatted kg"
         }
         "display_size" -> {
             val formatted = value.replace("_", ",")
-            if (formatted.lowercase().endsWith("inch")) formatted else "$formatted inch"
+            if (value.lowercase().endsWith("inch")) formatted else "$formatted inch"
         }
         "color" -> value.replace("_", " ")
             .split(" ")

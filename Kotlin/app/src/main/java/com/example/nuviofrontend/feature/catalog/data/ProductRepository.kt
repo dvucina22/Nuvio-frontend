@@ -7,7 +7,8 @@ import com.example.core.catalog.dto.UpdateProductRequest
 import javax.inject.Inject
 
 class ProductRepository @Inject constructor(
-    public val productService: ProductService
+    private val productService: ProductService,
+
 ) {
     suspend fun fetchProduct(id: Long): Result<ProductDetail> {
         return try {
