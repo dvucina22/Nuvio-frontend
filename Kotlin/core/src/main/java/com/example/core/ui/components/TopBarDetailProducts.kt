@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Icon
@@ -44,12 +45,13 @@ fun TopBarDetailProducts(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Outlined.FavoriteBorder,
+                imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                 tint = if (isFavorite) Color.Red else Color.White,
                 contentDescription = "Favorite",
                 modifier = Modifier
                     .size(26.dp)
-                    .clickable { onFavoriteClick() }
+                    .clickable { onFavoriteClick() },
+
             )
 
             Spacer(modifier = Modifier.width(15.dp))

@@ -18,6 +18,7 @@ data class ProductDetail(
     val createdAt: String,
     val updatedAt: String,
     val quantity: Long?,
+    val isFavorite: Boolean = false
 )
 
 @JsonClass(generateAdapter = true)

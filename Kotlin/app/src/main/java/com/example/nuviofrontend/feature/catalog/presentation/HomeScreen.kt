@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.core.R
 import com.example.core.catalog.dto.Product
+import com.example.core.network.token.IUserPrefs
 import com.example.core.ui.components.CustomPopupWarning
 import com.example.core.ui.components.ProductCard
 import com.example.core.ui.theme.BackgroundBehindButton
@@ -88,6 +89,10 @@ fun HomeScreen(
     val scrollState = rememberScrollState()
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
+
+    val profile by viewModel.profileFlow.collectAsState(initial = null)
+    val isAdmin = profile?.roles?.any { it.name == "admin" } == true
+
 
     var showDeletePopup by remember { mutableStateOf(false) }
     var productIdToDelete by remember { mutableStateOf<Long?>(null) }
@@ -182,19 +187,21 @@ fun HomeScreen(
                             tint = White
                         )
                     }
-                    Box(
-                        modifier = Modifier
-                            .size(35.dp)
-                            .background(color = BackgroundBehindButton, shape = RoundedCornerShape(5.dp))
-                            .clickable { onAddProductClick() },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.AddCircleOutline,
-                            contentDescription = "Add",
-                            tint = Black,
-                            modifier = Modifier.size(23.dp)
-                        )
+                    if (isAdmin) {
+                        Box(
+                            modifier = Modifier
+                                .size(35.dp)
+                                .background(color = BackgroundBehindButton, shape = RoundedCornerShape(5.dp))
+                                .clickable { onAddProductClick() },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.AddCircleOutline,
+                                contentDescription = "Add",
+                                tint = Black,
+                                modifier = Modifier.size(23.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -238,7 +245,8 @@ fun HomeScreen(
                     },
                     onEditProduct = { productId ->
                         onEditProductClick(productId)
-                    }
+                    },
+                    isAdmin = isAdmin
                 )
             } else {
                 EmptyStateRow("No deals available")
@@ -265,7 +273,8 @@ fun HomeScreen(
                     onProductClick = { productId -> onProductClick(productId) },
                     onDeleteProduct = { productId ->
                         onDeleteProduct(productId)
-                    }
+                    },
+                    isAdmin = isAdmin
                 )
             } else {
                 EmptyStateRow("No products available")
@@ -300,7 +309,8 @@ fun HomeScreen(
                     onProductClick = { productId -> onProductClick(productId) },
                     onDeleteProduct = { productId ->
                         onDeleteProduct(productId)
-                    }
+                    },
+                    isAdmin = isAdmin
                 )
             }
 
@@ -580,7 +590,8 @@ fun FlashDealsRow(
     onToggleFavorite: (Long, Boolean) -> Unit,
     onProductClick: (Long) -> Unit,
     onDeleteProduct: (Long) -> Unit,
-    onEditProduct: (Long) -> Unit
+    onEditProduct: (Long) -> Unit,
+    isAdmin: Boolean
 ) {
     LazyRow(
         contentPadding = PaddingValues(horizontal = 20.dp),
@@ -601,7 +612,8 @@ fun FlashDealsRow(
                 },
                 onEdit = {productId ->
                     onEditProduct(productId)
-                }
+                },
+                isAdmin = isAdmin
             )
         }
     }
@@ -613,7 +625,8 @@ fun LatestProductsRow(
     favoriteIds: Set<Long>,
     onToggleFavorite: (Long, Boolean) -> Unit,
     onProductClick: (Long) -> Unit,
-    onDeleteProduct: (Long) -> Unit
+    onDeleteProduct: (Long) -> Unit,
+    isAdmin: Boolean
 ) {
     LazyRow(
         contentPadding = PaddingValues(horizontal = 20.dp),
@@ -631,7 +644,8 @@ fun LatestProductsRow(
                 showMenu = true,
                 onDelete = { productId ->
                     onDeleteProduct(productId)
-                }
+                },
+                isAdmin = isAdmin
             )
         }
     }
@@ -683,7 +697,8 @@ fun RecommendedProductsGrid(
     favoriteIds: Set<Long>,
     onToggleFavorite: (Long, Boolean) -> Unit,
     onProductClick: (Long) -> Unit,
-    onDeleteProduct: (Long) -> Unit
+    onDeleteProduct: (Long) -> Unit,
+    isAdmin: Boolean
 ) {
     Column(
         modifier = Modifier.padding(horizontal = 20.dp),
@@ -707,7 +722,8 @@ fun RecommendedProductsGrid(
                             showMenu = true,
                             onDelete = { productId ->
                                 onDeleteProduct(productId)
-                            }
+                            },
+                            isAdmin = isAdmin
                         )
                     }
                 }

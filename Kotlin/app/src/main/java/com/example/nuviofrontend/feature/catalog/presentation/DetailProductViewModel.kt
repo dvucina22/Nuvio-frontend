@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.catalog.dto.ProductDetail
+import com.example.nuviofrontend.feature.catalog.data.CatalogRepository
 import com.example.nuviofrontend.feature.catalog.data.ProductRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,6 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailProductViewModel @Inject constructor(
     private val repository: ProductRepository,
+    private val catalogRepository: CatalogRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -25,6 +27,7 @@ class DetailProductViewModel @Inject constructor(
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
+
 
     private val _error = MutableStateFlow<String?>(null)
     val error = _error.asStateFlow()
@@ -45,6 +48,25 @@ class DetailProductViewModel @Inject constructor(
             }
 
             _isLoading.value = false
+        }
+    }
+    fun toggleFavorite() {
+        val currentProduct = _product.value ?: return
+        val newFavoriteState = !currentProduct.isFavorite
+
+        _product.value = currentProduct.copy(isFavorite = newFavoriteState)
+
+        viewModelScope.launch {
+            try {
+                if (newFavoriteState) {
+                    catalogRepository.addFavoriteProduct(currentProduct.id)
+                } else {
+                    catalogRepository.removeFavoriteProduct(currentProduct.id)
+                }
+            } catch (e: Exception) {
+                _product.value = currentProduct
+                _error.value = e.message
+            }
         }
     }
 }

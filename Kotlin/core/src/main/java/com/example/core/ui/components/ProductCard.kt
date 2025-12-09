@@ -12,7 +12,6 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -47,7 +46,8 @@ fun ProductCard(
     onClick: () -> Unit = {},
     onEdit: (Long) -> Unit = {},
     onDelete: (Long) -> Unit = {},
-    showMenu: Boolean = false
+    showMenu: Boolean = false,
+    isAdmin: Boolean = false
 ) {
     var menuOpen by remember { mutableStateOf(false) }
     Box(
@@ -145,8 +145,7 @@ fun ProductCard(
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Bold
                     )
-
-                    if (showMenu) {
+                    if (showMenu && isAdmin) {
                         Box {
                             Icon(
                                 imageVector = Icons.Default.MoreVert,
@@ -191,12 +190,14 @@ fun ProductCard(
                                 }
                             }
                         }
+
                     }
                 }
-            }
+           }
         }
     }
 }
+
 
 
 @Composable

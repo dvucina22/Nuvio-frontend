@@ -51,7 +51,7 @@ fun DetailProductScreen(
                 TopBarDetailProducts(
                     onBack = { onBack() },
                     onFavoriteClick = {
-                        product?.let { p -> cartViewModel.toggleFavorite(p.id.toInt()) }
+                        viewModel.toggleFavorite()
                     },
                     onCartClick = {
                         product?.let { p ->
@@ -59,7 +59,8 @@ fun DetailProductScreen(
                             Toast.makeText(context, "Uspješno dodano u košaricu", Toast.LENGTH_SHORT)
                                 .show()
                         }
-                    }
+                    },
+                    isFavorite = product?.isFavorite ?: false
                 )
             }
 
