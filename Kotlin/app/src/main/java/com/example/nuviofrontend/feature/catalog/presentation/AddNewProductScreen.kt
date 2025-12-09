@@ -1,7 +1,10 @@
 package com.example.nuviofrontend.feature.catalog.presentation
 
+import android.net.Uri
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -120,6 +123,16 @@ fun AddNewProductScreen(
         }
     }
 
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            viewModel.uploadProductImage(it, onError = { msg ->
+                Toast.makeText(context, "Upload failed: $msg", Toast.LENGTH_SHORT).show()
+            })
+        }
+    }
+
     fun removeAttribute(attribute: AttributeFilter) {
         addedAttributes = addedAttributes.filter { it.name != attribute.name }
         attributeValuesMap.remove(attribute.name)
@@ -149,7 +162,9 @@ fun AddNewProductScreen(
                         .fillMaxWidth()
                         .height(150.dp)
                         .background((BackgroundBehindButton), RoundedCornerShape(12.dp))
-                        .clickable { /* TODO: odabir slike */ },
+                        .clickable {
+                            imagePickerLauncher.launch("image/*")
+                        },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -165,6 +180,7 @@ fun AddNewProductScreen(
                         modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 12.dp)
                     )
                 }
+                
                 Spacer(modifier = Modifier.height(24.dp))
             }
 
@@ -357,7 +373,8 @@ fun AddNewProductScreen(
                                     categoryId = categoryId!!,
                                     quantity = qty,
                                     selectedAttributes = filteredAttributes,
-                                    attributeValuesMap = attributeValuesMap
+                                    attributeValuesMap = attributeValuesMap,
+                                    imageUrls = viewModel.productImages
                                 )
                             }
                         },
