@@ -12,6 +12,8 @@ import com.example.core.cards.dto.CardsResponse
 import com.example.core.cards.dto.DeleteCardResponse
 import com.example.core.cards.dto.PrimaryCardResponse
 import com.example.core.cart.dto.CartItemDto
+import com.example.core.catalog.dto.AddProductRequest
+import com.example.core.catalog.dto.AddProductResponse
 import com.example.core.catalog.dto.AttributeFilter
 import com.example.core.catalog.dto.Brand
 import com.example.core.catalog.dto.Category
@@ -19,7 +21,9 @@ import com.example.core.catalog.dto.FavoriteRequest
 import com.example.core.catalog.dto.Product
 import com.example.core.catalog.dto.ProductDetail
 import com.example.core.catalog.dto.ProductFilterRequest
-import com.example.core.catalog.dto.ProductResponse
+import com.example.core.catalog.dto.SuccessfulDeleteResponse
+import com.example.core.catalog.dto.UpdateProductRequest
+import com.example.core.catalog.dto.UpdateProductResponse
 import com.example.core.user.dto.ChangePasswordRequest
 import com.example.core.user.dto.ChangePasswordResponse
 import com.example.core.user.dto.UpdateProfilePictureRequest
@@ -88,12 +92,22 @@ interface ApiService {
     suspend fun getAttributes(): Response<List<AttributeFilter>>
     @GET("catalog/products/{id}")
     suspend fun getProductById(@Path("id") id: Long): Response<ProductDetail>
+    @POST("catalog/products")
+    suspend fun addNewProduct(@Body request: AddProductRequest): Response<AddProductResponse>
+    @DELETE("catalog/products/{id}")
+    suspend fun deleteProduct(@Path("id") id: Long): Response<SuccessfulDeleteResponse>
 
-
+    @PUT("catalog/products/{id}")
+    suspend fun updateProduct(
+        @Path("id") id: Long,
+        @Body request: UpdateProductRequest
+    ): Response<UpdateProductResponse>
     @GET("catalog/products/cart")
     suspend fun getCartItems(): Response<List<CartItemDto>>
     @POST("catalog/products/cart/{id}")
     suspend fun addCartItem(@Path("id") productId: Int): Response<Unit>
     @DELETE("catalog/products/cart/{id}")
     suspend fun deleteCartItem(@Path("id") productId: Int): Response<Unit>
+
+
 }

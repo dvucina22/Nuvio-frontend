@@ -19,7 +19,8 @@ class UserRepository(
             email = userDto.email,
             phoneNumber = userDto.phoneNumber ?: "",
             gender = userDto.gender ?: "",
-            profilePictureUrl = userDto.profilePictureUrl ?: ""
+            profilePictureUrl = userDto.profilePictureUrl ?: "",
+            roles = userDto.roles
         )
 
         userPrefs.saveProfile(profile)
@@ -51,7 +52,8 @@ class UserRepository(
             email = userDto.email,
             phoneNumber = userDto.phoneNumber ?: "",
             gender = userDto.gender ?: "",
-            profilePictureUrl = userDto.profilePictureUrl ?: ""
+            profilePictureUrl = userDto.profilePictureUrl ?: "",
+            roles = userDto.roles
         )
 
         userPrefs.saveProfile(profile)

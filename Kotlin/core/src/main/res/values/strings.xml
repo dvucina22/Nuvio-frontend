@@ -191,5 +191,40 @@
 
     <string name="product_details_title">Detalji proizvoda</string>
     <string name="attributes_title">Atributi</string>
+    <string name="product_description">Opis proizvoda</string>
+    <string name="product_info">Informacije o proizvodu</string>
 
+    <string name="add_new_product_title">Dodaj novi proizvod</string>
+    <string name="basic_information_product">Osnovne informacije o proizvodu</string>
+    <string name="label_product_name">Naziv proizvoda</string>
+    <string name="placeholder_product_name">Unesite naziv proizvoda</string>
+    <string name="label_price">Cijena (€)</string>
+    <string name="placeholder_price">Unesite cijenu</string>
+    <string name="label_quantity">Količina</string>
+    <string name="placeholder_quantity">Unesite količinu</string>
+    <string name="label_model_number">Broj modela</string>
+    <string name="placeholder_model_number">Unesite broj modela</string>
+    <string name="label_sku">SKU</string>
+    <string name="placeholder_sku">Unesite SKU</string>
+    <string name="label_description">Opis proizvoda</string>
+    <string name="placeholder_description">Unesite opis proizvoda</string>
+    <string name="placeholder_brand">Odaberite brand</string>
+    <string name="placeholder_category">Odaberite kategoriju</string>
+    <string name="placeholder_select_attribute">Odaberite vrijednost</string>
+    <string name="placeholder_add_attribute">Odaberite specifikaciju</string>
+    <string name="error_product_name_required">Naziv proizvoda je obavezan</string>
+    <string name="error_price_required">Cijena je obavezna</string>
+    <string name="error_price_invalid">Cijena ne smije biti negativna</string>
+    <string name="error_quantity_required">Količina je obavezna</string>
+    <string name="error_quantity_invalid">Količina ne smije biti negativna</string>
+    <string name="error_model_number_required">Broj modela je obavezan</string>
+    <string name="error_sku_required">SKU je obavezan</string>
+    <string name="error_description_required">Opis proizvoda je obavezan</string>
+    <string name="error_brand_required">Brand je obavezan</string>
+    <string name="error_category_required">Kategorija je obavezna</string>
+    <string name="additional_specifications_title">Dodatne informacije o proizvodu</string>
+    <string name="add_image_text">Dodirnite za dodavanje slike</string>
+
+    <string name="edit_product_title">Uredi prozivod</string>
+    <string name="edit_product_done">Proizvod ažuriran!</string>
 </resources>

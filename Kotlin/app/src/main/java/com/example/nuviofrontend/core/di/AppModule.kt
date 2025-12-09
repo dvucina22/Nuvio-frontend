@@ -13,6 +13,7 @@ import com.example.nuviofrontend.feature.cart.data.CartRepository
 import com.example.nuviofrontend.feature.cart.data.CartService
 import com.example.nuviofrontend.feature.catalog.data.CatalogRepository
 import com.example.nuviofrontend.feature.catalog.data.CatalogService
+import com.example.nuviofrontend.feature.catalog.data.ProductImageRepository
 import com.example.nuviofrontend.feature.catalog.data.ProductRepository
 import com.example.nuviofrontend.feature.catalog.data.ProductService
 import com.example.nuviofrontend.feature.profile.data.CardRepository
@@ -134,5 +135,10 @@ object AppModule {
     @Singleton
     fun provideProductRepository(productService: ProductService) : ProductRepository {
         return ProductRepository(productService)
+    }
+    @Provides
+    @Singleton
+    fun provideProductImageRepository(apiService: ApiService, cloudinaryService: CloudinaryService) : ProductImageRepository{
+        return ProductImageRepository(apiService, cloudinaryService)
     }
 }

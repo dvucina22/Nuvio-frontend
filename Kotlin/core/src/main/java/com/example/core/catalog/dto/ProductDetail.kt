@@ -13,10 +13,17 @@ data class ProductDetail(
     val isActive: Boolean,
     val brand: Brand,
     val category: Category,
-    val imageUrl: String = "",
+    val images: List<ProductImage>?,
     val attributes: List<ProductAttribute>?,
     val createdAt: String,
     val updatedAt: String,
-    val quantity: Long?
+    val quantity: Long?,
+    val isFavorite: Boolean = false
 )
 
+@JsonClass(generateAdapter = true)
+data class ProductImage(
+    val id: Long,
+    val url: String,
+    val isPrimary: Boolean
+)

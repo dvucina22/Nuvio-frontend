@@ -3,6 +3,8 @@ package com.example.nuviofrontend.feature.catalog.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.catalog.dto.Product
+import com.example.core.model.UserProfile
+import com.example.core.network.token.IUserPrefs
 import com.example.nuviofrontend.feature.catalog.data.CatalogRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,7 +34,8 @@ data class HomeState(
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val catalogRepository: CatalogRepository
+    private val catalogRepository: CatalogRepository,
+    private val userPrefs: IUserPrefs
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
@@ -40,9 +43,17 @@ class HomeViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(HomeState())
     val state: StateFlow<HomeState> = _state.asStateFlow()
+    private val _userProfile = MutableStateFlow<UserProfile?>(null)
+    val userProfile: StateFlow<UserProfile?> = _userProfile.asStateFlow()
+    val profileFlow = userPrefs.profileFlow
 
     init {
         loadHomeData()
+        viewModelScope.launch {
+            userPrefs.profileFlow.collect { profile ->
+                _userProfile.value = profile
+            }
+        }
     }
 
     fun loadHomeData() {

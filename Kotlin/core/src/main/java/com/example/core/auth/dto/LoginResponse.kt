@@ -8,5 +8,12 @@ data class LoginResponse(
     val lastName: String?,
     val email: String?,
     val gender: String?,
-    val profilePictureURL: String?
+    val profilePictureURL: String?,
+    val roles: List<Role>?
+)
+
+@JsonClass(generateAdapter = true)
+data class Role(
+    val id: Int,
+    val name: String
 )

@@ -1,5 +1,6 @@
 package com.example.nuviofrontend.feature.search.presentation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.catalog.dto.AttributeFilter
@@ -177,11 +178,11 @@ class SearchViewModel @Inject constructor(
     ): ProductFilterRequest {
         val attributes: List<AttributeFilter>? = filterState
             ?.selectedAttributes
-            ?.map { (name, values) ->
-                AttributeFilter(
-                    name = name,
-                    values = values.toList()
-                )
+            ?.mapNotNull { (name, selectedValues) ->
+                val attr = this.state.value.attributes.firstOrNull { it.name == name } ?: return@mapNotNull null
+                val selectedItems = attr.items.filter { it.value in selectedValues }
+                if (selectedItems.isEmpty()) null
+                else AttributeFilter(name = name, items = selectedItems)
             }
             ?.takeIf { it.isNotEmpty() }
 
@@ -278,6 +279,11 @@ class SearchViewModel @Inject constructor(
             val brands = brandsResult.getOrDefault(emptyList())
             val categories = categoriesResult.getOrDefault(emptyList())
             val attributes = attributesResult.getOrDefault(emptyList())
+            attributes.forEach { attr ->
+                attr.items.forEach { item ->
+                    Log.d("ATTR_DEBUG123", "Attribute loaded SEARCH: name=${attr.name} value=${item.value} id=${item.id}")
+                }
+            }
 
             val errorMessage = when {
                 brandsResult.isFailure && categoriesResult.isFailure && attributesResult.isFailure ->
