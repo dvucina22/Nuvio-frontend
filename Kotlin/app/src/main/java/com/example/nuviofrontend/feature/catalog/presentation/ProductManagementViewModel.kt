@@ -17,6 +17,8 @@ import com.example.nuviofrontend.feature.catalog.data.CatalogRepository
 import com.example.nuviofrontend.feature.catalog.data.ProductImageRepository
 import com.example.nuviofrontend.feature.catalog.data.ProductRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -35,11 +37,18 @@ class ProductManagementViewModel @Inject constructor(
     var errorMessage by mutableStateOf<String?>(null)
     var successMessage by mutableStateOf<String?>(null)
     var fieldErrors by mutableStateOf<Map<String, String>>(emptyMap())
-    var productAdded by mutableStateOf(false)
-    var productUpdated by mutableStateOf(false)
+    private val _productUpdated = MutableStateFlow(false)
+    val productUpdated = _productUpdated.asStateFlow()
     var productImages by mutableStateOf<List<String>>(emptyList())
     var isUploadingImages by mutableStateOf(false)
 
+    fun markProductUpdated() {
+        _productUpdated.value = true
+    }
+
+    fun resetProductUpdatedFlag() {
+        _productUpdated.value = false
+    }
 
     init {
         loadInitialData()
@@ -107,7 +116,7 @@ class ProductManagementViewModel @Inject constructor(
 
             result.onSuccess {
                 successMessage = it
-                productAdded = true
+                markProductUpdated()
             }.onFailure {
                 errorMessage = it.message
             }
@@ -217,7 +226,7 @@ class ProductManagementViewModel @Inject constructor(
 
             result.onSuccess {
                 successMessage = it
-                productUpdated = true
+                markProductUpdated()
             }.onFailure {
                 errorMessage = it.message
             }

@@ -69,4 +69,19 @@ class DetailProductViewModel @Inject constructor(
             }
         }
     }
+
+    fun loadProduct(productId: Long) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            val result = repository.fetchProduct(productId)
+
+            result.onSuccess { p ->
+                _product.value = p
+            }.onFailure { e ->
+                _error.value = e.message
+            }
+
+            _isLoading.value = false
+        }
+    }
 }

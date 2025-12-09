@@ -114,7 +114,10 @@ fun MainAppScreen(
             composable("product/{id}") { backStackEntry ->
                 val productId = backStackEntry.arguments?.getString("id")?.toLong() ?: 0L
                 DetailProductScreen(
-                    onBack = { navController.popBackStack() }
+                    onBack = { navController.popBackStack() },
+                    onEditNavigate = { productId ->
+                        navController.navigate("edit_product/$productId")
+                    }
                 )
             }
             composable("add_product") {
@@ -128,7 +131,8 @@ fun MainAppScreen(
 
                 EditProductScreen(
                     navController = navController,
-                    productId = id
+                    productId = id,
+                    onBackClick = { navController.popBackStack() }
                 )
             }
         }

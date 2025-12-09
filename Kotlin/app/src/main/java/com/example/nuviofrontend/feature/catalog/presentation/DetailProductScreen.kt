@@ -6,8 +6,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,6 +25,7 @@ import com.example.core.ui.components.TopBarDetailProducts
 import com.example.core.ui.theme.CardItemBackground
 import com.example.nuviofrontend.feature.cart.presentation.CartViewModel
 import com.example.core.R
+import com.example.core.ui.components.CustomPopupWarning
 import com.example.core.ui.components.ProductImageCarousel
 import com.example.core.ui.theme.AppTypography
 import com.example.core.ui.theme.BackgroundNavDark
@@ -31,12 +36,30 @@ import com.example.core.ui.theme.White
 fun DetailProductScreen(
     viewModel: DetailProductViewModel = hiltViewModel(),
     cartViewModel: CartViewModel = hiltViewModel(),
-    onBack: () -> Unit
+    homeViewModel: HomeViewModel = hiltViewModel(),
+    managementViewModel: ProductManagementViewModel = hiltViewModel(),
+    onBack: () -> Unit,
+    onEditNavigate: (Long) -> Unit
 ) {
     val product by viewModel.product.collectAsState()
     val loading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
     val context = LocalContext.current
+
+    val profile by homeViewModel.profileFlow.collectAsState(initial = null)
+    val isAdmin = profile?.roles?.any { it.name == "admin" } == true
+
+    var showDeletePopup by remember { mutableStateOf(false) }
+    var productIdToDelete by remember { mutableStateOf<Long?>(null) }
+
+    val productUpdated by managementViewModel.productUpdated.collectAsState(initial = false)
+
+    LaunchedEffect(productUpdated) {
+        if (productUpdated) {
+            viewModel.loadProduct(productId = viewModel.productId)
+            managementViewModel.resetProductUpdatedFlag()
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
@@ -60,7 +83,20 @@ fun DetailProductScreen(
                                 .show()
                         }
                     },
-                    isFavorite = product?.isFavorite ?: false
+                    isFavorite = product?.isFavorite ?: false,
+                    showDelete = isAdmin,
+                    showEdit = isAdmin,
+                    onDeleteClick = {
+                        product?.let { p ->
+                            productIdToDelete = p.id
+                            showDeletePopup = true
+                        }
+                    },
+                    onEditClick = {
+                        product?.let { p ->
+                            onEditNavigate(p.id)
+                        }
+                    },
                 )
             }
 
@@ -82,6 +118,7 @@ fun DetailProductScreen(
                 }
                 return@LazyColumn
             }
+
 
             product?.let { p ->
                 item {
@@ -145,6 +182,19 @@ fun DetailProductScreen(
                                     .fillMaxWidth()
                             )
                             Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                                InfoAboutProd(
+                                    label = stringResource(R.string.brand),
+                                    value = p.brand.name.split(" ").joinToString(" ") { it.replaceFirstChar { c -> c.uppercase() } }
+                                )
+
+                                InfoAboutProd(
+                                    label = stringResource(R.string.category),
+                                    value = p.category.name
+                                        .replace("_", " ")
+                                        .split(" ")
+                                        .joinToString(" ") { it.replaceFirstChar { c -> c.uppercase() } }
+                                )
+                                
                                 p.attributes?.forEach { attr ->
                                     InfoAboutProd(
                                         label = mapAttributeName(attr.name),
@@ -186,6 +236,26 @@ fun DetailProductScreen(
 
                 item { Spacer(modifier = Modifier.height(60.dp)) }
             }
+        }
+        if (showDeletePopup && productIdToDelete != null) {
+            CustomPopupWarning(
+                title = stringResource(R.string.warning),
+                message = stringResource(R.string.delete_item_confirm),
+                confirmText = stringResource(R.string.delete),
+                dismissText = stringResource(R.string.cancel),
+                onDismiss = {
+                    showDeletePopup = false
+                    productIdToDelete = null
+                },
+                onConfirm = {
+                    productIdToDelete?.let { id ->
+                        managementViewModel.deleteProduct(id)
+                    }
+                    showDeletePopup = false
+                    productIdToDelete = null
+                    onBack()
+                }
+            )
         }
     }
 }

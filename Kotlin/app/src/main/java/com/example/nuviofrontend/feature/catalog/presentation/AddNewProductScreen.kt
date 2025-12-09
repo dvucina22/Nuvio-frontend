@@ -41,6 +41,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -115,11 +116,13 @@ fun AddNewProductScreen(
 
     val context = LocalContext.current
 
-    LaunchedEffect(viewModel.productAdded) {
-        if (viewModel.productAdded) {
+    val productAdded by viewModel.productUpdated.collectAsState(initial = false)
+
+    LaunchedEffect(productAdded) {
+        if (productAdded) {
             Toast.makeText(context, "Proizvod je dodan!", Toast.LENGTH_SHORT).show()
             navController.popBackStack(HomeTab.HOME.name, false)
-            viewModel.productAdded = false
+            viewModel.resetProductUpdatedFlag()
         }
     }
 

@@ -3,12 +3,13 @@ package com.example.core.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -16,13 +17,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.core.ui.theme.BackgroundBehindButton
+import com.example.core.ui.theme.White
+import com.example.core.ui.theme.Error
 
 @Composable
 fun TopBarDetailProducts(
     isFavorite: Boolean = false,
     onBack: () -> Unit = {},
     onFavoriteClick: () -> Unit = {},
-    onCartClick: () -> Unit = {}
+    onCartClick: () -> Unit = {},
+    onEditClick: () -> Unit = {},
+    onDeleteClick: () -> Unit = {},
+    showDelete: Boolean = false,
+    showEdit: Boolean = false,
 ) {
     Row(
         modifier = Modifier
@@ -44,26 +52,77 @@ fun TopBarDetailProducts(
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                tint = if (isFavorite) Color.Red else Color.White,
-                contentDescription = "Favorite",
+            Box(
                 modifier = Modifier
-                    .size(26.dp)
+                    .size(35.dp)
+                    .background(color = BackgroundBehindButton, shape = RoundedCornerShape(5.dp))
                     .clickable { onFavoriteClick() },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.Favorite,
+                    tint = if (isFavorite) Error else White,
+                    contentDescription = "Favorite",
+                    modifier = Modifier
+                        .size(23.dp)
+                        .clickable { onFavoriteClick() },
 
-            )
+                    )
+            }
 
-            Spacer(modifier = Modifier.width(15.dp))
-
-            Icon(
-                imageVector = Icons.Default.ShoppingCart,
-                contentDescription = "Cart",
-                tint = Color.White,
+            Spacer(modifier = Modifier.width(10.dp))
+            Box(
                 modifier = Modifier
-                    .size(26.dp)
-                    .clickable { onCartClick() }
-            )
+                    .size(35.dp)
+                    .background(color = BackgroundBehindButton, shape = RoundedCornerShape(5.dp))
+                    .clickable { onCartClick() },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ShoppingCart,
+                    contentDescription = "Cart",
+                    tint = White,
+                    modifier = Modifier
+                        .size(23.dp)
+                        .clickable { onCartClick() }
+                )
+            }
+
+            Spacer(modifier = Modifier.width(10.dp))
+            if (showEdit) {
+                Box(
+                    modifier = Modifier
+                        .size(35.dp)
+                        .background(color = BackgroundBehindButton, shape = RoundedCornerShape(5.dp))
+                        .clickable { onEditClick() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Edit,
+                        contentDescription = "Edit",
+                        tint = White,
+                        modifier = Modifier.size(23.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.width(10.dp))
+            }
+
+            if (showDelete) {
+                Box(
+                    modifier = Modifier
+                        .size(35.dp)
+                        .background(color = BackgroundBehindButton, shape = RoundedCornerShape(5.dp))
+                        .clickable { onDeleteClick() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Delete,
+                        contentDescription = "Delete",
+                        tint = White,
+                        modifier = Modifier.size(23.dp)
+                    )
+                }
+            }
         }
     }
 }

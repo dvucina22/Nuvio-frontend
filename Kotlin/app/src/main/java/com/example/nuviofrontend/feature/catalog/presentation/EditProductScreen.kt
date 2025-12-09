@@ -34,6 +34,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -70,7 +71,6 @@ import com.example.core.ui.theme.CardItemBackground
 import com.example.core.ui.theme.ColorInput
 import com.example.core.ui.theme.Error
 import com.example.core.ui.theme.White
-import kotlin.collections.contains
 import kotlin.collections.forEach
 import kotlin.collections.set
 
@@ -129,10 +129,12 @@ fun EditProductScreen(
         }
     }
 
-    LaunchedEffect(viewModel.productUpdated) {
-        if (viewModel.productUpdated) {
+    val productUpdated by viewModel.productUpdated.collectAsState(initial = false)
+
+    LaunchedEffect(productUpdated) {
+        if (productUpdated) {
             Toast.makeText(context, "Proizvod ažuriran!", Toast.LENGTH_SHORT).show()
-            viewModel.productUpdated = false
+            viewModel.resetProductUpdatedFlag()
             homeViewModel.refreshData()
             navController.popBackStack()
         }
