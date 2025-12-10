@@ -46,6 +46,8 @@ class HomeViewModel @Inject constructor(
     private val _userProfile = MutableStateFlow<UserProfile?>(null)
     val userProfile: StateFlow<UserProfile?> = _userProfile.asStateFlow()
     val profileFlow = userPrefs.profileFlow
+    private val _refreshRequested = MutableStateFlow(false)
+    val refreshRequested: StateFlow<Boolean> = _refreshRequested
 
     init {
         loadHomeData()
@@ -173,5 +175,12 @@ class HomeViewModel @Inject constructor(
 
     fun clearError() {
         _state.value = _state.value.copy(error = null)
+    }
+
+    fun requestRefresh() {
+        _refreshRequested.value = true
+    }
+    fun clearRefresh() {
+        _refreshRequested.value = false
     }
 }

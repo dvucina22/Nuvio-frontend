@@ -1,6 +1,5 @@
 package com.example.nuviofrontend.feature.catalog.presentation
 
-import android.widget.Toast
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -47,9 +46,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.core.R
 import com.example.core.catalog.dto.Product
-import com.example.core.network.token.IUserPrefs
 import com.example.core.ui.components.CustomPopupWarning
 import com.example.core.ui.components.ProductCard
 import com.example.core.ui.theme.BackgroundBehindButton
@@ -88,11 +87,11 @@ fun HomeScreen(
 ) {
     val scrollState = rememberScrollState()
     val state by viewModel.state.collectAsState()
-    val context = LocalContext.current
+
+    val refreshRequested by viewModel.refreshRequested.collectAsState()
 
     val profile by viewModel.profileFlow.collectAsState(initial = null)
     val isAdmin = profile?.roles?.any { it.name == "admin" } == true
-
 
     var showDeletePopup by remember { mutableStateOf(false) }
     var productIdToDelete by remember { mutableStateOf<Long?>(null) }
@@ -101,14 +100,14 @@ fun HomeScreen(
         productIdToDelete = productId
         showDeletePopup = true
     }
-    val successMessage = productManagementViewModel.successMessage
-    LaunchedEffect(successMessage) {
-        if (!successMessage.isNullOrBlank()) {
-            Toast.makeText(context, successMessage, Toast.LENGTH_SHORT).show()
+
+    LaunchedEffect(refreshRequested) {
+        if (refreshRequested) {
             viewModel.refreshData()
-            productManagementViewModel.successMessage = null
+            viewModel.clearRefresh()
         }
     }
+
 
     val greeting = when (gender?.lowercase()) {
         "male" -> stringResource(R.string.welcome_male, firstName ?: "")
@@ -244,6 +243,7 @@ fun HomeScreen(
                         onDeleteProduct(productId)
                     },
                     onEditProduct = { productId ->
+                        viewModel.requestRefresh()
                         onEditProductClick(productId)
                     },
                     isAdmin = isAdmin
@@ -273,6 +273,10 @@ fun HomeScreen(
                     onProductClick = { productId -> onProductClick(productId) },
                     onDeleteProduct = { productId ->
                         onDeleteProduct(productId)
+                    },
+                    onEditProduct = { productId ->
+                        viewModel.requestRefresh()
+                        onEditProductClick(productId)
                     },
                     isAdmin = isAdmin
                 )
@@ -309,6 +313,10 @@ fun HomeScreen(
                     onProductClick = { productId -> onProductClick(productId) },
                     onDeleteProduct = { productId ->
                         onDeleteProduct(productId)
+                    },
+                    onEditProduct = { productId ->
+                        viewModel.requestRefresh()
+                        onEditProductClick(productId)
                     },
                     isAdmin = isAdmin
                 )
@@ -626,6 +634,7 @@ fun LatestProductsRow(
     onToggleFavorite: (Long, Boolean) -> Unit,
     onProductClick: (Long) -> Unit,
     onDeleteProduct: (Long) -> Unit,
+    onEditProduct: (Long) -> Unit,
     isAdmin: Boolean
 ) {
     LazyRow(
@@ -644,6 +653,9 @@ fun LatestProductsRow(
                 showMenu = true,
                 onDelete = { productId ->
                     onDeleteProduct(productId)
+                },
+                onEdit = {productId ->
+                    onEditProduct(productId)
                 },
                 isAdmin = isAdmin
             )
@@ -698,6 +710,7 @@ fun RecommendedProductsGrid(
     onToggleFavorite: (Long, Boolean) -> Unit,
     onProductClick: (Long) -> Unit,
     onDeleteProduct: (Long) -> Unit,
+    onEditProduct: (Long) -> Unit,
     isAdmin: Boolean
 ) {
     Column(
@@ -722,6 +735,9 @@ fun RecommendedProductsGrid(
                             showMenu = true,
                             onDelete = { productId ->
                                 onDeleteProduct(productId)
+                            },
+                            onEdit = {productId ->
+                                onEditProduct(productId)
                             },
                             isAdmin = isAdmin
                         )

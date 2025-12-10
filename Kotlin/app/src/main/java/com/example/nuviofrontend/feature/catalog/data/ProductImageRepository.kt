@@ -21,13 +21,6 @@ class ProductImageRepository @Inject constructor(
 
         val imageUrl = cloudinaryService.uploadImage(imageUri, signature)
 
-        val updateResponse = apiService.updateProfilePicture(
-            UpdateProfilePictureRequest(imageUrl)
-        )
-        if (!updateResponse.isSuccessful) {
-            throw HttpException(updateResponse)
-        }
-
         return imageUrl
     }
 

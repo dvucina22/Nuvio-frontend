@@ -16,10 +16,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -54,27 +54,34 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.core.R
 import com.example.core.catalog.dto.AttributeFilter
 import com.example.core.ui.components.CustomButton
+import com.example.core.ui.components.CustomDescriptionField
 import com.example.core.ui.components.CustomTextField
 import com.example.core.ui.components.CustomTopBar
+import com.example.core.ui.components.SelectedImagesRow
 import com.example.core.ui.theme.BackgroundBehindButton
 import com.example.core.ui.theme.BackgroundColorInput
 import com.example.core.ui.theme.BackgroundNavDark
 import com.example.core.ui.theme.Black
+import com.example.core.ui.theme.ButtonColorSelected
 import com.example.core.ui.theme.CardItemBackground
 import com.example.core.ui.theme.ColorInput
 import com.example.core.ui.theme.Error
@@ -85,7 +92,8 @@ import com.example.nuviofrontend.navigation.HomeTab
 fun AddNewProductScreen(
     navController: NavHostController,
     onBackClick: () -> Unit = {},
-    viewModel: ProductManagementViewModel = hiltViewModel()
+    viewModel: ProductManagementViewModel = hiltViewModel(),
+    homeViewModel: HomeViewModel = hiltViewModel()
 ){
     var productName by remember { mutableStateOf("") }
     var price by remember { mutableStateOf("") }
@@ -121,7 +129,7 @@ fun AddNewProductScreen(
     LaunchedEffect(productAdded) {
         if (productAdded) {
             Toast.makeText(context, "Proizvod je dodan!", Toast.LENGTH_SHORT).show()
-            navController.popBackStack(HomeTab.HOME.name, false)
+            navController.popBackStack()
             viewModel.resetProductUpdatedFlag()
         }
     }
@@ -130,9 +138,12 @@ fun AddNewProductScreen(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let {
-            viewModel.uploadProductImage(it, onError = { msg ->
-                Toast.makeText(context, "Upload failed: $msg", Toast.LENGTH_SHORT).show()
-            })
+            viewModel.uploadProductImage(
+                it,
+                onError = { msg ->
+                    Toast.makeText(context, "Upload failed: $msg", Toast.LENGTH_SHORT).show()
+                }
+            )
         }
     }
 
@@ -151,13 +162,11 @@ fun AddNewProductScreen(
             showBack = true,
             onBack = onBackClick
         )
-        Spacer(modifier = Modifier.height(16.dp))
 
         LazyColumn(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 20.dp),
-            contentPadding = PaddingValues(bottom = 120.dp)
+                .fillMaxSize(),
+            contentPadding = PaddingValues(bottom = 120.dp, start = 10.dp, end = 10.dp)
         ) {
             item {
                 Box(
@@ -183,8 +192,18 @@ fun AddNewProductScreen(
                         modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 12.dp)
                     )
                 }
-                
-                Spacer(modifier = Modifier.height(24.dp))
+                if (viewModel.productImages.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    SelectedImagesRow(
+                        images = viewModel.productImages,
+                        onRemoveImage = { removedUrl ->
+                            viewModel.productImages =
+                                viewModel.productImages.filter { it != removedUrl }
+                        }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
             }
 
             item {
@@ -204,7 +223,7 @@ fun AddNewProductScreen(
                             text = stringResource(R.string.basic_information_product),
                             fontSize = 16.sp,
                             color = Color.White,
-                            modifier = Modifier.padding(start = 22.dp, top = 10.dp)
+                            modifier = Modifier.padding(start = 32.dp, top = 10.dp)
                         )
                         Spacer(modifier = Modifier.height(7.dp))
                         Divider(color = BackgroundNavDark)
@@ -300,7 +319,7 @@ fun AddNewProductScreen(
                             errorMessage = viewModel.fieldErrors["sku"]
                         )
 
-                        CustomTextField(
+                        CustomDescriptionField(
                             value = description,
                             onValueChange = {
                                 description = it
@@ -414,13 +433,12 @@ fun AdditionalSpecificationsCard(
         modifier = Modifier
             .fillMaxWidth()
             .background(CardItemBackground, RoundedCornerShape(6.dp))
-            .padding(start = 10.dp)
     ) {
         Text(
             text = stringResource(R.string.additional_specifications_title),
             fontSize = 16.sp,
             color = Color.White,
-            modifier = Modifier.padding(start = 16.dp, bottom = 10.dp, top = 10.dp)
+            modifier = Modifier.padding(start = 32.dp, bottom = 10.dp, top = 10.dp)
         )
         Divider(color = BackgroundNavDark)
         Spacer(modifier = Modifier.height(8.dp))
@@ -433,7 +451,7 @@ fun AdditionalSpecificationsCard(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, end = 28.dp)
+                    .padding(start = 32.dp, end = 40.dp)
             ) {
                 Box(modifier = Modifier.weight(0.7f)) {
                     CustomDropdownAddProduct(
@@ -443,7 +461,7 @@ fun AdditionalSpecificationsCard(
                         itemLabel = { mapAttributeValue(attribute.name ?: "", it) },
                         placeholder = stringResource(R.string.placeholder_select_attribute),
                         onItemSelected = { value ->
-                            attributeValuesMap[attribute.name ?: ""] = value // update state map direktno
+                            attributeValuesMap[attribute.name ?: ""] = value
                         },
                         modifier = Modifier.width(250.dp)
                     )
@@ -451,15 +469,24 @@ fun AdditionalSpecificationsCard(
 
                 Spacer(modifier = Modifier.width(5.dp))
 
-                IconButton(
-                    onClick = { onRemoveAttribute(attribute) },
-                    modifier = Modifier.size(30.dp)
+                Box(
+                    modifier = Modifier.offset(y = 5.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.DeleteOutline,
-                        contentDescription = "",
-                        tint = Black
-                    )
+                    Box(
+                        modifier = Modifier
+                            .size(35.dp)
+                            .background(BackgroundBehindButton, RoundedCornerShape(5.dp))
+                            .clickable { onRemoveAttribute(attribute) },
+                        contentAlignment = Alignment.Center
+                    ) {
+
+                        Icon(
+                            imageVector = Icons.Default.DeleteOutline,
+                            contentDescription = "",
+                            tint = Black,
+                            modifier = Modifier.size(22.dp)
+                        )
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(6.dp))
@@ -470,7 +497,7 @@ fun AdditionalSpecificationsCard(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, end = 28.dp)
+                    .padding(start = 32.dp, end = 40.dp)
             ) {
                 Box(modifier = Modifier.weight(0.7f)) {
                     CustomDropdownAddProduct(
@@ -487,20 +514,30 @@ fun AdditionalSpecificationsCard(
                     )
                 }
 
-                IconButton(
-                    onClick = {
-                        selectedAttribute?.let {
-                            onAddAttribute(it)
-                            onSelectedAttributeChange(null)
-                        }
-                    },
-                    modifier = Modifier.size(30.dp)
+                Spacer(modifier = Modifier.width(5.dp))
+
+                Box(
+                    modifier = Modifier.offset(y = 5.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.AddCircleOutline,
-                        contentDescription = "",
-                        tint = Black
-                    )
+                    Box(
+                        modifier = Modifier
+                            .size(34.dp)
+                            .background(BackgroundBehindButton, RoundedCornerShape(5.dp))
+                            .clickable {
+                                selectedAttribute?.let {
+                                    onAddAttribute(it)
+                                    onSelectedAttributeChange(null)
+                                }
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.AddCircleOutline,
+                            contentDescription = "",
+                            tint = Black,
+                            modifier = Modifier.size(22.dp)
+                        )
+                    }
                 }
             }
         }
@@ -525,6 +562,9 @@ fun <T> CustomDropdownAddProduct(
     var expanded by remember { mutableStateOf(false) }
     var showErrorDropdown by remember { mutableStateOf(false) }
 
+    var triggeredWidth by remember { mutableStateOf(0.dp) }
+    val density = LocalDensity.current
+
     val arrowRotation by animateFloatAsState(
         targetValue = if (expanded) 180f else 0f,
         animationSpec = tween(durationMillis = 300),
@@ -548,7 +588,15 @@ fun <T> CustomDropdownAddProduct(
             )
         }
 
-        Box(modifier = Modifier.width(304.dp)) {
+        Box(
+            modifier = Modifier.width(304.dp)
+                .onGloballyPositioned { layoutCoordinates ->
+                    triggeredWidth = with(density) {
+                        layoutCoordinates.size.width.toDp()
+                    }
+                }
+
+        ) {
             Row(
                 modifier = Modifier
                     .width(304.dp)
@@ -604,34 +652,50 @@ fun <T> CustomDropdownAddProduct(
                 }
             }
 
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier
-                    .width(304.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(Color.White.copy(alpha = 0.85f))
-            ) {
-                items.forEachIndexed { index, item ->
-                    DropdownMenuItem(
-                        text = { Text(text = itemLabel(item), color = Color.Black, style = textStyle) },
-                        onClick = {
-                            onItemSelected(item)
-                            expanded = false
-                            showErrorDropdown = false
-                        },
+            if (expanded) {
+                val popupYOffsetPx = with(density) { 45.dp.roundToPx() }
+                Popup(
+                    alignment = Alignment.TopStart,
+                    offset = IntOffset(0, popupYOffsetPx),
+                    onDismissRequest = { expanded = false },
+                    properties = PopupProperties(focusable = true)
+                ) {
+                    Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color.White.copy(alpha = 0.08f))
-                            .padding(horizontal = 4.dp, vertical = 0.dp)
-                    )
-                    if (index < items.size - 1) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(1.dp)
-                                .background(Color.Black.copy(alpha = 0.1f))
-                        )
+                            .width(triggeredWidth)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(ButtonColorSelected)
+                    ) {
+                        items.forEachIndexed { index, item ->
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable(
+                                        interactionSource = remember { MutableInteractionSource() },
+                                        indication = null
+                                    ) {
+                                        onItemSelected(item)
+                                        expanded = false
+                                        showErrorDropdown = false
+                                    }
+                                    .padding(horizontal = 12.dp, vertical = 10.dp)
+                            ) {
+                                Text(
+                                    text = itemLabel(item),
+                                    color = White,
+                                    style = textStyle
+                                )
+                            }
+
+                            if (index < items.size - 1) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(1.dp)
+                                        .background(Color.Black.copy(alpha = 0.1f))
+                                )
+                            }
+                        }
                     }
                 }
             }
