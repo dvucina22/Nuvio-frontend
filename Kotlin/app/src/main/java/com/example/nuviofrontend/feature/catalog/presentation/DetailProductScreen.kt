@@ -48,6 +48,7 @@ fun DetailProductScreen(
 
     val profile by homeViewModel.profileFlow.collectAsState(initial = null)
     val isAdmin = profile?.roles?.any { it.name == "admin" } == true
+    val isSeller = profile?.roles?.any {it.name == "seller" } == true
 
     var showDeletePopup by remember { mutableStateOf(false) }
     var productIdToDelete by remember { mutableStateOf<Long?>(null) }
@@ -91,8 +92,8 @@ fun DetailProductScreen(
                         }
                     },
                     isFavorite = product?.isFavorite ?: false,
-                    showDelete = isAdmin,
-                    showEdit = isAdmin,
+                    showDelete = isAdmin || isSeller,
+                    showEdit = isAdmin || isSeller,
                     onDeleteClick = {
                         product?.let { p ->
                             productIdToDelete = p.id

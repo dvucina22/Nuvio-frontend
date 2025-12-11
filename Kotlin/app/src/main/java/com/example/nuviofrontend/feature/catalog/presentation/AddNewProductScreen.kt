@@ -34,7 +34,6 @@ import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -69,6 +68,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.core.R
 import com.example.core.catalog.dto.AttributeFilter
@@ -86,7 +86,7 @@ import com.example.core.ui.theme.CardItemBackground
 import com.example.core.ui.theme.ColorInput
 import com.example.core.ui.theme.Error
 import com.example.core.ui.theme.White
-import com.example.nuviofrontend.navigation.HomeTab
+import kotlinx.coroutines.delay
 
 @Composable
 fun AddNewProductScreen(
@@ -107,14 +107,6 @@ fun AddNewProductScreen(
     var selectedCategory by remember { mutableStateOf<String?>(null) }
 
     val allAttributes = viewModel.attributes
-    LaunchedEffect(allAttributes) {
-        allAttributes.forEach { attr ->
-            attr.items.forEach { item ->
-                Log.d("ATTR_DEBUG", "Attribute loaded: name=${attr.name} value=${item.value} id=${item.id}")
-            }
-        }
-    }
-
     var addedAttributes by remember { mutableStateOf(listOf<AttributeFilter>()) }
     var selectedAttribute by remember { mutableStateOf<AttributeFilter?>(null) }
     val attributeValuesMap = remember { mutableStateMapOf<String, String?>() }
@@ -126,11 +118,11 @@ fun AddNewProductScreen(
 
     val productAdded by viewModel.productUpdated.collectAsState(initial = false)
 
-    LaunchedEffect(productAdded) {
-        if (productAdded) {
-            Toast.makeText(context, "Proizvod je dodan!", Toast.LENGTH_SHORT).show()
+    LaunchedEffect(viewModel.productAddedFlow) {
+        viewModel.productAddedFlow.collect {
+            Toast.makeText(context, "Uspješno dodan novi proizvod", Toast.LENGTH_SHORT).show()
+            homeViewModel.loadHomeData()
             navController.popBackStack()
-            viewModel.resetProductUpdatedFlag()
         }
     }
 
@@ -379,12 +371,6 @@ fun AddNewProductScreen(
                                 val basePrice = price.toDouble()
                                 val qty = quantity.toInt()
                                 val filteredAttributes = addedAttributes
-
-                                Log.d(
-                                    "ATTR_DEBUG",
-                                    "Attributes to send: ${filteredAttributes.map { it.name to it.items.map { item -> item.id } }}"
-                                )
-
                                 viewModel.addProduct(
                                     name = productName,
                                     description = description,

@@ -11,7 +11,6 @@ import com.example.core.catalog.dto.AddProductRequest
 import com.example.core.catalog.dto.AttributeFilter
 import com.example.core.catalog.dto.Brand
 import com.example.core.catalog.dto.Category
-import com.example.core.catalog.dto.Product
 import com.example.core.catalog.dto.ProductDetail
 import com.example.core.catalog.dto.UpdateProductRequest
 import com.example.nuviofrontend.feature.catalog.data.CatalogRepository
@@ -49,16 +48,11 @@ class ProductManagementViewModel @Inject constructor(
 
     private val _productDeleted = MutableSharedFlow<Unit>(replay = 1)
     val productDeleted = _productDeleted.asSharedFlow()
-    private val _productAdded = MutableStateFlow(false)
-    val productAdded = _productAdded.asStateFlow()
+    private val _productUpdatedFlow = MutableSharedFlow<Boolean>()
+    val productUpdatedFlow = _productUpdatedFlow.asSharedFlow()
 
-    fun markProductAdded() {
-        _productAdded.value = true
-    }
-
-    fun resetProductAddedFlag() {
-        _productAdded.value = false
-    }
+    private val _productAddedFlow = MutableSharedFlow<Unit>()
+    val productAddedFlow = _productAddedFlow.asSharedFlow()
 
     fun markProductUpdated() {
         _productUpdated.value = true
@@ -75,8 +69,8 @@ class ProductManagementViewModel @Inject constructor(
 
     private fun loadInitialData() {
         viewModelScope.launch {
-            brands = repository.loadBrands().body() ?: emptyList()
-            categories = repository.loadCategories().body() ?: emptyList()
+            brands = repository.loadBrands()
+            categories = repository.loadCategories()
             val attributesResult = catalogRepository.getAttributes()
             attributesResult.onSuccess { list ->
                 attributes = list
@@ -131,14 +125,25 @@ class ProductManagementViewModel @Inject constructor(
             )
 
             val result = repository.createProduct(req)
+
             isLoading = false
 
             result.onSuccess {
                 successMessage = it
-                _productChanged.emit(Unit)
+                _productUpdatedFlow.emit(true)
+                _productAddedFlow.emit(Unit)
                 markProductUpdated()
-            }.onFailure {
-                errorMessage = it.message
+            }.onFailure { throwable ->
+                val message = throwable.message
+                val errors = mutableMapOf<String, String>()
+                if (message?.contains("products_sku_key") == true) {
+                    errors["sku"] = "SKU već postoji, molimo upišite drugi."
+                }
+                if (errors.isEmpty()) {
+                    errorMessage = message
+                }
+
+                fieldErrors = errors
             }
         }
     }

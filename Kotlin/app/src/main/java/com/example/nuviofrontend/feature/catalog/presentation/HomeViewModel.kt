@@ -7,8 +7,10 @@ import com.example.core.model.UserProfile
 import com.example.core.network.token.IUserPrefs
 import com.example.nuviofrontend.feature.catalog.data.CatalogRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -48,6 +50,9 @@ class HomeViewModel @Inject constructor(
     val profileFlow = userPrefs.profileFlow
     private val _refreshRequested = MutableStateFlow(false)
     val refreshRequested: StateFlow<Boolean> = _refreshRequested
+
+    private val _refreshProducts = MutableSharedFlow<Unit>()
+    val refreshProducts = _refreshProducts.asSharedFlow()
 
     init {
         loadHomeData()
@@ -182,5 +187,48 @@ class HomeViewModel @Inject constructor(
     }
     fun clearRefresh() {
         _refreshRequested.value = false
+    }
+    fun triggerRefresh() {
+        viewModelScope.launch {
+            _refreshProducts.emit(Unit)
+        }
+    }
+
+    fun refreshHomeData() {
+        viewModelScope.launch {
+            _state.value = _state.value.copy(isLoading = true, error = null)
+
+            try {
+                val latestResult = catalogRepository.getLatestProducts(limit = 5)
+                val flashDealsResult = catalogRepository.getFlashDeals(limit = 10)
+                val recommendedResult = catalogRepository.getLatestProducts(limit = 8)
+
+                val latestProducts = latestResult.getOrNull() ?: emptyList()
+                val flashDeals = flashDealsResult.getOrNull() ?: emptyList()
+                val recommendedProducts = recommendedResult.getOrNull() ?: emptyList()
+
+                _state.value = _state.value.copy(
+                    isLoading = false,
+                    latestProducts = latestProducts,
+                    flashDeals = flashDeals,
+                    recommendedProducts = recommendedProducts,
+                    error = null
+                )
+                _uiState.value = HomeUiState.Success(
+                    latestProducts = latestProducts,
+                    flashDeals = flashDeals,
+                    recommendedProducts = recommendedProducts
+                )
+            } catch (e: Exception) {
+                _state.value = _state.value.copy(
+                    isLoading = false,
+                    error = "Failed to refresh: ${e.message}"
+                )
+            }
+        }
+    }
+
+    fun triggerManualRefresh() {
+        loadHomeData()
     }
 }

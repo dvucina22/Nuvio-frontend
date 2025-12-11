@@ -40,13 +40,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.core.R
 import com.example.core.catalog.dto.Product
 import com.example.core.ui.components.CustomPopupWarning
@@ -85,6 +83,10 @@ fun HomeScreen(
     onAddProductClick: () -> Unit,
     onEditProductClick: (Long) -> Unit
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.loadHomeData()
+    }
+
     val scrollState = rememberScrollState()
     val state by viewModel.state.collectAsState()
 
@@ -92,20 +94,16 @@ fun HomeScreen(
 
     val profile by viewModel.profileFlow.collectAsState(initial = null)
     val isAdmin = profile?.roles?.any { it.name == "admin" } == true
+    val isSeller = profile?.roles?.any { it.name == "seller" } == true
 
     var showDeletePopup by remember { mutableStateOf(false) }
     var productIdToDelete by remember { mutableStateOf<Long?>(null) }
 
+    val uiState by viewModel.uiState.collectAsState()
+
     val onDeleteProduct: (Long) -> Unit = { productId ->
         productIdToDelete = productId
         showDeletePopup = true
-    }
-
-    LaunchedEffect(refreshRequested) {
-        if (refreshRequested) {
-            viewModel.refreshData()
-            viewModel.clearRefresh()
-        }
     }
 
 
@@ -186,7 +184,7 @@ fun HomeScreen(
                             tint = White
                         )
                     }
-                    if (isAdmin) {
+                    if (isAdmin || isSeller) {
                         Box(
                             modifier = Modifier
                                 .size(35.dp)
@@ -246,7 +244,8 @@ fun HomeScreen(
                         viewModel.requestRefresh()
                         onEditProductClick(productId)
                     },
-                    isAdmin = isAdmin
+                    isAdmin = isAdmin,
+                    isSeller = isSeller
                 )
             } else {
                 EmptyStateRow("No deals available")
@@ -278,7 +277,8 @@ fun HomeScreen(
                         viewModel.requestRefresh()
                         onEditProductClick(productId)
                     },
-                    isAdmin = isAdmin
+                    isAdmin = isAdmin,
+                    isSeller = isSeller
                 )
             } else {
                 EmptyStateRow("No products available")
@@ -318,7 +318,8 @@ fun HomeScreen(
                         viewModel.requestRefresh()
                         onEditProductClick(productId)
                     },
-                    isAdmin = isAdmin
+                    isAdmin = isAdmin,
+                    isSeller = isSeller
                 )
             }
 
@@ -599,7 +600,8 @@ fun FlashDealsRow(
     onProductClick: (Long) -> Unit,
     onDeleteProduct: (Long) -> Unit,
     onEditProduct: (Long) -> Unit,
-    isAdmin: Boolean
+    isAdmin: Boolean,
+    isSeller: Boolean
 ) {
     LazyRow(
         contentPadding = PaddingValues(horizontal = 20.dp),
@@ -621,7 +623,8 @@ fun FlashDealsRow(
                 onEdit = {productId ->
                     onEditProduct(productId)
                 },
-                isAdmin = isAdmin
+                isAdmin = isAdmin,
+                isSeller = isSeller
             )
         }
     }
@@ -635,7 +638,8 @@ fun LatestProductsRow(
     onProductClick: (Long) -> Unit,
     onDeleteProduct: (Long) -> Unit,
     onEditProduct: (Long) -> Unit,
-    isAdmin: Boolean
+    isAdmin: Boolean,
+    isSeller: Boolean
 ) {
     LazyRow(
         contentPadding = PaddingValues(horizontal = 20.dp),
@@ -657,7 +661,8 @@ fun LatestProductsRow(
                 onEdit = {productId ->
                     onEditProduct(productId)
                 },
-                isAdmin = isAdmin
+                isAdmin = isAdmin,
+                isSeller = isSeller
             )
         }
     }
@@ -711,7 +716,8 @@ fun RecommendedProductsGrid(
     onProductClick: (Long) -> Unit,
     onDeleteProduct: (Long) -> Unit,
     onEditProduct: (Long) -> Unit,
-    isAdmin: Boolean
+    isAdmin: Boolean,
+    isSeller: Boolean
 ) {
     Column(
         modifier = Modifier.padding(horizontal = 20.dp),
@@ -739,7 +745,8 @@ fun RecommendedProductsGrid(
                             onEdit = {productId ->
                                 onEditProduct(productId)
                             },
-                            isAdmin = isAdmin
+                            isAdmin = isAdmin,
+                            isSeller = isSeller
                         )
                     }
                 }
