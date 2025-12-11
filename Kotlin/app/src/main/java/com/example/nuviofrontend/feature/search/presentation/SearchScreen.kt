@@ -446,10 +446,12 @@ private fun SearchFilterSheetContent(
             }
 
             usedAttributes.forEach { attribute ->
-                val attrName = attribute.name ?: return@forEach
+                val attrName = attribute.name
                 val selectedValues = filterState.selectedAttributes[attrName] ?: emptySet()
 
-                if (attribute.values.isNotEmpty()) {
+                val valuesList = attribute.items.map { it.value }
+
+                if (valuesList.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(24.dp))
 
                     FilterSection(title = attributeSectionTitle(attrName)) {
@@ -458,7 +460,7 @@ private fun SearchFilterSheetContent(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            attribute.values.forEach { rawValue ->
+                            valuesList.forEach { rawValue: String ->
                                 val isSelected = selectedValues.contains(rawValue)
                                 FilterChip(
                                     label = attributeValueLabel(attrName, rawValue),
@@ -467,8 +469,7 @@ private fun SearchFilterSheetContent(
                                         val newValues =
                                             if (isSelected) selectedValues - rawValue
                                             else selectedValues + rawValue
-                                        val newAttrs =
-                                            filterState.selectedAttributes.toMutableMap()
+                                        val newAttrs = filterState.selectedAttributes.toMutableMap()
                                         if (newValues.isEmpty()) {
                                             newAttrs.remove(attrName)
                                         } else {
@@ -486,6 +487,7 @@ private fun SearchFilterSheetContent(
                     }
                 }
             }
+
 
             Spacer(modifier = Modifier.height(24.dp))
 

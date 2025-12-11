@@ -5,6 +5,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.example.core.R
+import com.example.core.cards.ICardRepository
+import com.example.core.cart.ICartRepository
+import com.example.core.catalog.IProductRepository
 import com.example.core.network.api.ApiClient
 import com.example.core.network.api.ApiService
 import com.example.core.network.interceptor.AuthInterceptor
@@ -13,6 +16,7 @@ import com.example.nuviofrontend.feature.cart.data.CartRepository
 import com.example.nuviofrontend.feature.cart.data.CartService
 import com.example.nuviofrontend.feature.catalog.data.CatalogRepository
 import com.example.nuviofrontend.feature.catalog.data.CatalogService
+import com.example.nuviofrontend.feature.catalog.data.ProductImageRepository
 import com.example.nuviofrontend.feature.catalog.data.ProductRepository
 import com.example.nuviofrontend.feature.catalog.data.ProductService
 import com.example.nuviofrontend.feature.profile.data.CardRepository
@@ -96,7 +100,7 @@ object AppModule {
     fun provideCardRepository(
         cardService: CardService,
         userPrefs: IUserPrefs
-    ): CardRepository {
+    ): ICardRepository {
         return CardRepository(cardService, userPrefs)
     }
 
@@ -120,7 +124,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideCartRepository(cartService: CartService) : CartRepository {
+    fun provideCartRepository(cartService: CartService) : ICartRepository {
         return CartRepository(cartService)
     }
 
@@ -132,7 +136,12 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideProductRepository(productService: ProductService) : ProductRepository {
+    fun provideProductRepository(productService: ProductService) : IProductRepository {
         return ProductRepository(productService)
+    }
+    @Provides
+    @Singleton
+    fun provideProductImageRepository(apiService: ApiService, cloudinaryService: CloudinaryService) : ProductImageRepository{
+        return ProductImageRepository(apiService, cloudinaryService)
     }
 }

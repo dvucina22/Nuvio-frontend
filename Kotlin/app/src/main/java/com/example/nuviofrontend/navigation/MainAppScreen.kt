@@ -31,7 +31,9 @@ import com.example.core.ui.theme.BackgroundNavDark
 import com.example.core.ui.theme.IconSelectedTintDark
 import com.example.core.ui.theme.IconUnselectedTintDark
 import com.example.core.ui.theme.SelectedItemBackgroundDark
+import com.example.nuviofrontend.feature.catalog.presentation.AddNewProductScreen
 import com.example.nuviofrontend.feature.catalog.presentation.DetailProductScreen
+import com.example.nuviofrontend.feature.catalog.presentation.EditProductScreen
 import com.example.nuviofrontend.feature.catalog.presentation.HomeScreen
 import com.example.nuviofrontend.feature.favorite.presentation.FavoriteScreen
 
@@ -46,7 +48,8 @@ fun MainAppScreen(
     profilePictureUrl: String?,
     onSignOut: () -> Unit,
     onNavigateToLogin: () -> Unit,
-    onNavigateToProfileEdit: () -> Unit
+    onNavigateToProfileEdit: () -> Unit,
+    onNavigateToUsers: () -> Unit
 ) {
     val navController = rememberNavController()
     val tabs = HomeTab.values()
@@ -72,6 +75,12 @@ fun MainAppScreen(
                             gender = gender,
                             onProductClick = { productId ->
                                 navController.navigate("product/$productId")
+                            },
+                            onAddProductClick = {
+                                navController.navigate("add_product")
+                            },
+                            onEditProductClick = { productId ->
+                                navController.navigate("edit_product/$productId")
                             }
                         )
                         HomeTab.SEARCH -> SearchScreen(
@@ -98,7 +107,8 @@ fun MainAppScreen(
                             profilePictureUrl = profilePictureUrl,
                             onSignOut = onSignOut,
                             onNavigateToLogin = onNavigateToLogin,
-                            onNavigateToProfileEdit = onNavigateToProfileEdit
+                            onNavigateToProfileEdit = onNavigateToProfileEdit,
+                            onNavigateToUsers = onNavigateToUsers
                         )
                     }
                 }
@@ -106,7 +116,25 @@ fun MainAppScreen(
             composable("product/{id}") { backStackEntry ->
                 val productId = backStackEntry.arguments?.getString("id")?.toLong() ?: 0L
                 DetailProductScreen(
-                    onBack = { navController.popBackStack() }
+                    onBack = { navController.popBackStack() },
+                    onEditNavigate = { productId ->
+                        navController.navigate("edit_product/$productId")
+                    }
+                )
+            }
+            composable("add_product") {
+                AddNewProductScreen(
+                    navController = navController,
+                    onBackClick = { navController.popBackStack() }
+                )
+            }
+            composable("edit_product/{id}") { backStackEntry ->
+                val id = backStackEntry.arguments?.getString("id")?.toLong() ?: 0L
+
+                EditProductScreen(
+                    navController = navController,
+                    productId = id,
+                    onBackClick = { navController.popBackStack() }
                 )
             }
         }

@@ -6,7 +6,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -14,18 +22,18 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.example.core.R
 import com.example.core.ui.theme.BackgroundColorInput
@@ -44,12 +52,14 @@ fun <T> CustomDropdown(
     modifier: Modifier = Modifier,
     textStyle: TextStyle = MaterialTheme.typography.labelSmall,
     isError: Boolean = false,
-    errorMessage: String? = null
+    errorMessage: String? = null,
+    getItemColor: ((T) -> Color?)? = null,
+    enabled: Boolean = true
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     val arrowRotation by animateFloatAsState(
-        targetValue = if (expanded) 180f else 0f,
+        targetValue = if (expanded && enabled) 180f else 0f,
         animationSpec = tween(durationMillis = 300),
         label = "arrow_rotation"
     )
@@ -66,20 +76,22 @@ fun <T> CustomDropdown(
                 color = White,
                 style = textStyle,
                 modifier = Modifier
-                    .width(304.dp)
+                    .fillMaxWidth()
                     .padding(bottom = 4.dp)
             )
         }
 
-        Box(modifier = Modifier.width(304.dp)) {
+        Box(modifier = Modifier.fillMaxWidth()) {
+            val selectedColor = value?.let { v -> getItemColor?.invoke(v) }
 
             Row(
                 modifier = Modifier
-                    .width(304.dp)
+                    .fillMaxWidth()
                     .height(40.dp)
                     .clip(RoundedCornerShape(8.dp))
                     .background(
-                        BackgroundColorInput.copy(alpha = 0.3f)
+                        if (enabled) BackgroundColorInput.copy(alpha = 0.3f)
+                        else BackgroundColorInput.copy(alpha = 0.15f)
                     )
                     .border(
                         width = if (isError) 1.dp else 0.dp,
@@ -88,17 +100,32 @@ fun <T> CustomDropdown(
                     )
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
-                        indication = null
-                    ) { expanded = true }
+                        indication = null,
+                        enabled = enabled
+                    ) {
+                        expanded = true
+                    }
                     .padding(horizontal = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                if (selectedColor != null && value != null) {
+                    Box(
+                        modifier = Modifier
+                            .size(12.dp)
+                            .clip(CircleShape)
+                            .background(selectedColor)
+                    )
+                    Spacer(modifier = Modifier.size(8.dp))
+                }
+
                 Text(
                     text = value?.let { itemLabel(it) } ?: placeholder,
                     style = textStyle.copy(
-                        color = if (value == null)
-                            ColorInput.copy(alpha = 0.7f)
-                        else White
+                        color = when {
+                            !enabled -> ColorInput.copy(alpha = 0.4f)
+                            value == null -> ColorInput.copy(alpha = 0.7f)
+                            else -> White
+                        }
                     ),
                     modifier = Modifier.weight(1f)
                 )
@@ -106,7 +133,7 @@ fun <T> CustomDropdown(
                 Icon(
                     painter = painterResource(id = R.drawable.ic_arrow_down),
                     contentDescription = null,
-                    tint = White,
+                    tint = if (enabled) White else White.copy(alpha = 0.4f),
                     modifier = Modifier
                         .size(20.dp)
                         .rotate(arrowRotation)
@@ -114,21 +141,36 @@ fun <T> CustomDropdown(
             }
 
             DropdownMenu(
-                expanded = expanded,
+                expanded = expanded && enabled,
                 onDismissRequest = { expanded = false },
                 modifier = Modifier
-                    .width(304.dp)
+                    .fillMaxWidth()
                     .clip(RoundedCornerShape(8.dp))
                     .background(Color.White.copy(alpha = 0.85f))
             ) {
                 items.forEachIndexed { index, item ->
+                    val color = getItemColor?.invoke(item)
+
                     DropdownMenuItem(
                         text = {
-                            Text(
-                                text = itemLabel(item),
-                                color = Color.Black,
-                                style = textStyle
-                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                if (color != null) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(10.dp)
+                                            .clip(CircleShape)
+                                            .background(color)
+                                    )
+                                    Spacer(modifier = Modifier.size(8.dp))
+                                }
+                                Text(
+                                    text = itemLabel(item),
+                                    color = Color.Black,
+                                    style = textStyle
+                                )
+                            }
                         },
                         onClick = {
                             onItemSelected(item)
@@ -137,7 +179,7 @@ fun <T> CustomDropdown(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(Color.White.copy(alpha = 0.08f))
-                            .padding(horizontal = 4.dp, vertical = 0.dp),
+                            .padding(horizontal = 4.dp),
                         colors = MenuDefaults.itemColors(
                             textColor = Color.Black
                         )
@@ -158,7 +200,7 @@ fun <T> CustomDropdown(
         if (isError && errorMessage != null) {
             Row(
                 modifier = Modifier
-                    .width(304.dp)
+                    .fillMaxWidth()
                     .padding(top = 6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {

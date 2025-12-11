@@ -6,12 +6,15 @@ import com.example.core.auth.dto.OAuthVerifyRequest
 import com.example.core.auth.dto.OAuthVerifyResponse
 import com.example.core.auth.dto.RegisterRequest
 import com.example.core.auth.dto.RegisterResponse
+import com.example.core.auth.dto.Role
 import com.example.core.cards.dto.AddCardRequest
 import com.example.core.cards.dto.AddCardResponse
 import com.example.core.cards.dto.CardsResponse
 import com.example.core.cards.dto.DeleteCardResponse
 import com.example.core.cards.dto.PrimaryCardResponse
 import com.example.core.cart.dto.CartItemDto
+import com.example.core.catalog.dto.AddProductRequest
+import com.example.core.catalog.dto.AddProductResponse
 import com.example.core.catalog.dto.AttributeFilter
 import com.example.core.catalog.dto.Brand
 import com.example.core.catalog.dto.Category
@@ -19,7 +22,9 @@ import com.example.core.catalog.dto.FavoriteRequest
 import com.example.core.catalog.dto.Product
 import com.example.core.catalog.dto.ProductDetail
 import com.example.core.catalog.dto.ProductFilterRequest
-import com.example.core.catalog.dto.ProductResponse
+import com.example.core.catalog.dto.SuccessfulDeleteResponse
+import com.example.core.catalog.dto.UpdateProductRequest
+import com.example.core.catalog.dto.UpdateProductResponse
 import com.example.core.user.dto.ChangePasswordRequest
 import com.example.core.user.dto.ChangePasswordResponse
 import com.example.core.user.dto.UpdateProfilePictureRequest
@@ -28,6 +33,7 @@ import com.example.core.user.dto.UpdateUserRequest
 import com.example.core.user.dto.UpdateUserResponse
 import com.example.core.user.dto.UploadSignatureResponse
 import com.example.core.user.dto.UserDto
+import com.example.core.user.dto.UserListItemDto
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -36,6 +42,7 @@ import retrofit2.http.HTTP
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ApiService {
     @POST("accounts/register")
@@ -88,12 +95,37 @@ interface ApiService {
     suspend fun getAttributes(): Response<List<AttributeFilter>>
     @GET("catalog/products/{id}")
     suspend fun getProductById(@Path("id") id: Long): Response<ProductDetail>
+    @POST("catalog/products")
+    suspend fun addNewProduct(@Body request: AddProductRequest): Response<AddProductResponse>
+    @DELETE("catalog/products/{id}")
+    suspend fun deleteProduct(@Path("id") id: Long): Response<SuccessfulDeleteResponse>
 
-
+    @PUT("catalog/products/{id}")
+    suspend fun updateProduct(
+        @Path("id") id: Long,
+        @Body request: UpdateProductRequest
+    ): Response<UpdateProductResponse>
     @GET("catalog/products/cart")
     suspend fun getCartItems(): Response<List<CartItemDto>>
     @POST("catalog/products/cart/{id}")
     suspend fun addCartItem(@Path("id") productId: Int): Response<Unit>
     @DELETE("catalog/products/cart/{id}")
     suspend fun deleteCartItem(@Path("id") productId: Int): Response<Unit>
+
+    @GET("accounts/users")
+    suspend fun getUsers(): Response<List<UserListItemDto>>
+
+    @GET("accounts/users/filter")
+    suspend fun filterUsers(@Query("name") name: String): Response<List<UserListItemDto>>
+
+    @DELETE("accounts/users/{id}") suspend fun deactivateUser(@Path("id") userId: String): Response<Unit>
+
+    @GET("accounts/roles")
+    suspend fun getAllRoles(): Response<List<Role>>
+
+    @POST("accounts/roles/{role_id}/user/{user_id}")
+    suspend fun addUserRole(@Path("role_id") roleId: Int, @Path("user_id") userId: String): Response<Unit>
+
+    @DELETE("accounts/roles/{role_id}/user/{user_id}")
+    suspend fun removeUserRole(@Path("role_id") roleId: Int, @Path("user_id") userId: String): Response<Unit>
 }

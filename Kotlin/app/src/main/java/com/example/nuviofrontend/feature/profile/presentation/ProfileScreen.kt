@@ -1,5 +1,7 @@
 package com.example.nuviofrontend.feature.profile.presentation
 
+import androidx.compose.material.icons.filled.People
+import com.example.auth.presentation.AuthViewModel
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -46,10 +48,15 @@ fun ProfileScreen(
     onEdit: () -> Unit = {},
     onNavigateToLogin: () -> Unit = {},
     onChangePassword: () -> Unit = {},
-    onNavigateToSavedCards: () -> Unit = {}
+    onNavigateToSavedCards: () -> Unit = {},
+    onNavigateToUsers: () -> Unit = {}
 ) {
     val profileState by viewModel.profileState.collectAsState()
     val isLoggedIn = profileState.isLoaded && profileState.email.isNotBlank()
+
+    val authViewModel: AuthViewModel = hiltViewModel()
+    val authState by authViewModel.uiState.collectAsState()
+    val isAdmin = authState.isAdmin
 
     val displayName = if (isLoggedIn) {
         listOfNotNull(profileState.firstName, profileState.lastName).joinToString(" ")
@@ -100,6 +107,13 @@ fun ProfileScreen(
             ProfileMenuItem(Icons.Default.Lock, stringResource(R.string.change_password)) {
                 onChangePassword()
             }
+
+            if (isAdmin) {
+                ProfileMenuItem(Icons.Default.People, stringResource(R.string.users)) {
+                    onNavigateToUsers()
+                }
+            }
+
             Divider(color = BackgroundNavDark)
         }
 

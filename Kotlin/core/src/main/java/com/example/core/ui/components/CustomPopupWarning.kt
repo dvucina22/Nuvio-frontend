@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -50,7 +51,7 @@ fun CustomPopupWarning(
             color = WarningPopUpBackground,
             modifier = Modifier
                 .width(264.dp)
-                .height(149.dp)
+                .heightIn(min = 150.dp)
                 .border(
                     width = 0.5.dp,
                     color = ButtonColorDark,
@@ -98,8 +99,7 @@ fun CustomPopupWarning(
 
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
+                        .fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(

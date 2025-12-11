@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -38,8 +39,8 @@ import com.example.core.R
 import com.example.core.cart.dto.CartItemDto
 import com.example.core.ui.theme.CardBorder
 import com.example.core.ui.theme.CardItemBackground
+import com.example.core.ui.theme.Error
 import com.example.core.ui.theme.QuantityBackground
-import com.example.core.ui.theme.SpecsText
 import kotlin.collections.filter
 import kotlin.collections.find
 import kotlin.collections.joinToString
@@ -62,7 +63,7 @@ fun ProductItemCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(120.dp)
+            .height(140.dp)
             .padding(horizontal = 8.dp, vertical = 5.dp)
             .border(
                 width = 0.5.dp,
@@ -105,7 +106,7 @@ fun ProductItemCard(
                     modifier = Modifier
                         .padding(6.dp)
                         .background(
-                            SpecsText,
+                            CardItemBackground,
                             androidx.compose.foundation.shape.RoundedCornerShape(4.dp)
                         )
                         .padding(horizontal = 6.dp, vertical = 2.dp)
@@ -133,13 +134,13 @@ fun ProductItemCard(
                         .padding(6.dp)
                         .align(Alignment.BottomStart)
                         .background(
-                            SpecsText,
+                            CardItemBackground,
                             androidx.compose.foundation.shape.RoundedCornerShape(4.dp)
                         )
                         .padding(horizontal = 4.dp, vertical = 2.dp)
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("Boja: ", color = Color.White, fontSize = 10.sp)
+                        Text("boja: ", color = Color.White, fontSize = 10.sp)
                         Spacer(Modifier.width(2.dp))
                         Box(
                             modifier = Modifier
@@ -162,7 +163,6 @@ fun ProductItemCard(
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.Top
                     ) {
                         Text(
@@ -172,8 +172,12 @@ fun ProductItemCard(
                                 .joinToString(" ") { it.replaceFirstChar { c -> c.uppercase() } },
                             color = Color.White,
                             fontSize = 16.sp,
-                            fontWeight = FontWeight.SemiBold
+                            maxLines = 2,
+                            modifier = Modifier.weight(1f),
+                            fontWeight = FontWeight.SemiBold,
+                            overflow = Ellipsis
                         )
+                        Spacer(modifier = Modifier.width(8.dp))
                         Box(
                             modifier = Modifier
                                 .size(28.dp)
@@ -187,7 +191,7 @@ fun ProductItemCard(
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Favorite,
-                                    tint = if (item.isFavorite) Color.Red else Color.White,
+                                    tint = if (item.isFavorite) Error else Color.White,
                                     contentDescription = "favorite",
                                     modifier = Modifier.size(16.dp)
                                 )
@@ -204,12 +208,9 @@ fun ProductItemCard(
                         val attributeText = displayAttributes
                             .filter { it.name.lowercase() != "color" }
                             .joinToString(separator = " • ") { attr ->
-                                if (attr.value.all { it.isDigit() || it == '_' }) {
-                                    attr.value.replace("_", ",")
-                                } else {
-                                    attr.value.replace("_", " ")
-                                }
+                                formatAttributeValue(attr.name, attr.value)
                             }
+
                         Text(
                             text = attributeText,
                             color = Color.White,
@@ -230,7 +231,7 @@ fun ProductItemCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        "Cijena: ${item.basePrice} €",
+                        "Cijena: ${"%.2f".format(item.basePrice)}€",
                         color = Color.White,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium
@@ -265,5 +266,18 @@ fun QuantityButton(symbol: String, onClick: () -> Unit) {
                 .padding(2.dp)
                 .clickable { onClick() }
         )
+    }
+}
+
+private fun formatAttributeValue(attrName: String, attrValue: String): String {
+    return when(attrName.lowercase()) {
+        "display_size" -> "${attrValue.replace("_", ",")} inch"
+        "battery_wh" -> "$attrValue Wh"
+        "weight_kg" -> "$attrValue kg"
+        else -> if (attrValue.all { it.isDigit() || it == '_' }) {
+            attrValue.replace("_", ",")
+        } else {
+            attrValue.replace("_", " ")
+        }
     }
 }
