@@ -1,6 +1,9 @@
 package com.example.nuviofrontend.feature.catalog.presentation
 
+import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -18,16 +21,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material3.Divider
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -46,15 +45,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.core.R
@@ -62,11 +65,14 @@ import com.example.core.catalog.dto.AttributeFilter
 import com.example.core.catalog.dto.Brand
 import com.example.core.catalog.dto.Category
 import com.example.core.ui.components.CustomButton
+import com.example.core.ui.components.CustomDescriptionField
 import com.example.core.ui.components.CustomTextField
 import com.example.core.ui.components.CustomTopBar
+import com.example.core.ui.components.SelectedImagesRow
 import com.example.core.ui.theme.BackgroundBehindButton
 import com.example.core.ui.theme.BackgroundColorInput
 import com.example.core.ui.theme.BackgroundNavDark
+import com.example.core.ui.theme.ButtonColorSelected
 import com.example.core.ui.theme.CardItemBackground
 import com.example.core.ui.theme.ColorInput
 import com.example.core.ui.theme.Error
@@ -98,8 +104,13 @@ fun EditProductScreen(
     var selectedAttribute by remember { mutableStateOf<AttributeFilter?>(null) }
     val attributeValuesMap = remember { mutableStateMapOf<String, String?>() }
 
+    var productImages by remember { mutableStateOf<List<String>>(emptyList()) }
+    var initialImages by remember { mutableStateOf<List<String>>(emptyList()) }
+    val allImages = (initialImages + productImages).distinct()
+
     val fieldErrors by viewModel::fieldErrors
     val allAttributes = viewModel.attributes
+    val urlsToSend = initialImages + productImages
 
     LaunchedEffect(productId, viewModel.categories) {
         if (viewModel.categories.isEmpty()) return@LaunchedEffect
@@ -111,7 +122,7 @@ fun EditProductScreen(
             description = product.description ?: ""
             modelNumber = product.modelNumber ?: ""
             sku = product.sku ?: ""
-            price = product.basePrice.toString()
+            price = "%.2f".format(product.basePrice)
             quantity = product.quantity?.toString() ?: "0"
 
             selectedBrand = viewModel.brands.find { it.id == product.brand.id }
@@ -126,6 +137,8 @@ fun EditProductScreen(
                 attributeValuesMap[attr.name] = attr.value
             }
             selectedAttribute = null
+
+            productImages = product.images?.map { it.url } ?: emptyList()
         }
     }
 
@@ -137,6 +150,22 @@ fun EditProductScreen(
             viewModel.resetProductUpdatedFlag()
             homeViewModel.refreshData()
             navController.popBackStack()
+        }
+    }
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            viewModel.uploadProductImage(
+                uri = it,
+                onSuccess = { uploadedUrl ->
+                    productImages = productImages + uploadedUrl
+                },
+                onError = { msg ->
+                    Toast.makeText(context, "Upload failed: $msg", Toast.LENGTH_SHORT).show()
+                }
+            )
         }
     }
 
@@ -152,9 +181,8 @@ fun EditProductScreen(
         )
         LazyColumn(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 20.dp),
-            contentPadding = PaddingValues(bottom = 120.dp)
+                .fillMaxSize(),
+            contentPadding = PaddingValues(bottom = 120.dp, start = 10.dp, end = 10.dp)
         ) {
             item {
                 Box(
@@ -162,7 +190,9 @@ fun EditProductScreen(
                         .fillMaxWidth()
                         .height(150.dp)
                         .background((BackgroundBehindButton), RoundedCornerShape(12.dp))
-                        .clickable { /* TODO: odabir slike */ },
+                        .clickable {
+                            imagePickerLauncher.launch("image/*")
+                        },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -178,7 +208,21 @@ fun EditProductScreen(
                         modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 12.dp)
                     )
                 }
-                Spacer(modifier = Modifier.height(24.dp))
+                if (allImages.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    SelectedImagesRow(
+                        images = allImages,
+                        onRemoveImage = { imageUrl ->
+                            if (productImages.contains(imageUrl)) {
+                                productImages = productImages.filter { it != imageUrl }
+                            } else {
+                                initialImages = initialImages.filter { it != imageUrl }
+                            }
+                        }
+                    )
+                }
+                Spacer(modifier = Modifier.height(10.dp))
             }
 
             item {
@@ -198,7 +242,7 @@ fun EditProductScreen(
                             text = stringResource(R.string.basic_information_product),
                             fontSize = 16.sp,
                             color = Color.White,
-                            modifier = Modifier.padding(start = 22.dp, top = 10.dp)
+                            modifier = Modifier.padding(start = 32.dp, top = 10.dp)
                         )
                         Spacer(modifier = Modifier.height(7.dp))
                         Divider(color = BackgroundNavDark)
@@ -273,7 +317,7 @@ fun EditProductScreen(
                             errorMessage = fieldErrors["sku"]
                         )
 
-                        CustomTextField(
+                        CustomDescriptionField(
                             value = description,
                             onValueChange = { description = it },
                             label = stringResource(R.string.label_description),
@@ -339,7 +383,8 @@ fun EditProductScreen(
                                 categoryId = selectedCategory?.id,
                                 quantity = quantity.toIntOrNull(),
                                 selectedAttributes = addedAttributes,
-                                attributeValuesMap = attributeValuesMap
+                                attributeValuesMap = attributeValuesMap,
+                                imageUrls = urlsToSend
                             )
                         },
                         width = 304
@@ -356,7 +401,7 @@ fun EditProductScreen(
 fun <T> CustomDropdownEditProduct(
     modifier: Modifier = Modifier,
     label: String? = null,
-    value: T?,
+    value: T? = null,
     items: List<T>,
     itemLabel: (T) -> String,
     placeholder: String,
@@ -367,6 +412,8 @@ fun <T> CustomDropdownEditProduct(
 ) {
     var expanded by remember { mutableStateOf(false) }
     var showErrorDropdown by remember { mutableStateOf(false) }
+    var triggeredWidth by remember { mutableStateOf(0.dp) }
+    val density = LocalDensity.current
 
     val arrowRotation by animateFloatAsState(
         targetValue = if (expanded) 180f else 0f,
@@ -391,7 +438,15 @@ fun <T> CustomDropdownEditProduct(
             )
         }
 
-        Box(modifier = Modifier.width(304.dp)) {
+        Box(
+            modifier = Modifier
+                .width(304.dp)
+                .onGloballyPositioned { layoutCoordinates ->
+                    triggeredWidth = with(density) {
+                        layoutCoordinates.size.width.toDp()
+                    }
+                }
+        ) {
             Row(
                 modifier = Modifier
                     .width(304.dp)
@@ -407,7 +462,7 @@ fun <T> CustomDropdownEditProduct(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null
                     ) {
-                        expanded = !expanded
+                        expanded = true
                         if (isError) showErrorDropdown = false
                     }
                     .padding(horizontal = 12.dp),
@@ -430,6 +485,13 @@ fun <T> CustomDropdownEditProduct(
                     modifier = Modifier
                         .size(20.dp)
                         .rotate(arrowRotation)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {
+                            expanded = !expanded
+                            if (!expanded) showErrorDropdown = false
+                        }
                 )
 
                 if (isError && errorMessage != null) {
@@ -447,50 +509,67 @@ fun <T> CustomDropdownEditProduct(
                 }
             }
 
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier
-                    .width(304.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(Color.White.copy(alpha = 0.85f))
-            ) {
-                items.forEachIndexed { index, item ->
-                    DropdownMenuItem(
-                        text = { Text(text = itemLabel(item), color = Color.Black, style = textStyle) },
-                        onClick = {
-                            onItemSelected(item)
-                            expanded = false
-                            showErrorDropdown = false
-                        },
+            if (expanded) {
+                val popupYOffsetPx = with(density) { 45.dp.roundToPx() }
+                Popup(
+                    alignment = Alignment.TopStart,
+                    offset = IntOffset(0, popupYOffsetPx),
+                    onDismissRequest = { expanded = false },
+                    properties = PopupProperties(focusable = true)
+                ) {
+                    Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color.White.copy(alpha = 0.08f))
-                            .padding(horizontal = 4.dp, vertical = 0.dp)
-                    )
-                    if (index < items.size - 1) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(1.dp)
-                                .background(Color.Black.copy(alpha = 0.1f))
-                        )
+                            .width(triggeredWidth)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(ButtonColorSelected)
+                    ) {
+                        items.forEachIndexed { index, item ->
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable(
+                                        interactionSource = remember { MutableInteractionSource() },
+                                        indication = null
+                                    ) {
+                                        onItemSelected(item)
+                                        expanded = false
+                                        showErrorDropdown = false
+                                    }
+                                    .padding(horizontal = 12.dp, vertical = 10.dp)
+                            ) {
+                                Text(
+                                    text = itemLabel(item),
+                                    color = White,
+                                    style = textStyle
+                                )
+                            }
+
+                            if (index < items.size - 1) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(1.dp)
+                                        .background(Color.Black.copy(alpha = 0.1f))
+                                )
+                            }
+                        }
                     }
                 }
             }
 
             if (isError && errorMessage != null && showErrorDropdown) {
-                DropdownMenu(
-                    expanded = showErrorDropdown,
+                Popup(
+                    alignment = Alignment.TopStart,
+                    offset = IntOffset(0, with(density) { (-60).dp.roundToPx() }),
                     onDismissRequest = { showErrorDropdown = false },
-                    modifier = Modifier
-                        .wrapContentWidth()
-                        .wrapContentHeight()
-                        .background(Color(0xFF1A1F16))
-                        .shadow(elevation = 8.dp, clip = true),
-                    offset = DpOffset(x = (130).dp, y = (-60).dp)
+                    properties = PopupProperties(focusable = true)
                 ) {
-                    Column(modifier = Modifier.padding(12.dp)) {
+                    Column(
+                        modifier = Modifier
+                            .background(Color(0xFF1A1F16))
+                            .shadow(8.dp, clip = true)
+                            .padding(12.dp)
+                    ) {
                         Text(
                             text = errorMessage,
                             color = White.copy(alpha = 0.9f),
@@ -503,6 +582,7 @@ fun <T> CustomDropdownEditProduct(
         }
     }
 }
+
 
 
 private fun formatProductName(name: String): String {

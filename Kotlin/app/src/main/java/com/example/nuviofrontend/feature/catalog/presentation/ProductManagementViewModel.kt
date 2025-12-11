@@ -17,7 +17,9 @@ import com.example.nuviofrontend.feature.catalog.data.CatalogRepository
 import com.example.nuviofrontend.feature.catalog.data.ProductImageRepository
 import com.example.nuviofrontend.feature.catalog.data.ProductRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -41,6 +43,16 @@ class ProductManagementViewModel @Inject constructor(
     val productUpdated = _productUpdated.asStateFlow()
     var productImages by mutableStateOf<List<String>>(emptyList())
     var isUploadingImages by mutableStateOf(false)
+    private val _productChanged = MutableSharedFlow<Unit>(replay = 1)
+    val productChanged = _productChanged.asSharedFlow()
+
+    private val _productDeleted = MutableSharedFlow<Unit>(replay = 1)
+    val productDeleted = _productDeleted.asSharedFlow()
+    private val _productUpdatedFlow = MutableSharedFlow<Boolean>()
+    val productUpdatedFlow = _productUpdatedFlow.asSharedFlow()
+
+    private val _productAddedFlow = MutableSharedFlow<Unit>()
+    val productAddedFlow = _productAddedFlow.asSharedFlow()
 
     fun markProductUpdated() {
         _productUpdated.value = true
@@ -50,14 +62,15 @@ class ProductManagementViewModel @Inject constructor(
         _productUpdated.value = false
     }
 
+
     init {
         loadInitialData()
     }
 
     private fun loadInitialData() {
         viewModelScope.launch {
-            brands = repository.loadBrands().body() ?: emptyList()
-            categories = repository.loadCategories().body() ?: emptyList()
+            brands = repository.loadBrands()
+            categories = repository.loadCategories()
             val attributesResult = catalogRepository.getAttributes()
             attributesResult.onSuccess { list ->
                 attributes = list
@@ -112,13 +125,25 @@ class ProductManagementViewModel @Inject constructor(
             )
 
             val result = repository.createProduct(req)
+
             isLoading = false
 
             result.onSuccess {
                 successMessage = it
+                _productUpdatedFlow.emit(true)
+                _productAddedFlow.emit(Unit)
                 markProductUpdated()
-            }.onFailure {
-                errorMessage = it.message
+            }.onFailure { throwable ->
+                val message = throwable.message
+                val errors = mutableMapOf<String, String>()
+                if (message?.contains("products_sku_key") == true) {
+                    errors["sku"] = "SKU već postoji, molimo upišite drugi."
+                }
+                if (errors.isEmpty()) {
+                    errorMessage = message
+                }
+
+                fieldErrors = errors
             }
         }
     }
@@ -168,6 +193,7 @@ class ProductManagementViewModel @Inject constructor(
                 val result = repository.removeProduct(productId)
                 result.onSuccess { message ->
                     successMessage = "Uspješno obrisan proizvod"
+                    _productDeleted.emit(Unit)
                 }.onFailure { e ->
                     errorMessage = e.message ?: "Failed to delete product"
                 }
@@ -190,7 +216,8 @@ class ProductManagementViewModel @Inject constructor(
         categoryId: Long? = null,
         quantity: Int? = null,
         selectedAttributes: List<AttributeFilter>? = null,
-        attributeValuesMap: Map<String, String?> = emptyMap()
+        attributeValuesMap: Map<String, String?> = emptyMap(),
+        imageUrls: List<String>? = null
     ) {
         viewModelScope.launch {
             isLoading = true
@@ -209,6 +236,8 @@ class ProductManagementViewModel @Inject constructor(
                 attr.items.firstOrNull { it.value == selectedValue }?.id
             } ?: existingProduct.attributes?.map { it.id.toLong() } ?: emptyList()
 
+            val existingImages = existingProduct.images?.map { it.toString() } ?: emptyList()
+
             val req = UpdateProductRequest(
                 name = name ?: existingProduct.name,
                 description = description ?: existingProduct.description.orEmpty(),
@@ -218,7 +247,8 @@ class ProductManagementViewModel @Inject constructor(
                 brandId = brandId?.toInt() ?: existingProduct.brand.id!!.toInt(),
                 categoryId = categoryId?.toInt() ?: existingProduct.category.id!!.toInt(),
                 quantity = quantity ?: existingProduct.quantity?.toInt() ?: 0,
-                attributeIds = attributeIds
+                attributeIds = attributeIds,
+                imageUrls = imageUrls ?: existingImages
             )
 
             val result = repository.updateProduct(id, req)
@@ -226,29 +256,30 @@ class ProductManagementViewModel @Inject constructor(
 
             result.onSuccess {
                 successMessage = it
+                _productChanged.emit(Unit)
                 markProductUpdated()
             }.onFailure {
                 errorMessage = it.message
             }
         }
+
     }
 
     suspend fun loadProduct(productId: Long): Result<ProductDetail> {
         return repository.fetchProduct(productId)
     }
 
-    fun uploadProductImage(uri: Uri, onError: (String) -> Unit) {
+    fun uploadProductImage(
+        uri: Uri,
+        onSuccess: ((String) -> Unit)? = null,
+        onError: (String) -> Unit
+    ) {
         viewModelScope.launch {
             try {
-                Log.d("UPLOAD_DEBUG", "Starting upload for URI: $uri")
-
                 val url = imageRepository.uploadProductPicture(uri)
-
-                Log.d("UPLOAD_DEBUG", "Upload successful! URL: $url")
-
                 productImages = productImages + url
+                onSuccess?.invoke(url)
             } catch (e: Exception) {
-                Log.e("UPLOAD_DEBUG", "Upload failed: ${e.message}", e)
                 onError(e.message ?: "Unknown error")
             }
         }

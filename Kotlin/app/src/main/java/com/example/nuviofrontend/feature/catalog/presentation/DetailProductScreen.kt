@@ -48,16 +48,24 @@ fun DetailProductScreen(
 
     val profile by homeViewModel.profileFlow.collectAsState(initial = null)
     val isAdmin = profile?.roles?.any { it.name == "admin" } == true
+    val isSeller = profile?.roles?.any {it.name == "seller" } == true
 
     var showDeletePopup by remember { mutableStateOf(false) }
     var productIdToDelete by remember { mutableStateOf<Long?>(null) }
 
-    val productUpdated by managementViewModel.productUpdated.collectAsState(initial = false)
+    val isScreenActive by remember { mutableStateOf(true) }
 
-    LaunchedEffect(productUpdated) {
-        if (productUpdated) {
-            viewModel.loadProduct(productId = viewModel.productId)
-            managementViewModel.resetProductUpdatedFlag()
+    LaunchedEffect(isScreenActive) {
+        if (isScreenActive) {
+            viewModel.loadProduct(viewModel.productId)
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        managementViewModel.productDeleted.collect {
+            homeViewModel.requestRefresh()
+            Toast.makeText(context, "Proizvod obrisan!", Toast.LENGTH_SHORT).show()
+            onBack()
         }
     }
 
@@ -84,12 +92,13 @@ fun DetailProductScreen(
                         }
                     },
                     isFavorite = product?.isFavorite ?: false,
-                    showDelete = isAdmin,
-                    showEdit = isAdmin,
+                    showDelete = isAdmin || isSeller,
+                    showEdit = isAdmin || isSeller,
                     onDeleteClick = {
                         product?.let { p ->
                             productIdToDelete = p.id
                             showDeletePopup = true
+                            homeViewModel.requestRefresh()
                         }
                     },
                     onEditClick = {
@@ -153,7 +162,7 @@ fun DetailProductScreen(
                                     .padding(horizontal = 12.dp, vertical = 4.dp)
                             ) {
                                 Text(
-                                    text = "${p.basePrice}€",
+                                    text = "${"%.2f".format(p.basePrice)}€",
                                     color = White,
                                     style = AppTypography.displayLarge.copy(fontWeight = FontWeight.Medium, fontSize = 18.sp),
                                 )
@@ -253,7 +262,7 @@ fun DetailProductScreen(
                     }
                     showDeletePopup = false
                     productIdToDelete = null
-                    onBack()
+                    homeViewModel.requestRefresh()
                 }
             )
         }
@@ -322,4 +331,5 @@ fun InfoAboutProd(label: String, value: String) {
             style = AppTypography.titleSmall.copy(fontSize = 16.sp)
         )
     }
+    Spacer(modifier = Modifier.height(10.dp))
 }

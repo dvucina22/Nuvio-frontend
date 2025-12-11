@@ -47,7 +47,8 @@ fun ProductCard(
     onEdit: (Long) -> Unit = {},
     onDelete: (Long) -> Unit = {},
     showMenu: Boolean = false,
-    isAdmin: Boolean = false
+    isAdmin: Boolean = false,
+    isSeller: Boolean = false
 ) {
     var menuOpen by remember { mutableStateOf(false) }
     Box(
@@ -145,7 +146,7 @@ fun ProductCard(
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Bold
                     )
-                    if (showMenu && isAdmin) {
+                    if (showMenu && (isAdmin || isSeller)) {
                         Box {
                             Icon(
                                 imageVector = Icons.Default.MoreVert,

@@ -1,16 +1,18 @@
 package com.example.nuviofrontend.feature.catalog.data
 
+import com.example.core.catalog.IProductRepository
 import com.example.core.catalog.dto.AddProductRequest
-import com.example.core.catalog.dto.Product
+import com.example.core.catalog.dto.AttributeFilter
+import com.example.core.catalog.dto.Brand
+import com.example.core.catalog.dto.Category
 import com.example.core.catalog.dto.ProductDetail
 import com.example.core.catalog.dto.UpdateProductRequest
 import javax.inject.Inject
 
 class ProductRepository @Inject constructor(
     private val productService: ProductService,
-
-) {
-    suspend fun fetchProduct(id: Long): Result<ProductDetail> {
+) : IProductRepository {
+    override suspend fun fetchProduct(id: Long): Result<ProductDetail> {
         return try {
             val product = productService.getProductById(id)
             if (product != null) {
@@ -23,7 +25,7 @@ class ProductRepository @Inject constructor(
         }
     }
 
-    suspend fun createProduct(request: AddProductRequest): Result<String> {
+    override suspend fun createProduct(request: AddProductRequest): Result<String> {
         return try {
             val response = productService.addProduct(request)
             if (response.isSuccessful) {
@@ -36,11 +38,21 @@ class ProductRepository @Inject constructor(
         }
     }
 
-    suspend fun loadBrands() = productService.getBrands()
-    suspend fun loadCategories() = productService.getCategories()
-    suspend fun loadAttributes() = productService.getAttributes()
+    override suspend fun loadBrands(): List<Brand> {
+        val response = productService.getBrands()
+        return response.body() ?: emptyList()
+    }
+    override suspend fun loadCategories(): List<Category> {
+        val response = productService.getCategories()
+        return response.body() ?: emptyList()
+    }
 
-    suspend fun removeProduct(productId: Long): Result<String> {
+    override suspend fun loadAttributes(): List<AttributeFilter> {
+        val response = productService.getAttributes()
+        return response.body() ?: emptyList()
+    }
+
+    override suspend fun removeProduct(productId: Long): Result<String> {
         return try {
             val response = productService.deleteProduct(productId)
             if (response != null) {
@@ -52,7 +64,7 @@ class ProductRepository @Inject constructor(
             Result.failure(e)
         }
     }
-    suspend fun updateProduct(id: Long, request: UpdateProductRequest): Result<String>{
+    override suspend fun updateProduct(id: Long, request: UpdateProductRequest): Result<String>{
         return try {
             val response = productService.updateProduct(id, request)
             if (response.isSuccessful) {

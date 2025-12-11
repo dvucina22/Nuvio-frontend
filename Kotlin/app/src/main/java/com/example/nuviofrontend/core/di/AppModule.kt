@@ -5,6 +5,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.example.core.R
+import com.example.core.cards.ICardRepository
+import com.example.core.cart.ICartRepository
+import com.example.core.catalog.IProductRepository
 import com.example.core.network.api.ApiClient
 import com.example.core.network.api.ApiService
 import com.example.core.network.interceptor.AuthInterceptor
@@ -97,7 +100,7 @@ object AppModule {
     fun provideCardRepository(
         cardService: CardService,
         userPrefs: IUserPrefs
-    ): CardRepository {
+    ): ICardRepository {
         return CardRepository(cardService, userPrefs)
     }
 
@@ -121,7 +124,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideCartRepository(cartService: CartService) : CartRepository {
+    fun provideCartRepository(cartService: CartService) : ICartRepository {
         return CartRepository(cartService)
     }
 
@@ -133,7 +136,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideProductRepository(productService: ProductService) : ProductRepository {
+    fun provideProductRepository(productService: ProductService) : IProductRepository {
         return ProductRepository(productService)
     }
     @Provides
