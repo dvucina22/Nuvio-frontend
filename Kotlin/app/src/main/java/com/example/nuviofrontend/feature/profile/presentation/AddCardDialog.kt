@@ -130,6 +130,7 @@ fun AddCardDialog(
                         if (digitsOnly.length <= 16) {
                             cardNumber = digitsOnly
                         }
+                        cardNumberError = null
                     },
                     placeholder = "XXXX-XXXX-XXXX-XXXX",
                     label = stringResource(R.string.card_number),

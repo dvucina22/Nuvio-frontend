@@ -5,7 +5,6 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class CardDto(
     val id: Int,
-    val token: String,
     val lastFourDigits: String,
     val cardBrand: String,
     val expirationMonth: Int,
