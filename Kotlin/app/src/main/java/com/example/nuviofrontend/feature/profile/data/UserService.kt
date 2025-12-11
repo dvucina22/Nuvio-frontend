@@ -1,9 +1,11 @@
 package com.example.nuviofrontend.feature.profile.data
 
+import com.example.core.auth.dto.Role
 import com.example.core.network.api.ApiService
 import com.example.core.user.dto.ChangePasswordRequest
 import com.example.core.user.dto.UpdateUserRequest
 import com.example.core.user.dto.UserDto
+import com.example.core.user.dto.UserListItemDto
 import retrofit2.HttpException
 import java.io.IOException
 
@@ -44,5 +46,50 @@ class UserService(private val api: ApiService) {
             else -> throw Exception("server_error")
         }
 
+    }
+
+    suspend fun getAllUsers(): List<UserListItemDto> {
+        val response = api.getUsers()
+        if (response.isSuccessful) {
+            return response.body() ?: emptyList()
+        }
+        throw HttpException(response)
+    }
+
+    suspend fun filterUsersByName(name: String): List<UserListItemDto> {
+        val response = api.filterUsers(name)
+        if (response.isSuccessful) {
+            return response.body() ?: emptyList()
+        }
+        throw HttpException(response)
+    }
+
+    suspend fun deactivateUser(userId: String) {
+        val response = api.deactivateUser(userId)
+        if (!response.isSuccessful) {
+            throw HttpException(response)
+        }
+    }
+
+    suspend fun getAllRoles(): List<Role> {
+        val response = api.getAllRoles()
+        if (response.isSuccessful) {
+            return response.body() ?: emptyList()
+        }
+        throw HttpException(response)
+    }
+
+    suspend fun addUserRole(userId: String, roleId: Int) {
+        val response = api.addUserRole(roleId, userId)
+        if (!response.isSuccessful) {
+            throw HttpException(response)
+        }
+    }
+
+    suspend fun removeUserRole(userId: String, roleId: Int) {
+        val response = api.removeUserRole(roleId, userId)
+        if (!response.isSuccessful) {
+            throw HttpException(response)
+        }
     }
 }

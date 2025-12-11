@@ -56,6 +56,7 @@
     <string name="hello_world">Pozdrav!</string>
     <string name="hello_guest">Pozdrav, gost!</string>
 
+    <string name="profile_update_success">Profil je uspješno ažuriran</string>
     <string name="profile_title">Profil</string>
     <string name="guest">Gost</string>
     <string name="not_logged_in">Niste prijavljeni</string>
@@ -64,6 +65,7 @@
     <string name="settings">Postavke</string>
     <string name="saved_cards">Spremljene kartice</string>
     <string name="change_password">Promijenite lozinku</string>
+    <string name="users">Korisnici</string>
     <string name="help">Pomoć</string>
 
     <string name="edit_profile_title">Uredi profil</string>
@@ -227,4 +229,28 @@
 
     <string name="edit_product_title">Uredi prozivod</string>
     <string name="edit_product_done">Proizvod ažuriran!</string>
+
+    <string name="users_title">Korisnici i uloge</string>
+    <string name="users_search_placeholder">Pretraži korisnike...</string>
+    <string name="users_empty">Nema korisnika.</string>
+    <string name="users_snackbar_dismiss">Zatvori</string>
+
+    <string name="users_deactivate_title">Deaktivacija korisnika</string>
+    <string name="users_deactivate_message">Jeste li sigurni da želite deaktivirati korisnika?</string>
+    <string name="users_deactivate_confirm">Deaktiviraj</string>
+
+    <string name="role_admin">Administrator</string>
+    <string name="role_seller">Zaposlenik</string>
+    <string name="role_buyer">Kupac</string>
+    <string name="role_not_set">Uloga nije postavljena</string>
+
+    <string name="toast_product_deleted">Proizvod obrisan!</string>
+    <string name="toast_added_to_cart">Uspješno dodano u košaricu</string>
+    <string name="no_description">Nema opisa</string>
+    <string name="cart_login_required">Za pregled košarice potrebno je prijaviti se.</string>
+
+    <string name="users_error_roles">Greška pri dohvaćanju uloga</string>
+    <string name="users_error_fetch">Neuspješno dohvaćanje korisnika</string>
+    <string name="users_error_change_role">Greška pri promjeni uloge</string>
+    <string name="users_error_deactivate">Greška pri deaktivaciji korisnika</string>
 </resources>

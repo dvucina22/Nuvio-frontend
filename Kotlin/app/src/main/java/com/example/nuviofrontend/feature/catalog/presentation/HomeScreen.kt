@@ -45,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.auth.presentation.AuthViewModel
 import com.example.core.R
 import com.example.core.catalog.dto.Product
 import com.example.core.ui.components.CustomPopupWarning
@@ -90,22 +91,14 @@ fun HomeScreen(
     val scrollState = rememberScrollState()
     val state by viewModel.state.collectAsState()
 
-    val refreshRequested by viewModel.refreshRequested.collectAsState()
-
-    val profile by viewModel.profileFlow.collectAsState(initial = null)
-    val isAdmin = profile?.roles?.any { it.name == "admin" } == true
-    val isSeller = profile?.roles?.any { it.name == "seller" } == true
+    val authViewModel: AuthViewModel = hiltViewModel()
+    val authState by authViewModel.uiState.collectAsState()
+    val isLoggedIn = authState.isLoggedIn
+    val isAdmin = authState.isAdmin
+    val isSeller = authState.isSeller
 
     var showDeletePopup by remember { mutableStateOf(false) }
     var productIdToDelete by remember { mutableStateOf<Long?>(null) }
-
-    val uiState by viewModel.uiState.collectAsState()
-
-    val onDeleteProduct: (Long) -> Unit = { productId ->
-        productIdToDelete = productId
-        showDeletePopup = true
-    }
-
 
     val greeting = when (gender?.lowercase()) {
         "male" -> stringResource(R.string.welcome_male, firstName ?: "")
@@ -177,18 +170,21 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.spacedBy(7.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(onClick = { /* akcija za Notifications */ }) {
+                    IconButton(onClick = { }) {
                         Icon(
                             imageVector = Icons.Default.Notifications,
                             contentDescription = "Notifications",
                             tint = White
                         )
                     }
-                    if (isAdmin || isSeller) {
+                    if (isLoggedIn && (isAdmin || isSeller)) {
                         Box(
                             modifier = Modifier
                                 .size(35.dp)
-                                .background(color = BackgroundBehindButton, shape = RoundedCornerShape(5.dp))
+                                .background(
+                                    color = BackgroundBehindButton,
+                                    shape = RoundedCornerShape(5.dp)
+                                )
                                 .clickable { onAddProductClick() },
                             contentAlignment = Alignment.Center
                         ) {
@@ -238,7 +234,8 @@ fun HomeScreen(
                     },
                     onProductClick = { productId -> onProductClick(productId) },
                     onDeleteProduct = { productId ->
-                        onDeleteProduct(productId)
+                        productIdToDelete = productId
+                        showDeletePopup = true
                     },
                     onEditProduct = { productId ->
                         viewModel.requestRefresh()
@@ -271,7 +268,8 @@ fun HomeScreen(
                     },
                     onProductClick = { productId -> onProductClick(productId) },
                     onDeleteProduct = { productId ->
-                        onDeleteProduct(productId)
+                        productIdToDelete = productId
+                        showDeletePopup = true
                     },
                     onEditProduct = { productId ->
                         viewModel.requestRefresh()
@@ -312,7 +310,8 @@ fun HomeScreen(
                     },
                     onProductClick = { productId -> onProductClick(productId) },
                     onDeleteProduct = { productId ->
-                        onDeleteProduct(productId)
+                        productIdToDelete = productId
+                        showDeletePopup = true
                     },
                     onEditProduct = { productId ->
                         viewModel.requestRefresh()
@@ -620,7 +619,7 @@ fun FlashDealsRow(
                 onDelete = { productId ->
                     onDeleteProduct(productId)
                 },
-                onEdit = {productId ->
+                onEdit = { productId ->
                     onEditProduct(productId)
                 },
                 isAdmin = isAdmin,
@@ -658,7 +657,7 @@ fun LatestProductsRow(
                 onDelete = { productId ->
                     onDeleteProduct(productId)
                 },
-                onEdit = {productId ->
+                onEdit = { productId ->
                     onEditProduct(productId)
                 },
                 isAdmin = isAdmin,
@@ -742,7 +741,7 @@ fun RecommendedProductsGrid(
                             onDelete = { productId ->
                                 onDeleteProduct(productId)
                             },
-                            onEdit = {productId ->
+                            onEdit = { productId ->
                                 onEditProduct(productId)
                             },
                             isAdmin = isAdmin,

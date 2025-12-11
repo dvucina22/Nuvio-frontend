@@ -48,7 +48,8 @@ fun MainAppScreen(
     profilePictureUrl: String?,
     onSignOut: () -> Unit,
     onNavigateToLogin: () -> Unit,
-    onNavigateToProfileEdit: () -> Unit
+    onNavigateToProfileEdit: () -> Unit,
+    onNavigateToUsers: () -> Unit
 ) {
     val navController = rememberNavController()
     val tabs = HomeTab.values()
@@ -106,7 +107,8 @@ fun MainAppScreen(
                             profilePictureUrl = profilePictureUrl,
                             onSignOut = onSignOut,
                             onNavigateToLogin = onNavigateToLogin,
-                            onNavigateToProfileEdit = onNavigateToProfileEdit
+                            onNavigateToProfileEdit = onNavigateToProfileEdit,
+                            onNavigateToUsers = onNavigateToUsers
                         )
                     }
                 }
