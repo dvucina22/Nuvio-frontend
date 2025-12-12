@@ -8,5 +8,6 @@ data class OAuthVerifyResponse(
     val lastName: String?,
     val email: String?,
     val gender: String?,
-    val profilePictureURL: String?
+    val profilePictureURL: String?,
+    val roles: List<Role>?
 )

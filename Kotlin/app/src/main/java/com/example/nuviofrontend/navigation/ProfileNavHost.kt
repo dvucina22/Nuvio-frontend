@@ -40,7 +40,8 @@ fun ProfileNavHost(
     profilePictureUrl: String?,
     onSignOut: () -> Unit,
     onNavigateToLogin: () -> Unit,
-    onNavigateToProfileEdit: () -> Unit
+    onNavigateToProfileEdit: () -> Unit,
+    onNavigateToUsers: () -> Unit
 ) {
     val context = LocalContext.current
     val changePasswordViewModel: ChangePasswordViewModel = hiltViewModel()
@@ -63,7 +64,8 @@ fun ProfileNavHost(
                 onNavigateToLogin = onNavigateToLogin,
                 onEdit = { navController.navigate(ProfileRoute.EditProfile.route) },
                 onChangePassword = { navController.navigate(ProfileRoute.ChangePassword.route) },
-                onNavigateToSavedCards = { navController.navigate(ProfileRoute.SavedCards.route) }
+                onNavigateToSavedCards = { navController.navigate(ProfileRoute.SavedCards.route) },
+                onNavigateToUsers = onNavigateToUsers
             )
         }
 
@@ -73,7 +75,11 @@ fun ProfileNavHost(
             LaunchedEffect(changePasswordState) {
                 when (changePasswordState) {
                     is ChangePasswordState.Success -> {
-                        Toast.makeText(context, "Lozinka uspješno promijenjena", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            "Lozinka uspješno promijenjena",
+                            Toast.LENGTH_SHORT
+                        ).show()
                         changePasswordViewModel.resetState()
                         navController.popBackStack()
                     }
@@ -106,7 +112,11 @@ fun ProfileNavHost(
             LaunchedEffect(profileEditState) {
                 when (profileEditState) {
                     is ProfileEditState.Success -> {
-                        Toast.makeText(context, "Profile updated successfully", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            "Profile updated successfully",
+                            Toast.LENGTH_SHORT
+                        ).show()
                         profileEditViewModel.resetState()
                         navController.popBackStack()
                     }
@@ -136,8 +146,8 @@ fun ProfileNavHost(
                 phoneNumberError = profileUiState.phoneNumberError,
                 genderError = profileUiState.genderError,
                 onBack = { navController.popBackStack() },
-                onSave = { firstName, lastName, phoneNumber, gender ->
-                    profileEditViewModel.updateProfile(firstName, lastName, phoneNumber, gender)
+                onSave = { fn, ln, phone, gender ->
+                    profileEditViewModel.updateProfile(fn, ln, phone, gender)
                 },
                 onProfilePictureSelected = { uri ->
                     profileEditViewModel.uploadProfilePicture(uri)
@@ -150,7 +160,7 @@ fun ProfileNavHost(
 
             CardScreen(
                 viewModel = viewModel,
-                onViewTransactions = { cardId -> /* to do */ },
+                onViewTransactions = { _ -> },
                 onBack = { navController.popBackStack() }
             )
         }

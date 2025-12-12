@@ -40,7 +40,7 @@ class AuthRepository(
                 phoneNumber = "",
                 gender = response.gender.orEmpty(),
                 profilePictureUrl = response.profilePictureURL.orEmpty(),
-                roles = response.roles
+                roles = response.roles ?: emptyList()
             )
         )
         return true
@@ -59,7 +59,7 @@ class AuthRepository(
                 phoneNumber = "",
                 gender = response.gender.orEmpty(),
                 profilePictureUrl = response.profilePictureURL.orEmpty(),
-                roles = null
+                roles = response.roles ?: emptyList()
             )
         )
         return true
@@ -78,7 +78,7 @@ class AuthRepository(
                 phoneNumber = "",
                 gender = response.gender.orEmpty(),
                 profilePictureUrl = response.profilePictureURL.orEmpty(),
-                roles = null
+                roles = response.roles ?: emptyList()
             )
         )
         return true

@@ -1,11 +1,18 @@
 package com.example.nuviofrontend.navigation
 
 import android.widget.Toast
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -14,20 +21,24 @@ import com.example.auth.presentation.AuthViewModel
 import com.example.auth.presentation.login.LoginScreen
 import com.example.auth.presentation.login.LoginViewModel
 import com.example.auth.presentation.register.RegisterScreen
+import com.example.core.R
 import com.example.nuviofrontend.MainScreen
 import com.example.nuviofrontend.feature.profile.presentation.ProfileEditScreen
 import com.example.nuviofrontend.feature.profile.presentation.ProfileEditState
 import com.example.nuviofrontend.feature.profile.presentation.ProfileEditViewModel
+import com.example.nuviofrontend.feature.profile.presentation.UsersScreen
 
 @Composable
 fun AppNavGraph(navController: NavHostController) {
     NavHost(navController = navController, startDestination = Screen.Splash.route) {
         composable(Screen.Splash.route) {
-            val authVm: com.example.auth.presentation.AuthViewModel = hiltViewModel()
+            val authVm: AuthViewModel = hiltViewModel()
             val ui by authVm.uiState.collectAsState()
 
             LaunchedEffect(ui.isLoggedIn) {
-                navController.navigate(if (ui.isLoggedIn) Screen.MainAppScreen.route else Screen.MainScreen.route) {
+                navController.navigate(
+                    if (ui.isLoggedIn) Screen.MainAppScreen.route else Screen.MainScreen.route
+                ) {
                     popUpTo(0)
                     launchSingleTop = true
                 }
@@ -92,6 +103,9 @@ fun AppNavGraph(navController: NavHostController) {
                 },
                 onNavigateToProfileEdit = {
                     navController.navigate(Screen.ProfileEdit.route)
+                },
+                onNavigateToUsers = {
+                    navController.navigate(Screen.Users.route)
                 }
             )
         }
@@ -101,12 +115,16 @@ fun AppNavGraph(navController: NavHostController) {
             val uiState by profileEditVm.uiState.collectAsState()
             val profileEditState by profileEditVm.profileEditState.collectAsState()
             val context = LocalContext.current
+            val successMessage = stringResource(R.string.profile_update_success)
 
             LaunchedEffect(profileEditState) {
                 when (profileEditState) {
                     is ProfileEditState.Success -> {
-                        Toast.makeText(context, "Profile updated successfully", Toast.LENGTH_SHORT)
-                            .show()
+                        Toast.makeText(
+                            context,
+                            successMessage,
+                            Toast.LENGTH_SHORT
+                        ).show()
                         profileEditVm.resetState()
                         navController.popBackStack()
                     }
@@ -145,6 +163,21 @@ fun AppNavGraph(navController: NavHostController) {
                     profileEditVm.uploadProfilePicture(uri)
                 }
             )
+        }
+
+        composable(Screen.Users.route) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                Image(
+                    painter = painterResource(id = R.drawable.background_dark),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+
+                UsersScreen(
+                    onBack = { navController.popBackStack() }
+                )
+            }
         }
     }
 }

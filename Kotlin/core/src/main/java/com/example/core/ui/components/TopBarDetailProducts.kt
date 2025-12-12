@@ -31,6 +31,8 @@ fun TopBarDetailProducts(
     onDeleteClick: () -> Unit = {},
     showDelete: Boolean = false,
     showEdit: Boolean = false,
+    showFavorite: Boolean = true,
+    showCart: Boolean = true,
 ) {
     Row(
         modifier = Modifier
@@ -52,43 +54,44 @@ fun TopBarDetailProducts(
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .size(35.dp)
-                    .background(color = BackgroundBehindButton, shape = RoundedCornerShape(5.dp))
-                    .clickable { onFavoriteClick() },
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.Favorite,
-                    tint = if (isFavorite) Error else White,
-                    contentDescription = "Favorite",
+            if (showFavorite) {
+                Box(
                     modifier = Modifier
-                        .size(23.dp)
+                        .size(35.dp)
+                        .background(color = BackgroundBehindButton, shape = RoundedCornerShape(5.dp))
                         .clickable { onFavoriteClick() },
-
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Favorite,
+                        tint = if (isFavorite) Error else White,
+                        contentDescription = "Favorite",
+                        modifier = Modifier.size(23.dp)
                     )
+                }
+
+                Spacer(modifier = Modifier.width(10.dp))
             }
 
-            Spacer(modifier = Modifier.width(10.dp))
-            Box(
-                modifier = Modifier
-                    .size(35.dp)
-                    .background(color = BackgroundBehindButton, shape = RoundedCornerShape(5.dp))
-                    .clickable { onCartClick() },
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ShoppingCart,
-                    contentDescription = "Cart",
-                    tint = White,
+            if (showCart) {
+                Box(
                     modifier = Modifier
-                        .size(23.dp)
-                        .clickable { onCartClick() }
-                )
+                        .size(35.dp)
+                        .background(color = BackgroundBehindButton, shape = RoundedCornerShape(5.dp))
+                        .clickable { onCartClick() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ShoppingCart,
+                        contentDescription = "Cart",
+                        tint = White,
+                        modifier = Modifier.size(23.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(10.dp))
             }
 
-            Spacer(modifier = Modifier.width(10.dp))
             if (showEdit) {
                 Box(
                     modifier = Modifier
@@ -136,9 +139,11 @@ fun TopBarDetailProductsPreview() {
             .fillMaxWidth()
     ) {
         TopBarDetailProducts(
-            onBack = { /* preview back action */ },
-            onFavoriteClick = { /* preview favorite */ },
-            onCartClick = { /* preview cart */ }
+            onBack = {},
+            onFavoriteClick = {},
+            onCartClick = {},
+            showFavorite = true,
+            showCart = true
         )
     }
 }

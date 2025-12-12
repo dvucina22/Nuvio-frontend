@@ -1,11 +1,11 @@
-// feature/auth/presentation/AuthViewModel.kt
 package com.example.auth.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.auth.data.AuthRepository
+import com.example.core.auth.AccessManager
+import com.example.core.auth.dto.Role
 import com.example.core.network.token.TokenManager
-import com.example.core.network.token.UserPrefs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -17,31 +17,42 @@ data class AuthUiState(
     val lastName: String = "",
     val email: String = "",
     val gender: String = "",
-    val profilePictureUrl: String = ""
+    val profilePictureUrl: String = "",
+    val roles: List<Role> = emptyList(),
+    val isAdmin: Boolean = false,
+    val isSeller: Boolean = false
 )
 
 @HiltViewModel
-class AuthViewModel @Inject constructor(private val tokenManager: TokenManager, private val userPrefs: UserPrefs, private val repo: AuthRepository) : ViewModel() {
+class AuthViewModel @Inject constructor(
+    private val tokenManager: TokenManager,
+    private val accessManager: AccessManager,
+    private val repo: AuthRepository
+) : ViewModel() {
 
     val uiState: StateFlow<AuthUiState> = combine(
         tokenManager.accessTokenFlow,
-        userPrefs.profileFlow
-    ) { token, profile ->
-        val firstName = profile?.firstName ?: ""
-        val lastName = profile?.lastName ?: ""
-        val email = profile?.email ?: ""
-        val gender = profile?.gender ?: ""
-        val profilePictureUrl = profile?.profilePictureUrl ?: ""
+        accessManager.profileFlow,
+        accessManager.isAdminFlow,
+        accessManager.isSellerFlow
+    ) { token, profile, isAdmin, isSeller ->
 
         AuthUiState(
             isLoggedIn = !token.isNullOrEmpty(),
-            firstName = firstName,
-            lastName = lastName,
-            email = email,
-            gender = gender,
-            profilePictureUrl = profilePictureUrl
+            firstName = profile?.firstName.orEmpty(),
+            lastName = profile?.lastName.orEmpty(),
+            email = profile?.email.orEmpty(),
+            gender = profile?.gender.orEmpty(),
+            profilePictureUrl = profile?.profilePictureUrl.orEmpty(),
+            roles = profile?.roles ?: emptyList(),
+            isAdmin = isAdmin,
+            isSeller = isSeller
         )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AuthUiState())
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = AuthUiState()
+    )
 
     fun logout() {
         viewModelScope.launch {
