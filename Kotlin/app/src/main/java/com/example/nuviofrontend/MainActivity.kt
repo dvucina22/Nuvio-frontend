@@ -60,7 +60,7 @@ fun MainScreen(onNavigateToRegister: () -> Unit, onNavigateToLogin: () -> Unit, 
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = painterResource(id = R.drawable.background_dark),
+            painter = painterResource(id = R.drawable.background_light),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop

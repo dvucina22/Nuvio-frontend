@@ -60,7 +60,7 @@ fun RegisterScreen(
         contentAlignment = Alignment.TopCenter
     ) {
         Image(
-            painter = painterResource(id = CoreR.drawable.background_dark),
+            painter = painterResource(id = CoreR.drawable.background_light),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop

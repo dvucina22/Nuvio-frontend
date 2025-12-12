@@ -25,6 +25,8 @@ import com.example.core.catalog.dto.ProductFilterRequest
 import com.example.core.catalog.dto.SuccessfulDeleteResponse
 import com.example.core.catalog.dto.UpdateProductRequest
 import com.example.core.catalog.dto.UpdateProductResponse
+import com.example.core.sale.dto.SaleRequest
+import com.example.core.sale.dto.SaleResponse
 import com.example.core.user.dto.ChangePasswordRequest
 import com.example.core.user.dto.ChangePasswordResponse
 import com.example.core.user.dto.UpdateProfilePictureRequest
@@ -112,6 +114,8 @@ interface ApiService {
     @DELETE("catalog/products/cart/{id}")
     suspend fun deleteCartItem(@Path("id") productId: Int): Response<Unit>
 
+    @POST("transactions/sale")
+    suspend fun makeSale(@Body request: SaleRequest): Response<SaleResponse>
     @GET("accounts/users")
     suspend fun getUsers(): Response<List<UserListItemDto>>
 

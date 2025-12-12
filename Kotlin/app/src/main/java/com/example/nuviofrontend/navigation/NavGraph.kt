@@ -26,6 +26,8 @@ import com.example.nuviofrontend.MainScreen
 import com.example.nuviofrontend.feature.profile.presentation.ProfileEditScreen
 import com.example.nuviofrontend.feature.profile.presentation.ProfileEditState
 import com.example.nuviofrontend.feature.profile.presentation.ProfileEditViewModel
+import com.example.nuviofrontend.feature.sale.presentation.CheckoutScreen
+import com.example.nuviofrontend.feature.sale.presentation.TransactionResultScreen
 import com.example.nuviofrontend.feature.profile.presentation.UsersScreen
 
 @Composable
@@ -165,19 +167,52 @@ fun AppNavGraph(navController: NavHostController) {
             )
         }
 
-        composable(Screen.Users.route) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                Image(
-                    painter = painterResource(id = R.drawable.background_dark),
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
+        composable(Screen.Checkout.route) {
+            CheckoutScreen(
+                onPaymentSuccess = { saleResponse ->
+                    navController.navigate(Screen.TransactionSuccess.route) {
+                        popUpTo(Screen.MainAppScreen.route)
+                        launchSingleTop = true
+                    }
+                },
+                onPaymentFailure = { errorMessage ->
+                    navController.navigate(Screen.TransactionFailure.route) {
+                        popUpTo(Screen.MainAppScreen.route)
+                        launchSingleTop = true
+                    }
+                },
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
+        }
 
-                UsersScreen(
-                    onBack = { navController.popBackStack() }
-                )
-            }
+        composable(Screen.TransactionSuccess.route) {
+            TransactionResultScreen(
+                isSuccess = true,
+                onContinueShopping = {
+                    navController.navigate(Screen.MainAppScreen.route) {
+                        popUpTo(0)
+                        launchSingleTop = true
+                    }
+                },
+                onViewOrders = {
+                    navController.navigate(Screen.MainAppScreen.route) {
+                        popUpTo(0)
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+
+        composable(Screen.TransactionFailure.route) {
+            TransactionResultScreen(
+                isSuccess = false,
+                onContinueShopping = {
+                    navController.popBackStack()
+                },
+                onViewOrders = {}
+            )
         }
     }
 }

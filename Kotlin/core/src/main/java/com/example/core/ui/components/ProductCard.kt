@@ -1,10 +1,13 @@
 package com.example.core.ui.components
 
+import android.R.attr.fontWeight
+import android.R.attr.maxLines
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -13,7 +16,6 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,7 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -35,6 +37,8 @@ import androidx.compose.ui.window.Popup
 import coil.compose.AsyncImage
 import com.example.core.R
 import com.example.core.catalog.dto.Product
+import com.example.core.ui.theme.AccentColor
+import com.example.core.ui.theme.Black
 import com.example.core.ui.theme.White
 
 @Composable
@@ -51,180 +55,276 @@ fun ProductCard(
     isSeller: Boolean = false
 ) {
     var menuOpen by remember { mutableStateOf(false) }
+
     Box(
         modifier = modifier
-            .width(170.dp)
-            .clip(RoundedCornerShape(18.dp))
-            .background(Color(0xFF0B1220))
+            .fillMaxWidth()
+            .padding(horizontal = 15.dp)
+            .height(140.dp)
+            .shadow(
+                elevation = 2.dp,
+                shape = RoundedCornerShape(12.dp),
+                ambientColor = Color(0xFF000000).copy(alpha = 0.03f),
+                spotColor = Color(0xFF000000).copy(alpha = 0.03f)
+            )
+            .clip(RoundedCornerShape(12.dp))
+            .background(Color(0xD8D9D9D9))
+            .border(
+                width = 1.dp,
+                color = Color.White,
+                shape = RoundedCornerShape(12.dp)
+            )
             .clickable(onClick = onClick)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 210.dp)
+        Row(
+            modifier = Modifier.fillMaxSize()
         ) {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(120.dp)
-                    .background(Color(0xFF111827))
+                    .width(140.dp)
+                    .fillMaxHeight()
             ) {
                 AsyncImage(
                     model = product.imageUrl.ifEmpty { R.drawable.logo_light_icon },
                     contentDescription = product.name,
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(topStart = 12.dp, bottomStart = 12.dp)),
                     contentScale = ContentScale.Crop
                 )
 
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.BottomCenter)
-                        .height(36.dp)
-                        .background(
-                            Brush.verticalGradient(
-                                listOf(
-                                    Color.Transparent,
-                                    Color(0xCC020617)
-                                )
-                            )
-                        )
-                )
-
-                IconButton(
-                    onClick = { onFavoriteChange(!isFavorite) },
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
+                        .align(Alignment.TopStart)
                         .padding(8.dp)
+                        .size(32.dp)
+                        .shadow(
+                            elevation = 2.dp,
+                            shape = CircleShape
+                        )
+                        .clip(CircleShape)
+                        .background(Color(0xDD1A1F2E))
+                        .clickable { onFavoriteChange(!isFavorite) },
+                    contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                         contentDescription = "Favorite",
-                        tint = if (isFavorite) Color(0xFFF97373) else White
+                        tint = if (isFavorite) Color(0xFFFF6B6B) else Color.White,
+                        modifier = Modifier.size(18.dp)
                     )
+                }
+
+                val quantity = product.quantity ?: 0
+                if (quantity <= 0) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                            .padding(8.dp)
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(AccentColor)
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = "Out of Stock",
+                            color = White,
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                } else if (quantity < 5) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                            .padding(8.dp)
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(AccentColor)
+                            .padding(horizontal = 8.dp, vertical = 0.dp)
+                    ) {
+                        Text(
+                            text = "Low Stock",
+                            color = Color.White,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
 
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 10.dp)
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .padding(14.dp),
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = product.name,
-                    color = White,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                Column {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.Top
+                    ) {
+                        Text(
+                            text = product.brand.uppercase(),
+                            color = AccentColor,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 0.8.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f, fill = false)
+                        )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
 
-                Text(
-                    text = product.brand,
-                    color = Color(0xFF9CA3AF),
-                    fontSize = 12.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "$${String.format("%.2f", product.basePrice)}",
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(999.dp))
-                            .background(Color(0xFF111827))
-                            .padding(horizontal = 10.dp, vertical = 4.dp),
-                        color = Color(0xFF60A5FA),
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    if (showMenu && (isAdmin || isSeller)) {
-                        Box {
-                            Icon(
-                                imageVector = Icons.Default.MoreVert,
-                                contentDescription = "More",
-                                tint = Color.White,
-                                modifier = Modifier
-                                    .size(20.dp)
-                                    .clickable { menuOpen = true }
+                        if (product.modelNumber?.isNotEmpty() == true) {
+                            Text(
+                                text = product.modelNumber!!,
+                                color = Color(0xFF1D1D1D),
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Medium,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
+                        }
 
-                            if (menuOpen) {
-                                Popup(
-                                    alignment = Alignment.TopEnd,
-                                    onDismissRequest = { menuOpen = false }
+                        if (showMenu && (isAdmin || isSeller)) {
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Box {
+                                Box(
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .clip(CircleShape)
+                                        .background(Color(0xFFa8afbd))
+                                        .clickable { menuOpen = true },
+                                    contentAlignment = Alignment.Center
                                 ) {
-                                    Column(
-                                        modifier = Modifier
-                                            .background(Color(0xFF232323), RoundedCornerShape(6.dp))
-                                            .border(
-                                                width = 1.dp,
-                                                color = Color(0xFF444444),
-                                                shape = RoundedCornerShape(6.dp)
-                                            )
-                                            .width(IntrinsicSize.Max)
-                                    ) {
-                                        MenuItem(
-                                            icon = Icons.Default.Edit,
-                                            label = "Uredi"
-                                        ) {
-                                            menuOpen = false
-                                            onEdit(product.id)
-                                        }
+                                    Icon(
+                                        imageVector = Icons.Default.MoreVert,
+                                        contentDescription = "More",
+                                        tint = Color(0xFF9CA3AF),
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
 
-                                        MenuItem(
-                                            icon = Icons.Default.Delete,
-                                            label = "Obriši"
+                                if (menuOpen) {
+                                    Popup(
+                                        alignment = Alignment.TopEnd,
+                                        onDismissRequest = { menuOpen = false }
+                                    ) {
+                                        Column(
+                                            modifier = Modifier
+                                                .shadow(
+                                                    elevation = 8.dp,
+                                                    shape = RoundedCornerShape(10.dp)
+                                                )
+                                                .background(Color(0xFF252D3D), RoundedCornerShape(10.dp))
+                                                .border(
+                                                    width = 1.dp,
+                                                    color = Color(0xFF353D4D),
+                                                    shape = RoundedCornerShape(10.dp)
+                                                )
+                                                .padding(4.dp)
+                                                .width(IntrinsicSize.Max)
                                         ) {
-                                            menuOpen = false
-                                            onDelete(product.id)
+                                            MenuItem(
+                                                icon = Icons.Default.Edit,
+                                                label = "Edit"
+                                            ) {
+                                                menuOpen = false
+                                                onEdit(product.id)
+                                            }
+
+                                            Spacer(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(1.dp)
+                                                    .padding(horizontal = 8.dp)
+                                                    .background(Color(0xFF353D4D))
+                                            )
+
+                                            MenuItem(
+                                                icon = Icons.Default.Delete,
+                                                label = "Delete",
+                                                isDestructive = true
+                                            ) {
+                                                menuOpen = false
+                                                onDelete(product.id)
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
+                    }
 
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Text(
+                        text = product.name,
+                        color = Black,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        lineHeight = 18.sp
+                    )
+
+                    if (product.category.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = product.category,
+                            color = Color(0xFF1D1D1D),
+                            fontSize = 12.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
                     }
                 }
-           }
+
+                Text(
+                    text = "€${String.format("%.2f", product.basePrice)}",
+                    color = AccentColor,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
     }
 }
 
-
-
 @Composable
-fun MenuItem(icon: ImageVector, label: String, onClick: () -> Unit) {
+fun MenuItem(
+    icon: ImageVector,
+    label: String,
+    isDestructive: Boolean = false,
+    onClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 6.dp)
+            .clip(RoundedCornerShape(6.dp))
             .clickable(
                 onClick = onClick,
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() }
-            ),
+            )
+            .background(Color.Transparent)
+            .padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             imageVector = icon,
             contentDescription = label,
-            tint = Color.White,
-            modifier = Modifier.size(13.dp)
+            tint = if (isDestructive) Color(0xFFFF6B6B) else Color.White,
+            modifier = Modifier.size(14.dp)
         )
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(10.dp))
         Text(
             text = label,
-            color = Color.White,
-            fontSize = 12.sp
+            color = if (isDestructive) Color(0xFFFF6B6B) else Color.White,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium
         )
     }
 }

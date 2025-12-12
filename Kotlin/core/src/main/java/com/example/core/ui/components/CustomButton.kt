@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.example.core.ui.theme.AccentColor
 import com.example.core.ui.theme.ButtonColorDark
 
 @Composable
@@ -26,7 +27,7 @@ fun CustomButton(
     modifier: Modifier = Modifier,
     width: Int = 250,
     height: Int = 45,
-    containerColor: Color = ButtonColorDark,
+    containerColor: Color = AccentColor,
     iconRes: Int? = null,
     iconSize: Int = 20
 ) {
@@ -36,7 +37,7 @@ fun CustomButton(
             .height(height.dp)
             .width(width.dp)
             .padding(vertical = 4.dp),
-        shape = RoundedCornerShape(4.dp),
+        shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(containerColor = containerColor)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {

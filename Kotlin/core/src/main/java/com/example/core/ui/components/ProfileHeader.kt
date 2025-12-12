@@ -21,6 +21,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.example.core.ui.theme.IconDark
 
 
 @Composable
@@ -53,14 +54,14 @@ fun ProfileHeader(
 
         Text(
             text = displayName,
-            color = Color.White,
+            color = Color.Black,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
 
         Text(
             text = displayEmail,
-            color = Color(0xFF9AA4A6),
+            color = IconDark,
             style = MaterialTheme.typography.labelSmall
         )
 

@@ -64,8 +64,13 @@ import com.example.core.catalog.dto.Product
 import com.example.core.ui.components.CustomRangeSlider
 import com.example.core.ui.components.ProductCard
 import com.example.core.ui.components.SearchField
+import com.example.core.ui.theme.AccentColor
 import com.example.core.ui.theme.BackgroundNavDark
+import com.example.core.ui.theme.Black
+import com.example.core.ui.theme.GrayOne
+import com.example.core.ui.theme.IconDark
 import com.example.core.ui.theme.IconSelectedTintDark
+import com.example.core.ui.theme.LightOverlay
 import com.example.core.ui.theme.SelectedItemBackgroundDark
 import com.example.core.ui.theme.White
 import kotlinx.coroutines.launch
@@ -91,13 +96,14 @@ fun SearchScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(bottom = 80.dp, top = 36.dp, start = 20.dp, end = 20.dp)
+            .padding(bottom = 80.dp, top = 36.dp, start = 10.dp, end = 10.dp)
     ) {
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth()
+                    .padding(end = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 SearchField(
@@ -113,10 +119,14 @@ fun SearchScreen(
                 Box(
                     modifier = Modifier
                         .width(44.dp)
-                        .height(40.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(SelectedItemBackgroundDark)
-                        .border(1.dp, BackgroundNavDark, RoundedCornerShape(12.dp))
+                        .height(44.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(LightOverlay)
+                        .border(
+                            width = 1.dp,
+                            color = AccentColor.copy(alpha = 0.8f),
+                            shape = RoundedCornerShape(8.dp)
+                        )
                 ) {
                     IconButton(
                         onClick = { showFilterSheet = true },
@@ -125,7 +135,7 @@ fun SearchScreen(
                         Icon(
                             imageVector = Icons.Default.Tune,
                             contentDescription = stringResource(id = R.string.filter),
-                            tint = IconSelectedTintDark
+                            tint = IconDark
                         )
                     }
                 }
@@ -241,47 +251,28 @@ private fun SearchResultsGrid(
     onToggleFavorite: (productId: Long, shouldBeFavorite: Boolean) -> Unit,
     onProductClick: (Long) -> Unit
 ) {
-    val rows = products.chunked(2)
-
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues(bottom = 16.dp)
+        contentPadding = PaddingValues(horizontal = 0.dp, vertical = 8.dp)
     ) {
-        itemsIndexed(rows) { index, rowProducts ->
-            if (index == rows.lastIndex) {
-                LaunchedEffect(key1 = index, key2 = rowProducts.size) {
+        itemsIndexed(products) { index, product ->
+            if (index == products.lastIndex) {
+                LaunchedEffect(key1 = index) {
                     onLoadMore()
                 }
             }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                rowProducts.forEach { product ->
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                    ) {
-                        ProductCard(
-                            product = product,
-                            isFavorite = favoriteProductIds.contains(product.id),
-                            onFavoriteChange = { shouldBeFavorite ->
-                                onToggleFavorite(product.id, shouldBeFavorite)
-                            },
-                            onClick = { onProductClick(product.id) }
-                        )
-                    }
-                }
-                if (rowProducts.size == 1) {
-                    Spacer(
-                        modifier = Modifier
-                            .weight(1f)
-                            .width(0.dp)
-                    )
-                }
-            }
+            ProductCard(
+                product = product,
+                isFavorite = favoriteProductIds.contains(product.id),
+                onFavoriteChange = { shouldBeFavorite ->
+                    onToggleFavorite(product.id, shouldBeFavorite)
+                },
+                onClick = { onProductClick(product.id) },
+                showMenu = false,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
 
         if (isLoadingMore) {
@@ -289,7 +280,7 @@ private fun SearchResultsGrid(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 8.dp),
+                        .padding(vertical = 16.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator(color = IconSelectedTintDark)
@@ -516,8 +507,8 @@ private fun SearchFilterSheetContent(
                 modifier = Modifier.weight(1f),
                 onClick = onReset,
                 colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = Color(0xFF8A9499),
-                    contentColor = Color(0xFF1A1A1A)
+                    containerColor = GrayOne,
+                    contentColor = Black
                 ),
                 border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF6A7479)),
                 shape = RoundedCornerShape(12.dp)
@@ -532,7 +523,7 @@ private fun SearchFilterSheetContent(
                 modifier = Modifier.weight(1f),
                 onClick = onApply,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF5A656A),
+                    containerColor = AccentColor,
                     contentColor = White
                 ),
                 shape = RoundedCornerShape(12.dp)
@@ -573,15 +564,15 @@ private fun FilterChip(
         modifier = Modifier
             .clip(RoundedCornerShape(8.dp))
             .background(
-                if (selected) Color(0xFF5A656A)
-                else Color(0xFFD1D5D7)
+                if (selected) AccentColor
+                else GrayOne
             )
             .clickable(onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Text(
             text = label,
-            color = if (selected) White else Color(0xFF2A2A2A),
+            color = if (selected) White else Black,
             fontSize = 14.sp,
             fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal
         )
@@ -605,7 +596,7 @@ private fun FilterSwitchRow(
     ) {
         Text(
             text = label,
-            color = Color(0xFF2A2A2A),
+            color = Black,
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium
         )
@@ -614,9 +605,9 @@ private fun FilterSwitchRow(
             onCheckedChange = onCheckedChange,
             colors = SwitchDefaults.colors(
                 checkedThumbColor = White,
-                checkedTrackColor = Color(0xFF5A656A),
-                uncheckedThumbColor = Color(0xFF8A9499),
-                uncheckedTrackColor = Color(0xFFB1B5B7)
+                checkedTrackColor = AccentColor,
+                uncheckedThumbColor = GrayOne,
+                uncheckedTrackColor = LightOverlay
             )
         )
     }

@@ -230,6 +230,78 @@
     <string name="edit_product_title">Uredi prozivod</string>
     <string name="edit_product_done">Proizvod ažuriran!</string>
 
+    <string name="category_all">Sve</string>
+    <string name="category_gaming">Igre</string>
+    <string name="category_multimedia">Multimedija</string>
+    <string name="category_business">Poslovno</string>
+
+    <string name="banner_best_deals">Dobre ponude tijekom cijele godine</string>
+    <string name="banner_christmas_sale">Božićni popusti</string>
+    <string name="banner_new_year_laptop">Nova godina, novi laptop</string>
+
+    <string name="banner_btn_shop_now">Kupi sada</string>
+    <string name="banner_btn_explore">Istraži</string>
+    <string name="banner_btn_view_deals">Pogledaj ponude</string>
+
+    <string name="what_are_you_looking_for">Što danas tražite?</string>
+
+    <string name="shop_by_category">Kupuj po kategoriji</string>
+    <string name="latest_arrivals">Najnoviji proizvodi</string>
+    <string name="popular_brands">Popularni brendovi</string>
+    <string name="recommended_for_you">Preporučeno za tebe</string>
+
+    <string name="see_all">Pogledaj sve</string>
+    <string name="your_saved_products">Vaši spremljeni proizvodi</string>
+
+    <string name="checkout_title">Plaćanje</string>
+    <string name="checkout_subtitle">Dovršite svoju kupnju</string>
+
+    <string name="order_summary">Sažetak narudžbe (%1$d artikala)</string>
+
+    <string name="billing_information">Podaci za naplatu</string>
+    <string name="user_info_not_available">Korisnički podaci nisu dostupni</string>
+    <string name="info_name">Ime</string>
+    <string name="info_email">Email</string>
+    <string name="info_phone">Telefon</string>
+
+    <string name="payment_method">Način plaćanja</string>
+    <string name="payment_new_card">Nova kartica</string>
+    <string name="payment_use_saved_card">Koristi spremljenu karticu</string>
+    <string name="payment_select_saved_card">Odaberi spremljenu karticu</string>
+    <string name="payment_enter_card_details">Unesite podatke o kartici</string>
+
+    <string name="expiry_mm">MM</string>
+    <string name="expiry_yy">GG</string>
+    <string name="full_name_on_card">Ime i prezime na kartici</string>
+    <string name="card_expires">Istječe %1$02d/%2$d</string>
+    <string name="total">Ukupno</string>
+    <string name="pay_button">PLATI</string>
+
+    <string name="payment_success_title">Plaćanje uspješno!</string>
+    <string name="payment_failed_title">Plaćanje nije uspjelo</string>
+
+    <string name="transaction_details_title">Detalji transakcije</string>
+    <string name="transaction_id">ID transakcije</string>
+    <string name="transaction_status">Status</string>
+    <string name="transaction_amount">Iznos</string>
+    <string name="transaction_date">Datum</string>
+
+    <string name="payment_success_message">
+    Vaša narudžba je uspješno zaprimljena.\nHvala na kupnji!
+    </string>
+
+    <string name="payment_failed_retry_message">
+    Nismo uspjeli obraditi vašu uplatu.\nPokušajte ponovno ili koristite drugi način plaćanja.
+    </string>
+
+    <string name="payment_failed_max_retries">
+    Plaćanje nije uspjelo nakon više pokušaja.\nMolimo pokušajte kasnije.
+    </string>
+
+    <string name="go_to_home">Natrag na početnu</string>
+    <string name="view_orders">Pogledaj narudžbe</string>
+    <string name="try_again">Pokušaj ponovno</string>
+
     <string name="users_title">Korisnici i uloge</string>
     <string name="users_search_placeholder">Pretraži korisnike...</string>
     <string name="users_empty">Nema korisnika.</string>
