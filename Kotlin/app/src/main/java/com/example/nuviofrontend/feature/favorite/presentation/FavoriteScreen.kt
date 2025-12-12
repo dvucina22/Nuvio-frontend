@@ -13,18 +13,17 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.auth.presentation.AuthViewModel
 import com.example.core.R
 import com.example.core.catalog.dto.Product
 import com.example.core.ui.components.ProductCard
+import com.example.core.ui.theme.Black
 import com.example.core.ui.theme.IconSelectedTintDark
-import com.example.core.ui.theme.White
 
 @Composable
 fun FavoriteScreen(
@@ -33,76 +32,83 @@ fun FavoriteScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
-    val authViewModel: AuthViewModel = hiltViewModel()
-    val authState by authViewModel.uiState.collectAsState()
-    val isLoggedIn = authState.isLoggedIn
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(top = 36.dp, bottom = 80.dp, start = 20.dp, end = 20.dp)
-    ) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            Text(
-                text = stringResource(id = R.string.favorites_title),
-                color = White,
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold
-            )
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 80.dp, top = 20.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        start = 15.dp,
+                        end = 10.dp,
+                        top = 26.dp,
+                        bottom = 13.dp
+                    ),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(
+                        text = stringResource(id = R.string.favorites_title),
+                        color = Black,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = stringResource(R.string.your_saved_products),
+                        color = Color(0xFF344351),
+                        fontSize = 14.sp
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            if (!isLoggedIn) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 32.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.cart_login_required),
-                        color = White
-                    )
+            when {
+                state.isLoading && state.products.isEmpty() -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 32.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(color = IconSelectedTintDark)
+                    }
                 }
-            } else {
-                when {
-                    state.isLoading && state.products.isEmpty() -> {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 32.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(color = IconSelectedTintDark)
-                        }
-                    }
 
-                    state.products.isEmpty() -> {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 32.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = stringResource(id = R.string.favorites_empty_message),
-                                color = White
-                            )
-                        }
-                    }
-
-                    else -> {
-                        FavoriteResultsGrid(
-                            products = state.products,
-                            favoriteProductIds = state.favoriteProductIds,
-                            isLoadingMore = state.isLoadingMore,
-                            onToggleFavorite = { productId, shouldBeFavorite ->
-                                viewModel.toggleFavorite(productId, shouldBeFavorite)
-                            },
-                            onLoadMore = { viewModel.loadMore() },
-                            onProductClick = { onProductClick(it) }
+                state.products.isEmpty() -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 32.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.favorites_empty_message),
+                            color = Color(0xFF344351),
+                            fontSize = 14.sp
                         )
                     }
+                }
+
+                else -> {
+                    FavoriteResultsList(
+                        products = state.products,
+                        favoriteProductIds = state.favoriteProductIds,
+                        isLoadingMore = state.isLoadingMore,
+                        onToggleFavorite = { productId, shouldBeFavorite ->
+                            viewModel.toggleFavorite(productId, shouldBeFavorite)
+                        },
+                        onLoadMore = {
+                            viewModel.loadMore()
+                        },
+                        onProductClick = { productId ->
+                            onProductClick(productId)
+                        }
+                    )
                 }
             }
         }
@@ -125,7 +131,7 @@ fun FavoriteScreen(
 }
 
 @Composable
-private fun FavoriteResultsGrid(
+private fun FavoriteResultsList(
     products: List<Product>,
     favoriteProductIds: Set<Long>,
     isLoadingMore: Boolean,
@@ -133,52 +139,31 @@ private fun FavoriteResultsGrid(
     onLoadMore: () -> Unit,
     onProductClick: (Long) -> Unit
 ) {
-    val rows = products.chunked(2)
-
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues(bottom = 16.dp)
+        contentPadding = PaddingValues(horizontal = 0.dp, vertical = 8.dp)
     ) {
-        itemsIndexed(rows) { index, rowProducts ->
-            if (index == rows.lastIndex) {
-                LaunchedEffect(key1 = index, key2 = rowProducts.size) {
+        itemsIndexed(products) { index, product ->
+
+            if (index == products.lastIndex) {
+                LaunchedEffect(key1 = index) {
                     onLoadMore()
                 }
             }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                rowProducts.forEach { product ->
-                    val isFavorite = favoriteProductIds.contains(product.id)
+            val isFavorite = favoriteProductIds.contains(product.id)
 
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(bottom = 4.dp)
-                    ) {
-                        ProductCard(
-                            product = product,
-                            isFavorite = isFavorite,
-                            onFavoriteChange = { shouldBeFavorite ->
-                                onToggleFavorite(product.id, shouldBeFavorite)
-                            },
-                            onClick = { onProductClick(product.id) },
-                            showMenu = false
-                        )
-                    }
-                }
-
-                if (rowProducts.size == 1) {
-                    Spacer(
-                        modifier = Modifier
-                            .weight(1f)
-                            .width(0.dp)
-                    )
-                }
-            }
+            ProductCard(
+                product = product,
+                isFavorite = isFavorite,
+                onFavoriteChange = { shouldBeFavorite ->
+                    onToggleFavorite(product.id, shouldBeFavorite)
+                },
+                onClick = { onProductClick(product.id) },
+                showMenu = false,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
 
         if (isLoadingMore) {
@@ -186,7 +171,7 @@ private fun FavoriteResultsGrid(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 8.dp),
+                        .padding(vertical = 16.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator(color = IconSelectedTintDark)

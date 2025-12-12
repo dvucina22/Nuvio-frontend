@@ -12,6 +12,7 @@ import com.example.core.network.api.ApiClient
 import com.example.core.network.api.ApiService
 import com.example.core.network.interceptor.AuthInterceptor
 import com.example.core.network.token.IUserPrefs
+import com.example.core.sale.ISaleService
 import com.example.nuviofrontend.feature.cart.data.CartRepository
 import com.example.nuviofrontend.feature.cart.data.CartService
 import com.example.nuviofrontend.feature.catalog.data.CatalogRepository
@@ -25,6 +26,8 @@ import com.example.nuviofrontend.feature.profile.data.CloudinaryService
 import com.example.nuviofrontend.feature.profile.data.ProfilePictureRepository
 import com.example.nuviofrontend.feature.profile.data.UserRepository
 import com.example.nuviofrontend.feature.profile.data.UserService
+import com.example.nuviofrontend.feature.sale.data.SaleRepository
+import com.example.nuviofrontend.feature.sale.data.SaleService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -143,5 +146,17 @@ object AppModule {
     @Singleton
     fun provideProductImageRepository(apiService: ApiService, cloudinaryService: CloudinaryService) : ProductImageRepository{
         return ProductImageRepository(apiService, cloudinaryService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSaleService(apiService: ApiService): ISaleService {
+        return SaleService(apiService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSaleRepository(saleService: ISaleService): SaleRepository {
+        return SaleRepository(saleService)
     }
 }

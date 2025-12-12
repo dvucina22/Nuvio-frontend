@@ -50,6 +50,7 @@ import com.example.core.R
 import com.example.core.catalog.dto.Product
 import com.example.core.ui.components.CustomPopupWarning
 import com.example.core.ui.components.ProductCard
+import com.example.core.ui.components.banner.BannerData
 import com.example.core.ui.theme.BackgroundBehindButton
 import com.example.core.ui.theme.Black
 import com.example.core.ui.theme.White
@@ -58,6 +59,19 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.yield
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerScope
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.rememberAsyncImagePainter
+import com.example.core.ui.components.banner.BannerComponent
+import com.example.core.ui.components.categories.CategoryButton
+import com.example.core.ui.components.categories.CategoryButtonData
 
 data class Category(
     val id: Long,
@@ -90,6 +104,7 @@ fun HomeScreen(
 
     val scrollState = rememberScrollState()
     val state by viewModel.state.collectAsState()
+    val profile by viewModel.profileFlow.collectAsState(initial = null)
 
     val authViewModel: AuthViewModel = hiltViewModel()
     val authState by authViewModel.uiState.collectAsState()
@@ -99,6 +114,13 @@ fun HomeScreen(
 
     var showDeletePopup by remember { mutableStateOf(false) }
     var productIdToDelete by remember { mutableStateOf<Long?>(null) }
+    var selectedCategoryId by remember { mutableStateOf<Long?>(0L) }
+
+    val onDeleteProduct: (Long) -> Unit = { productId ->
+        productIdToDelete = productId
+        showDeletePopup = true
+    }
+
 
     val greeting = when (gender?.lowercase()) {
         "male" -> stringResource(R.string.welcome_male, firstName ?: "")
@@ -107,37 +129,40 @@ fun HomeScreen(
     }
 
     val categories = listOf(
-        Category(
-            id = 1,
-            name = "Gaming",
-            icon = Icons.Default.SportsEsports,
-            gradient = Brush.linearGradient(
-                colors = listOf(Color(0xFF667EEA), Color(0xFF764BA2))
-            )
-        ),
-        Category(
-            id = 2,
-            name = "Multimedia",
-            icon = Icons.Default.Movie,
-            gradient = Brush.linearGradient(
-                colors = listOf(Color(0xFFF093FB), Color(0xFFF5576C))
-            )
-        ),
-        Category(
-            id = 3,
-            name = "Business",
-            icon = Icons.Default.Business,
-            gradient = Brush.linearGradient(
-                colors = listOf(Color(0xFF4FACFE), Color(0xFF00F2FE))
-            )
-        )
+        CategoryButtonData(id = 0, name = stringResource(R.string.category_all)),
+        CategoryButtonData(id = 1, name = stringResource(R.string.category_gaming)),
+        CategoryButtonData(id = 2, name = stringResource(R.string.category_multimedia)),
+        CategoryButtonData(id = 3, name = stringResource(R.string.category_business))
     )
 
     val banners = listOf(
-        Banner(1, "", "Black Friday", "Up to 50% OFF"),
-        Banner(2, "", "New Arrivals", "Check latest models"),
-        Banner(3, "", "Gaming Week", "Special deals")
+        BannerData(
+            id = 1,
+            imageUrl = "https://res.cloudinary.com/dx6vzaymg/image/upload/v1765468054/Gemini_Generated_Image_xj3bq9xj3bq9xj3b_jlud1h.png",
+            title = "",
+            subtitle = "",
+            buttonText = stringResource(R.string.banner_btn_shop_now),
+            onButtonClick = {  }
+        ),
+        BannerData(
+            id = 2,
+            imageUrl = "https://res.cloudinary.com/dx6vzaymg/image/upload/v1765468055/Group_108_zwyhez.png",
+            title = "",
+            subtitle = "",
+            buttonText = stringResource(R.string.banner_btn_explore),
+            onButtonClick = {  }
+        ),
+        BannerData(
+            id = 3,
+            imageUrl = "https://res.cloudinary.com/dx6vzaymg/image/upload/v1765468054/Gemini_Generated_Image_a5us7ma5us7ma5us_crsjza.png",
+            title = "",
+            subtitle = "",
+            buttonText = stringResource(R.string.banner_btn_view_deals),
+            onButtonClick = {  }
+        )
     )
+
+
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -149,20 +174,25 @@ fun HomeScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 16.dp),
+                    .padding(
+                        start = 15.dp,
+                        end = 10.dp,
+                        top = 26.dp,
+                        bottom = 13.dp
+                    ),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
                     Text(
                         text = greeting,
-                        color = White,
+                        color = Black,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "What are you looking for today?",
-                        color = Color(0xFF9AA4A6),
+                        text = stringResource(R.string.what_are_you_looking_for),
+                        color = Color(0xFF344351),
                         fontSize = 14.sp
                     )
                 }
@@ -174,7 +204,7 @@ fun HomeScreen(
                         Icon(
                             imageVector = Icons.Default.Notifications,
                             contentDescription = "Notifications",
-                            tint = White
+                            tint = Black
                         )
                     }
                     if (isLoggedIn && (isAdmin || isSeller)) {
@@ -201,33 +231,37 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            PromotionalBanner(banners)
+            PromotionalBannerCarousel(
+                banners = banners,
+                modifier = Modifier
+                    .fillMaxWidth(),
+                autoScrollInterval = 8000L
+            )
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            SectionHeader(title = "Shop by Category")
+            SectionHeader(stringResource(R.string.shop_by_category))
             Spacer(modifier = Modifier.height(12.dp))
-            CategoriesRow(
+            CategoriesButtonRow(
                 categories = categories,
+                selectedCategoryId = selectedCategoryId,
                 onCategoryClick = { categoryId ->
-                    viewModel.loadCategoryProducts(categoryId)
+                    selectedCategoryId = categoryId
+                    if (categoryId == 0L) {
+                        viewModel.loadHomeData()
+                    } else {
+                        viewModel.loadCategoryProducts(categoryId)
+                    }
                 }
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            SectionHeader(
-                title = "Flash Deals",
-                actionText = "See All",
-                onActionClick = { }
-            )
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             if (state.isLoading && state.flashDeals.isEmpty()) {
                 LoadingRow()
             } else if (state.flashDeals.isNotEmpty()) {
                 FlashDealsRow(
-                    products = state.flashDeals,
+                    products = state.flashDeals.take(6),
                     favoriteIds = state.favoriteProductIds,
                     onToggleFavorite = { id, newValue ->
                         viewModel.setFavorite(id, newValue)
@@ -245,15 +279,15 @@ fun HomeScreen(
                     isSeller = isSeller
                 )
             } else {
-                EmptyStateRow("No deals available")
+                EmptyStateRow("No products available")
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
             SectionHeader(
-                title = "Latest Arrivals",
-                actionText = "See All",
-                onActionClick = { }
+                title = stringResource(R.string.latest_arrivals),
+                actionText = stringResource(R.string.see_all),
+                onActionClick = {  }
             )
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -284,7 +318,6 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            SectionHeader(title = "Popular Brands")
             Spacer(modifier = Modifier.height(12.dp))
             PopularBrandsRow(
                 onBrandClick = { _ -> }
@@ -292,11 +325,6 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            SectionHeader(
-                title = "Recommended for You",
-                actionText = "See All",
-                onActionClick = { }
-            )
             Spacer(modifier = Modifier.height(12.dp))
 
             if (state.isLoading && state.recommendedProducts.isEmpty()) {
@@ -371,12 +399,111 @@ fun HomeScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun PromotionalBannerCarousel(
+    banners: List<BannerData>,
+    modifier: Modifier = Modifier,
+    autoScrollInterval: Long = 4000L,
+    animationDuration: Int = 1200
+) {
+    val realPageCount = banners.size
+    val infiniteCount = Int.MAX_VALUE
+
+    val pagerState = rememberPagerState(
+        initialPage = infiniteCount / 2,
+        pageCount = { infiniteCount }
+    )
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(autoScrollInterval)
+            pagerState.animateScrollToPage(
+                pagerState.currentPage + 1,
+                animationSpec = tween(
+                    durationMillis = animationDuration,
+                    easing = LinearEasing
+                )
+            )
+        }
+    }
+
+    Column(modifier = modifier) {
+
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(180.dp)
+                .padding(horizontal = 5.dp)
+        ) { page ->
+
+            val realIndex = page % realPageCount
+            BannerComponent(banner = banners[realIndex])
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            val current = pagerState.currentPage % realPageCount
+
+            repeat(realPageCount) { index ->
+                val isSelected = index == current
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = 4.dp)
+                        .size(
+                            width = if (isSelected) 24.dp else 8.dp,
+                            height = 8.dp
+                        )
+                        .clip(CircleShape)
+                        .background(
+                            if (isSelected) Color(0xFF004CBB)
+                            else Color.Black
+                        )
+                )
+            }
+        }
+    }
+}
+
+
+
+
+
+@Composable
+fun CategoriesButtonRow(
+    categories: List<CategoryButtonData>,
+    selectedCategoryId: Long?,
+    onCategoryClick: (Long) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyRow(
+        modifier = modifier,
+        contentPadding = PaddingValues(horizontal = 10.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        items(categories) { category ->
+            CategoryButton(
+                category = category,
+                isSelected = category.id == selectedCategoryId,
+                onClick = { onCategoryClick(category.id) }
+            )
+        }
+    }
+}
+
+///
+
 @Composable
 fun LoadingRow() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp),
+            .padding(horizontal = 10.dp),
         horizontalArrangement = Arrangement.Center
     ) {
         CircularProgressIndicator(color = Color(0xFF667EEA))
@@ -388,7 +515,7 @@ fun LoadingGrid() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp),
+            .padding(horizontal = 10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         CircularProgressIndicator(color = Color(0xFF667EEA))
@@ -400,7 +527,7 @@ fun EmptyStateRow(message: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 32.dp),
+            .padding(horizontal = 10.dp, vertical = 32.dp),
         horizontalArrangement = Arrangement.Center
     ) {
         Text(
@@ -432,7 +559,7 @@ fun PromotionalBanner(banners: List<Banner>) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(180.dp)
-                .padding(horizontal = 20.dp)
+                .padding(horizontal = 10.dp)
         ) {
             HorizontalPager(
                 count = banners.size,
@@ -487,21 +614,21 @@ fun BannerCard(banner: Banner) {
         ) {
             Text(
                 text = banner.title,
-                color = White,
+                color = Black,
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = banner.subtitle,
-                color = White.copy(alpha = 0.9f),
+                color = Black.copy(alpha = 0.9f),
                 fontSize = 16.sp
             )
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = { },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = White,
+                    containerColor = Black,
                     contentColor = Color(0xFF667EEA)
                 ),
                 shape = RoundedCornerShape(20.dp)
@@ -521,13 +648,13 @@ fun SectionHeader(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp),
+            .padding(horizontal = 10.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = title,
-            color = White,
+            color = Black,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold
         )
@@ -535,7 +662,7 @@ fun SectionHeader(
             TextButton(onClick = onActionClick) {
                 Text(
                     text = actionText,
-                    color = Color(0xFF667EEA),
+                    color = Color(0xFF004CBB),
                     fontSize = 14.sp
                 )
             }
@@ -549,7 +676,7 @@ fun CategoriesRow(
     onCategoryClick: (Long) -> Unit
 ) {
     LazyRow(
-        contentPadding = PaddingValues(horizontal = 20.dp),
+        contentPadding = PaddingValues(horizontal = 10.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(categories) { category ->
@@ -603,7 +730,7 @@ fun FlashDealsRow(
     isSeller: Boolean
 ) {
     LazyRow(
-        contentPadding = PaddingValues(horizontal = 20.dp),
+        contentPadding = PaddingValues(end = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(products) { product ->
@@ -623,7 +750,8 @@ fun FlashDealsRow(
                     onEditProduct(productId)
                 },
                 isAdmin = isAdmin,
-                isSeller = isSeller
+                isSeller = isSeller,
+                modifier = Modifier.width(360.dp)
             )
         }
     }
@@ -641,7 +769,7 @@ fun LatestProductsRow(
     isSeller: Boolean
 ) {
     LazyRow(
-        contentPadding = PaddingValues(horizontal = 20.dp),
+        contentPadding = PaddingValues(end = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(products) { product ->
@@ -661,7 +789,8 @@ fun LatestProductsRow(
                     onEditProduct(productId)
                 },
                 isAdmin = isAdmin,
-                isSeller = isSeller
+                isSeller = isSeller,
+                modifier = Modifier.width(360.dp)
             )
         }
     }
@@ -669,43 +798,56 @@ fun LatestProductsRow(
 
 @Composable
 fun PopularBrandsRow(onBrandClick: (String) -> Unit) {
-    val brands = listOf("Apple", "Dell", "HP", "Lenovo", "Asus", "MSI")
+
+    val brandLogos = listOf(
+        "Apple" to "https://1000logos.net/wp-content/uploads/2016/10/Apple-Logo.png",
+        "Dell" to "https://1000logos.net/wp-content/uploads/2017/07/Dell-Logo.png",
+        "HP" to "https://1000logos.net/wp-content/uploads/2017/02/HP-Log%D0%BE.png",
+        "Lenovo" to "https://res.cloudinary.com/dx6vzaymg/image/upload/v1765473224/pngegg_xkpnok.png",
+        "Asus" to "https://1000logos.net/wp-content/uploads/2016/10/Asus-Logo.png",
+        "MSI" to "https://1000logos.net/wp-content/uploads/2018/10/MSI-Logo.png"
+    )
 
     LazyRow(
-        contentPadding = PaddingValues(horizontal = 20.dp),
+        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(brands) { brand ->
+        items(brandLogos) { (brand, logoUrl) ->
             BrandCard(
-                brandName = brand,
+                logoUrl = logoUrl,
                 onClick = { onBrandClick(brand) }
             )
         }
     }
 }
 
+
 @Composable
 fun BrandCard(
-    brandName: String,
+    logoUrl: String,
     onClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
-            .size(100.dp, 60.dp)
-            .clip(RoundedCornerShape(12.dp))
+            .size(80.dp, 50.dp)
+            .clip(RoundedCornerShape(10.dp))
             .background(Color(0xFF1E2A38))
-            .border(1.dp, Color(0xFF3A4A5A), RoundedCornerShape(12.dp))
+            .border(1.dp, Color(0xFF3A4A5A), RoundedCornerShape(10.dp))
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = brandName,
-            color = White,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.SemiBold
+        Image(
+            painter = rememberAsyncImagePainter(logoUrl),
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth(0.7f)
+                .fillMaxHeight(0.7f),
+            contentScale = ContentScale.Fit,
+            colorFilter = ColorFilter.tint(Color.White)
         )
     }
 }
+
 
 @Composable
 fun RecommendedProductsGrid(
@@ -719,40 +861,28 @@ fun RecommendedProductsGrid(
     isSeller: Boolean
 ) {
     Column(
-        modifier = Modifier.padding(horizontal = 20.dp),
+        modifier = Modifier.padding(horizontal = 2.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        products.chunked(2).forEach { rowProducts ->
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                rowProducts.forEach { product ->
-                    val isFavorite = favoriteIds.contains(product.id)
-                    Box(modifier = Modifier.weight(1f)) {
-                        ProductCard(
-                            product = product,
-                            isFavorite = isFavorite,
-                            onFavoriteChange = { newValue ->
-                                onToggleFavorite(product.id, newValue)
-                            },
-                            onClick = { onProductClick(product.id) },
-                            showMenu = true,
-                            onDelete = { productId ->
-                                onDeleteProduct(productId)
-                            },
-                            onEdit = { productId ->
-                                onEditProduct(productId)
-                            },
-                            isAdmin = isAdmin,
-                            isSeller = isSeller
-                        )
-                    }
-                }
-                if (rowProducts.size == 1) {
-                    Spacer(modifier = Modifier.weight(1f))
-                }
-            }
+        products.forEach { product ->
+            val isFavorite = favoriteIds.contains(product.id)
+            ProductCard(
+                product = product,
+                isFavorite = isFavorite,
+                onFavoriteChange = { newValue ->
+                    onToggleFavorite(product.id, newValue)
+                },
+                onClick = { onProductClick(product.id) },
+                showMenu = true,
+                onDelete = { productId ->
+                    onDeleteProduct(productId)
+                },
+                onEdit = { productId ->
+                    onEditProduct(productId)
+                },
+                isAdmin = isAdmin,
+                isSeller = isSeller
+            )
         }
     }
 }

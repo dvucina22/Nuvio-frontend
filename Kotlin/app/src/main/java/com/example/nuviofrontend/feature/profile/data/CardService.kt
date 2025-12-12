@@ -25,10 +25,10 @@ class CardService(private val api: ApiService) {
         val errorBody = response.errorBody()?.string()?.lowercase() ?: ""
         when {
             "invalid token" in errorBody -> throw IllegalArgumentException("invalid_token")
-            "invalid card data" in errorBody -> throw IllegalArgumentException("invalid_card")
+            "invalid card number" in errorBody -> throw IllegalArgumentException("invalid_card")
             "missing required fields" in errorBody -> throw IllegalArgumentException("missing_fields")
             "missing token" in errorBody -> throw IllegalArgumentException("missing_token")
-            "card expired" in errorBody -> throw IllegalArgumentException("expired_card")
+            "card has expired" in errorBody -> throw IllegalArgumentException("expired_card")
             else -> throw HttpException(response)
         }
     }

@@ -12,5 +12,5 @@ data class UserDto(
     val profilePictureUrl: String?,
     val phoneNumber: String?,
     val roles: List<Role>?,
-    val isActive: Boolean
+    val isActive: Boolean?
 )

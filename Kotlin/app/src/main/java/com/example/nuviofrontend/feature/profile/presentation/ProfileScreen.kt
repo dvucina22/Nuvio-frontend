@@ -39,6 +39,7 @@ import com.example.core.ui.components.CustomButton
 import com.example.core.ui.components.CustomTopBar
 import com.example.core.ui.components.ProfileHeader
 import com.example.core.ui.theme.BackgroundNavDark
+import com.example.core.ui.theme.IconDark
 import com.example.core.ui.theme.White
 
 @Composable
@@ -148,7 +149,7 @@ fun ProfileMenuItem(
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = Color(0xFF818E96),
+            tint = IconDark,
             modifier = Modifier.size(22.dp)
         )
 
@@ -156,7 +157,7 @@ fun ProfileMenuItem(
 
         Text(
             text = title,
-            color = White,
+            color = Color.Black,
             modifier = Modifier.weight(1f),
             style = MaterialTheme.typography.titleSmall
         )
@@ -164,7 +165,7 @@ fun ProfileMenuItem(
         Icon(
             imageVector = Icons.Default.KeyboardArrowRight,
             contentDescription = null,
-            tint = Color(0xFF818E96),
+            tint = IconDark,
             modifier = Modifier.size(22.dp)
         )
     }

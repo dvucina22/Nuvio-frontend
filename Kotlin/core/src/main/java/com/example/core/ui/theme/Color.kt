@@ -5,7 +5,7 @@ val Black = Color(0xFF000000)
 val White = Color(0xFFFFFFFF)
 val DirtyWhite = Color(0xFFEDF2F4)
 val ColorInput = Color(0xFFEDF2F4)
-val BackgroundColorInput = Color(0xFFD5DFE5)
+val BackgroundColorInput = Color(0xFFD5D8E5)
 val ButtonColorDark = Color(0xFF7A7A7A)
 val ButtonColorSelected = Color(0xFF4A4A4A)
 val BackgroundNavDark = Color(0xFFA2A9AD)
@@ -18,6 +18,12 @@ val SpecsText = Color(0xFF818E96)
 val QuantityBackground = Color(0xFF535557)
 val CardBorder = Color(0x4DD5DFE5)
 val BackgroundBehindButton = Color(0x598A8A8A)
+
+val AccentColor = Color(0xFF004CBB)
+val GrayOne = Color(0xFFCACACA)
+val LightOverlay = Color(0xFFd8dedf)
+val IconDark = Color(0xFF1C1C1C)
+
 
 
 
