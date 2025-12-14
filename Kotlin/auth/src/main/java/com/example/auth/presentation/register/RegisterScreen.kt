@@ -112,6 +112,7 @@ fun RegisterForm(viewModel: RegisterViewModel) {
     val passwordError by viewModel.passwordError.collectAsState()
     val confirmPasswordError by viewModel.confirmPasswordError.collectAsState()
     val generalError by viewModel.generalError.collectAsState()
+    val phoneNumberError by viewModel.phoneNumberError.collectAsState()
 
     var passwordVisible by remember { mutableStateOf(false) }
     var confirmPasswordVisible by remember { mutableStateOf(false) }
@@ -121,10 +122,6 @@ fun RegisterForm(viewModel: RegisterViewModel) {
         verticalArrangement = Arrangement.Top,
         modifier = Modifier.fillMaxWidth().offset(y = (-30).dp)
     ) {
-        generalError?.let {
-            Text(text = it, color = Error)
-        }
-
         CustomTextField(
             value = firstName,
             onValueChange = {
@@ -160,9 +157,12 @@ fun RegisterForm(viewModel: RegisterViewModel) {
             value = phoneNumber,
             onValueChange = {
                 viewModel.phoneNumber.value = it
+                viewModel.clearPhoneNumberError()
             },
             label = stringResource(id = AuthR.string.label_phone_number),
-            placeholder = stringResource(id = AuthR.string.label_phone_number)
+            placeholder = stringResource(id = AuthR.string.label_phone_number),
+            isError = phoneNumberError != null,
+            errorMessage = phoneNumberError
         )
 
         CustomTextField(

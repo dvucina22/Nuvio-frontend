@@ -95,7 +95,7 @@ fun UsersScreen(
 
             else -> {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize().padding(bottom = 120.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     itemsIndexed(state.visibleUsers, key = { _, user -> user.id }) { index, user ->
