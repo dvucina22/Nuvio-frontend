@@ -125,9 +125,7 @@ fun MainAppScreen(
                             email = email,
                             profilePictureUrl = profilePictureUrl,
                             onSignOut = onSignOut,
-                            onNavigateToLogin = onNavigateToLogin,
-                            onNavigateToProfileEdit = onNavigateToProfileEdit,
-                            onNavigateToUsers = onNavigateToUsers
+                            onNavigateToLogin = onNavigateToLogin
                         )
                     }
                 }

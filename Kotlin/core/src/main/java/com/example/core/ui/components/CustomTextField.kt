@@ -44,6 +44,7 @@ import com.example.core.ui.theme.Error
 import com.example.core.ui.theme.White
 import com.example.core.R
 import com.example.core.ui.theme.BackgroundColorInput
+import com.example.core.ui.theme.Black
 import com.example.core.ui.theme.ColorInput
 
 @Composable
@@ -73,7 +74,7 @@ fun CustomTextField(
         label?.let {
             Text(
                 text = it,
-                color = White,
+                color = Black,
                 style = textStyle,
                 modifier = Modifier
                     .width(304.dp)
