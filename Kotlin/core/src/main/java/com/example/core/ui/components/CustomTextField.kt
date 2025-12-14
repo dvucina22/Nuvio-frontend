@@ -45,12 +45,14 @@ import com.example.core.ui.theme.White
 import com.example.core.R
 import com.example.core.ui.theme.BackgroundColorInput
 import com.example.core.ui.theme.Black
+import com.example.core.ui.theme.ButtonColorSelected
 import com.example.core.ui.theme.ColorInput
 
 @Composable
 fun CustomTextField(
     value: String,
     onValueChange: (String) -> Unit,
+    labelColor: Color = Black,
     placeholder: String,
     label: String? = null,
     modifier: Modifier = Modifier,
@@ -74,7 +76,7 @@ fun CustomTextField(
         label?.let {
             Text(
                 text = it,
-                color = Black,
+                color = labelColor,
                 style = textStyle,
                 modifier = Modifier
                     .width(304.dp)

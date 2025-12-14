@@ -21,6 +21,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.core.ui.theme.Black
+import com.example.core.ui.theme.ButtonColorSelected
 
 @Composable
 fun CustomTopBar(
@@ -39,7 +42,7 @@ fun CustomTopBar(
             Icon(
                 imageVector = Icons.Default.ArrowBack,
                 contentDescription = "Back",
-                tint = Color.White,
+                tint = Black,
                 modifier = Modifier
                     .size(28.dp)
                     .align(Alignment.CenterStart)
@@ -49,19 +52,11 @@ fun CustomTopBar(
 
         Text(
             text = title,
-            color = Color.White,
-            style = MaterialTheme.typography.titleSmall,
+            color = Black,
+            fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.align(Alignment.Center)
+            modifier = Modifier.align(Alignment.CenterEnd)
         )
 
-        Image(
-            painter = painterResource(id = R.drawable.logo_dark_icon),
-            contentDescription = null,
-            modifier = Modifier
-                .size(35.dp)
-                .align(Alignment.CenterEnd),
-            contentScale = ContentScale.Fit
-        )
     }
 }

@@ -33,6 +33,7 @@ import com.example.nuviofrontend.navigation.NavigationHost
 import dagger.hilt.android.AndroidEntryPoint
 import com.example.core.R
 import com.example.core.ui.components.CustomButton
+import com.example.core.ui.theme.Black
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -91,7 +92,7 @@ fun MainScreen(onNavigateToRegister: () -> Unit, onNavigateToLogin: () -> Unit, 
                 )
                 Text(
                     text = stringResource(R.string.text_guest),
-                    color = Color(0xFF9DA39F),
+                    color = Black,
                     fontSize = 14.sp,
                     style = MaterialTheme.typography.labelSmall,
                     textAlign = TextAlign.Center,

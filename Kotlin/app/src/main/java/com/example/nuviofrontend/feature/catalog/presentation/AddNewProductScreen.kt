@@ -230,7 +230,8 @@ fun AddNewProductScreen(
                             placeholder = stringResource(R.string.placeholder_product_name),
                             label = stringResource(R.string.label_product_name),
                             isError = viewModel.fieldErrors.containsKey("productName"),
-                            errorMessage = viewModel.fieldErrors["productName"]
+                            errorMessage = viewModel.fieldErrors["productName"],
+                            labelColor = White
                         )
 
                         CustomTextField(
@@ -243,7 +244,8 @@ fun AddNewProductScreen(
                             label = stringResource(R.string.label_price),
                             isError = viewModel.fieldErrors.containsKey("price"),
                             errorMessage = viewModel.fieldErrors["price"],
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            labelColor = White
                         )
 
                         CustomDropdownAddProduct(
@@ -284,7 +286,8 @@ fun AddNewProductScreen(
                             label = stringResource(R.string.label_quantity),
                             isError = viewModel.fieldErrors.containsKey("quantity"),
                             errorMessage = viewModel.fieldErrors["quantity"],
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            labelColor = White
                         )
 
                         CustomTextField(
@@ -296,7 +299,8 @@ fun AddNewProductScreen(
                             placeholder = stringResource(R.string.placeholder_model_number),
                             label = stringResource(R.string.label_model_number),
                             isError = viewModel.fieldErrors.containsKey("modelNumber"),
-                            errorMessage = viewModel.fieldErrors["modelNumber"]
+                            errorMessage = viewModel.fieldErrors["modelNumber"],
+                            labelColor = White
                         )
 
                         CustomTextField(
@@ -308,7 +312,8 @@ fun AddNewProductScreen(
                             placeholder = stringResource(R.string.placeholder_sku),
                             label = stringResource(R.string.label_sku),
                             isError = viewModel.fieldErrors.containsKey("sku"),
-                            errorMessage = viewModel.fieldErrors["sku"]
+                            errorMessage = viewModel.fieldErrors["sku"],
+                            labelColor = White
                         )
 
                         CustomDescriptionField(

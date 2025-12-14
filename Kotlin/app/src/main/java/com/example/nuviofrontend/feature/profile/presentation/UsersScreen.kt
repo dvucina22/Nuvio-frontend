@@ -44,98 +44,94 @@ fun UsersScreen(
     val state by viewModel.state.collectAsState()
     var confirmDeactivateId by remember { mutableStateOf<String?>(null) }
 
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(bottom = 80.dp, top = 36.dp, start = 20.dp, end = 20.dp)
+            .padding(horizontal = 20.dp)
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            CustomTopBar(
-                title = stringResource(R.string.users_title),
-                showBack = true,
-                onBack = onBack
-            )
+        CustomTopBar(
+            title = stringResource(R.string.users_title),
+            showBack = true,
+            onBack = onBack
+        )
 
-            Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-            SearchField(
-                modifier = Modifier.fillMaxWidth(),
-                value = state.query,
-                onValueChange = { viewModel.onQueryChange(it) },
-                placeholder = stringResource(R.string.users_search_placeholder),
-                label = null
-            )
+        SearchField(
+            modifier = Modifier.fillMaxWidth(),
+            value = state.query,
+            onValueChange = { viewModel.onQueryChange(it) },
+            placeholder = stringResource(R.string.users_search_placeholder),
+            label = null
+        )
 
-            Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-            when {
-                state.isLoading && state.visibleUsers.isEmpty() -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 32.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
+        when {
+            state.isLoading && state.visibleUsers.isEmpty() -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 32.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
                 }
+            }
 
-                state.visibleUsers.isEmpty() -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 32.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = stringResource(R.string.users_empty),
-                            color = White
-                        )
-                    }
+            state.visibleUsers.isEmpty() -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 32.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.users_empty),
+                        color = White
+                    )
                 }
+            }
 
-                else -> {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        itemsIndexed(state.visibleUsers, key = { _, user -> user.id }) { index, user ->
-                            if (index == state.visibleUsers.lastIndex) {
-                                LaunchedEffect(key1 = index) {
-                                    viewModel.loadMore()
-                                }
+            else -> {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    itemsIndexed(state.visibleUsers, key = { _, user -> user.id }) { index, user ->
+                        if (index == state.visibleUsers.lastIndex) {
+                            LaunchedEffect(key1 = index) {
+                                viewModel.loadMore()
                             }
-
-                            UserRoleCard(
-                                name = listOfNotNull(user.firstName, user.lastName)
-                                    .joinToString(" ")
-                                    .ifBlank { user.email },
-                                email = user.email,
-                                role = user.roles?.firstOrNull(),
-                                allRoles = state.roles,
-                                onRoleSelected = { role ->
-                                    viewModel.onRoleSelected(user.id, role)
-                                },
-                                onDeactivate = {
-                                    confirmDeactivateId = user.id
-                                },
-                                isActive = user.isActive,
-                                profilePictureUrl = user.profilePictureUrl
-                            )
                         }
 
-                        if (state.isLoadingMore) {
-                            item {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(top = 8.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    CircularProgressIndicator()
-                                }
+                        UserRoleCard(
+                            name = listOfNotNull(user.firstName, user.lastName)
+                                .joinToString(" ")
+                                .ifBlank { user.email },
+                            email = user.email,
+                            role = user.roles?.firstOrNull(),
+                            allRoles = state.roles,
+                            onRoleSelected = { role ->
+                                viewModel.onRoleSelected(user.id, role)
+                            },
+                            onDeactivate = {
+                                confirmDeactivateId = user.id
+                            },
+                            isActive = user.isActive,
+                            profilePictureUrl = user.profilePictureUrl
+                        )
+                    }
+
+                    if (state.isLoadingMore) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 8.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator()
                             }
                         }
                     }
@@ -146,7 +142,7 @@ fun UsersScreen(
         if (state.error != null) {
             Snackbar(
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
+                    .align(Alignment.CenterHorizontally)
                     .padding(bottom = 8.dp),
                 action = {
                     TextButton(onClick = { viewModel.clearError() }) {
