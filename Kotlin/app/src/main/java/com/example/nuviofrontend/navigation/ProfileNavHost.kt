@@ -22,12 +22,14 @@ import com.example.nuviofrontend.feature.profile.presentation.ProfileEditState
 import com.example.nuviofrontend.feature.profile.presentation.ProfileEditViewModel
 import com.example.nuviofrontend.feature.profile.presentation.ProfileScreen
 import com.example.nuviofrontend.feature.profile.presentation.ProfileViewModel
+import com.example.nuviofrontend.feature.profile.presentation.UsersScreen
 
 sealed class ProfileRoute(val route: String) {
     object Main : ProfileRoute("profile_main")
     object ChangePassword : ProfileRoute("profile_change_password")
     object EditProfile : ProfileRoute("profile_edit")
     object SavedCards : ProfileRoute("profile_saved_cards")
+    object Users : ProfileRoute("users")
 }
 
 @Composable
@@ -40,8 +42,6 @@ fun ProfileNavHost(
     profilePictureUrl: String?,
     onSignOut: () -> Unit,
     onNavigateToLogin: () -> Unit,
-    onNavigateToProfileEdit: () -> Unit,
-    onNavigateToUsers: () -> Unit
 ) {
     val context = LocalContext.current
     val changePasswordViewModel: ChangePasswordViewModel = hiltViewModel()
@@ -65,7 +65,7 @@ fun ProfileNavHost(
                 onEdit = { navController.navigate(ProfileRoute.EditProfile.route) },
                 onChangePassword = { navController.navigate(ProfileRoute.ChangePassword.route) },
                 onNavigateToSavedCards = { navController.navigate(ProfileRoute.SavedCards.route) },
-                onNavigateToUsers = onNavigateToUsers
+                onNavigateToUsers = { navController.navigate(ProfileRoute.Users.route) }
             )
         }
 
@@ -161,6 +161,11 @@ fun ProfileNavHost(
             CardScreen(
                 viewModel = viewModel,
                 onViewTransactions = { _ -> },
+                onBack = { navController.popBackStack() }
+            )
+        }
+        composable(ProfileRoute.Users.route) {
+            UsersScreen(
                 onBack = { navController.popBackStack() }
             )
         }
