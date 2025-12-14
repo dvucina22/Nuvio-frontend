@@ -36,6 +36,8 @@
     <string name="error_email_required">Email je obavezan</string>
     <string name="error_password_required">Lozinka je obavezna</string>
     <string name="error_password_complexity">Lozinka mora imati najmanje 8 znakova, jedno veliko slovo i jedan broj</string>
+    <string name="error_phone_exists">Broj telefona već postoji</string>
+    <string name="error_phone_invalid">Molimo unesite odgovarajući broj telefona</string>
     <string name="error_confirm_password_empty">Potvrda lozinke je obavezna</string>
     <string name="error_passwords_mismatch">Lozinke se ne podudaraju</string>
     <string name="error_gender_required">Odabir spola je obavezan</string>

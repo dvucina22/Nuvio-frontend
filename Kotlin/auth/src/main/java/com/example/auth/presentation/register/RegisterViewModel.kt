@@ -43,6 +43,7 @@ class RegisterViewModel @Inject constructor(
     val confirmPasswordError = MutableStateFlow<String?>(null)
     val generalError = MutableStateFlow<String?>(null)
     val genderError = MutableStateFlow<String?>(null)
+    val phoneNumberError = MutableStateFlow<String?>(null)
 
     private val _registerState = MutableStateFlow<RegisterState>(RegisterState.Idle)
     val registerState = _registerState.asStateFlow()
@@ -53,8 +54,12 @@ class RegisterViewModel @Inject constructor(
         confirmPasswordError.value = null
         generalError.value = null
         genderError.value = null
+        phoneNumberError.value = null
     }
 
+    fun clearPhoneNumberError(){
+        phoneNumberError.value = null
+    }
     fun clearEmailError() {
         emailError.value = null
     }
@@ -95,6 +100,11 @@ class RegisterViewModel @Inject constructor(
             valid = false
         }
 
+        if (phoneNumber.value.isNotBlank() && !Regex("^\\+?[0-9]{9,15}\$").matches(phoneNumber.value)) {
+            phoneNumberError.value = app.getString(R.string.error_phone_invalid)
+            valid = false
+        }
+
         return valid
     }
 
@@ -118,6 +128,7 @@ class RegisterViewModel @Inject constructor(
                 when {
                     errorBody.contains("email already exists", ignoreCase = true) -> emailError.value = app.getString(R.string.error_email_exists)
                     errorBody.contains("password", ignoreCase = true) -> passwordError.value = app.getString(R.string.error_password_complexity)
+                    errorBody.contains("users_phone_number_key", ignoreCase = true) -> phoneNumberError.value = app.getString(R.string.error_phone_exists)
                     else -> {
                         val message = app.getString(R.string.error_generic, e.code())
                         generalError.value = message
