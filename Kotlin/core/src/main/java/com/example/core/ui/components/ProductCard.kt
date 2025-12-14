@@ -38,6 +38,7 @@ import coil.compose.AsyncImage
 import com.example.core.R
 import com.example.core.catalog.dto.Product
 import com.example.core.ui.theme.AccentColor
+import com.example.core.ui.theme.BackgroundBehindButton
 import com.example.core.ui.theme.Black
 import com.example.core.ui.theme.White
 
@@ -195,14 +196,14 @@ fun ProductCard(
                                     modifier = Modifier
                                         .size(24.dp)
                                         .clip(CircleShape)
-                                        .background(Color(0xFFa8afbd))
+                                        .background(BackgroundBehindButton)
                                         .clickable { menuOpen = true },
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.MoreVert,
                                         contentDescription = "More",
-                                        tint = Color(0xFF9CA3AF),
+                                        tint = Black,
                                         modifier = Modifier.size(16.dp)
                                     )
                                 }

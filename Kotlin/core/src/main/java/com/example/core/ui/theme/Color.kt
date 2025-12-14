@@ -1,7 +1,7 @@
 package com.example.core.ui.theme
 import androidx.compose.ui.graphics.Color
 
-val Black = Color(0xFF000000)
+val Black = Color(0xFF1C1C1C)
 val White = Color(0xFFFFFFFF)
 val DirtyWhite = Color(0xFFEDF2F4)
 val ColorInput = Color(0xFFEDF2F4)
@@ -19,7 +19,7 @@ val QuantityBackground = Color(0xFF535557)
 val CardBorder = Color(0x4DD5DFE5)
 val BackgroundBehindButton = Color(0x598A8A8A)
 
-val AccentColor = Color(0xFF004CBB)
+val AccentColor = Color(0xFF2978E3)
 val GrayOne = Color(0xFFCACACA)
 val LightOverlay = Color(0xFFd8dedf)
 val IconDark = Color(0xFF1C1C1C)

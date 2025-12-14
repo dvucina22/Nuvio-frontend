@@ -3,6 +3,8 @@ package com.example.nuviofrontend.feature.profile.presentation
 import androidx.compose.material.icons.filled.People
 import com.example.auth.presentation.AuthViewModel
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -32,7 +34,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.core.R
 import com.example.core.ui.components.CustomButton
@@ -65,68 +69,94 @@ fun ProfileScreen(
 
     val displayEmail = if (isLoggedIn) profileState.email else stringResource(R.string.not_logged_in)
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 20.dp)
-    ) {
-
-        CustomTopBar(
-            title = stringResource(R.string.profile_title),
-            showBack = false
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        ProfileHeader(
-            displayName = displayName,
-            displayEmail = displayEmail,
-            profilePictureUrl =  profileState.profilePictureUrl ?: ""
-        )
-
-        if (isLoggedIn) {
-            CustomButton(
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                text = stringResource(R.string.edit_button),
-                onClick = onEdit
-            )
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Divider(color = BackgroundNavDark)
-
-        if (isLoggedIn) {
-            ProfileMenuItem(Icons.Default.Settings, stringResource(R.string.settings))
-            ProfileMenuItem(
-                Icons.Default.CreditCard,
-                stringResource(R.string.saved_cards)
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 80.dp, top = 20.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        start = 20.dp,
+                        end = 20.dp,
+                        top = 26.dp,
+                        bottom = 13.dp
+                    ),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                onNavigateToSavedCards()
-            }
-            ProfileMenuItem(Icons.Default.List, stringResource(R.string.order_history))
-            ProfileMenuItem(Icons.Default.Lock, stringResource(R.string.change_password)) {
-                onChangePassword()
-            }
-
-            if (isAdmin) {
-                ProfileMenuItem(Icons.Default.People, stringResource(R.string.users)) {
-                    onNavigateToUsers()
+                Column {
+                    Text(
+                        text = stringResource(R.string.profile_title),
+                        color = Color(0xFF1C1C1C),
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
 
-            Divider(color = BackgroundNavDark)
-        }
+            Spacer(modifier = Modifier.height(20.dp))
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 20.dp)
+            ) {
+                ProfileHeader(
+                    displayName = displayName,
+                    displayEmail = displayEmail,
+                    profilePictureUrl = profileState.profilePictureUrl ?: ""
+                )
 
-        ProfileMenuItem(Icons.Default.Help, stringResource(R.string.help))
+                if (isLoggedIn) {
+                    CustomButton(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        text = stringResource(R.string.edit_button),
+                        onClick = onEdit
+                    )
+                }
 
-        if (isLoggedIn) {
-            ProfileMenuItem(Icons.Default.ExitToApp, stringResource(R.string.sign_out)) {
-                onSignOut()
-            }
-        } else {
-            ProfileMenuItem(Icons.Default.ExitToApp, stringResource(R.string.login_button)) {
-                onNavigateToLogin()
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Divider(color = BackgroundNavDark)
+
+                if (isLoggedIn) {
+                    ProfileMenuItem(Icons.Default.Settings, stringResource(R.string.settings))
+                    ProfileMenuItem(
+                        Icons.Default.CreditCard,
+                        stringResource(R.string.saved_cards)
+                    ) {
+                        onNavigateToSavedCards()
+                    }
+                    ProfileMenuItem(Icons.Default.List, stringResource(R.string.order_history))
+                    ProfileMenuItem(Icons.Default.Lock, stringResource(R.string.change_password)) {
+                        onChangePassword()
+                    }
+
+                    if (isAdmin) {
+                        ProfileMenuItem(Icons.Default.People, stringResource(R.string.users)) {
+                            onNavigateToUsers()
+                        }
+                    }
+
+                    Divider(color = BackgroundNavDark)
+                }
+
+                ProfileMenuItem(Icons.Default.Help, stringResource(R.string.help))
+
+                if (isLoggedIn) {
+                    ProfileMenuItem(Icons.Default.ExitToApp, stringResource(R.string.sign_out)) {
+                        onSignOut()
+                    }
+                } else {
+                    ProfileMenuItem(
+                        Icons.Default.ExitToApp,
+                        stringResource(R.string.login_button)
+                    ) {
+                        onNavigateToLogin()
+                    }
+                }
             }
         }
     }

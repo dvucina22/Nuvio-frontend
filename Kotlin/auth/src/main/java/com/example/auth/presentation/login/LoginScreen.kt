@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.core.ui.components.CustomButton
 import com.example.core.ui.components.CustomTextField
+import com.example.core.ui.theme.Black
 import com.example.auth.R as AuthR
 import com.example.core.R as CoreR
 import com.example.core.ui.theme.White
@@ -179,7 +180,7 @@ fun LoginForm(
 
         Text(
             text = stringResource(id = AuthR.string.text_register_prompt),
-            color = Color(0xFF9DA39F),
+            color = Black,
             fontSize = 14.sp,
             style = MaterialTheme.typography.labelSmall,
             textAlign = TextAlign.Center,
