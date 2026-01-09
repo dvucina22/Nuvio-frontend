@@ -69,9 +69,11 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.rememberAsyncImagePainter
+import com.example.core.ui.components.IconActionBox
 import com.example.core.ui.components.banner.BannerComponent
 import com.example.core.ui.components.categories.CategoryButton
 import com.example.core.ui.components.categories.CategoryButtonData
+import com.example.core.ui.theme.IconDark
 
 data class Category(
     val id: Long,
@@ -208,21 +210,13 @@ fun HomeScreen(
                         )
                     }
                     if (isLoggedIn && (isAdmin || isSeller)) {
-                        Box(
-                            modifier = Modifier
-                                .size(35.dp)
-                                .background(
-                                    color = BackgroundBehindButton,
-                                    shape = RoundedCornerShape(5.dp)
-                                )
-                                .clickable { onAddProductClick() },
-                            contentAlignment = Alignment.Center
+                        IconActionBox(
+                            onClick = onAddProductClick
                         ) {
                             Icon(
                                 imageVector = Icons.Default.AddCircleOutline,
                                 contentDescription = "Add",
-                                tint = Black,
-                                modifier = Modifier.size(23.dp)
+                                tint = IconDark
                             )
                         }
                     }
@@ -350,7 +344,7 @@ fun HomeScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(46.dp))
         }
 
         state.error?.let { error ->

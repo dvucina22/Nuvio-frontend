@@ -325,4 +325,6 @@
     <string name="users_error_fetch">Neuspješno dohvaćanje korisnika</string>
     <string name="users_error_change_role">Greška pri promjeni uloge</string>
     <string name="users_error_deactivate">Greška pri deaktivaciji korisnika</string>
+
+    <string name="support_title">Pomoć</string>
 </resources>

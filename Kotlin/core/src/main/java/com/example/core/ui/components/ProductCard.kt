@@ -230,7 +230,7 @@ fun ProductCard(
                                         ) {
                                             MenuItem(
                                                 icon = Icons.Default.Edit,
-                                                label = "Edit"
+                                                label = "Uredi"
                                             ) {
                                                 menuOpen = false
                                                 onEdit(product.id)
@@ -246,7 +246,7 @@ fun ProductCard(
 
                                             MenuItem(
                                                 icon = Icons.Default.Delete,
-                                                label = "Delete",
+                                                label = "Obriši",
                                                 isDestructive = true
                                             ) {
                                                 menuOpen = false

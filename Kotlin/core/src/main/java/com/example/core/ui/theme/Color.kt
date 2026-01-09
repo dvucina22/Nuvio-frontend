@@ -1,4 +1,5 @@
 package com.example.core.ui.theme
+import androidx.compose.material3.CardDefaults
 import androidx.compose.ui.graphics.Color
 
 val Black = Color(0xFF1C1C1C)
@@ -14,6 +15,7 @@ val IconUnselectedTintDark = Color(0xFF818E96)
 val SelectedItemBackgroundDark = Color(0x331E2F23)
 val WarningPopUpBackground = Color(0xFF232323)
 val CardItemBackground = Color(0xCC232323)
+val CardItemBackgroundLight = Color(0xD8D9D9D9)
 val SpecsText = Color(0xFF818E96)
 val QuantityBackground = Color(0xFF535557)
 val CardBorder = Color(0x4DD5DFE5)
