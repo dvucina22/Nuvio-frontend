@@ -54,7 +54,8 @@ fun ProfileScreen(
     onNavigateToLogin: () -> Unit = {},
     onChangePassword: () -> Unit = {},
     onNavigateToSavedCards: () -> Unit = {},
-    onNavigateToUsers: () -> Unit = {}
+    onNavigateToUsers: () -> Unit = {},
+    onNavigateToSupport: () -> Unit = {},
 ) {
     val profileState by viewModel.profileState.collectAsState()
     val isLoggedIn = profileState.isLoaded && profileState.email.isNotBlank()
@@ -143,7 +144,9 @@ fun ProfileScreen(
                     Divider(color = BackgroundNavDark)
                 }
 
-                ProfileMenuItem(Icons.Default.Help, stringResource(R.string.help))
+                ProfileMenuItem(Icons.Default.Help, stringResource(R.string.help)){
+                    onNavigateToSupport()
+                }
 
                 if (isLoggedIn) {
                     ProfileMenuItem(Icons.Default.ExitToApp, stringResource(R.string.sign_out)) {

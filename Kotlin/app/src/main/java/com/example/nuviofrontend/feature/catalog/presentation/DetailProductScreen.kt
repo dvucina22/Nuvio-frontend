@@ -85,49 +85,50 @@ fun DetailProductScreen(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp)) {
+            TopBarDetailProducts(
+                onBack = { onBack() },
+                onFavoriteClick = {
+                    viewModel.toggleFavorite()
+                },
+                onCartClick = {
+                    product?.let { p ->
+                        cartViewModel.increaseQuantity(p.id.toInt())
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.toast_added_to_cart),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                },
+                isFavorite = product?.isFavorite ?: false,
+                showDelete = isAdmin || isSeller,
+                showEdit = isAdmin || isSeller,
+                onDeleteClick = {
+                    product?.let { p ->
+                        productIdToDelete = p.id
+                        showDeletePopup = true
+                        homeViewModel.requestRefresh()
+                    }
+                },
+                onEditClick = {
+                    product?.let { p ->
+                        onEditNavigate(p.id)
+                    }
+                },
+                showFavorite = isLoggedIn,
+                showCart = isLoggedIn
+            )
+        }
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(top = 105.dp)
                 .padding(horizontal = 20.dp)
                 .padding(bottom = 55.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            item {
-                TopBarDetailProducts(
-                    onBack = { onBack() },
-                    onFavoriteClick = {
-                        viewModel.toggleFavorite()
-                    },
-                    onCartClick = {
-                        product?.let { p ->
-                            cartViewModel.increaseQuantity(p.id.toInt())
-                            Toast.makeText(
-                                context,
-                                context.getString(R.string.toast_added_to_cart),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    },
-                    isFavorite = product?.isFavorite ?: false,
-                    showDelete = isAdmin || isSeller,
-                    showEdit = isAdmin || isSeller,
-                    onDeleteClick = {
-                        product?.let { p ->
-                            productIdToDelete = p.id
-                            showDeletePopup = true
-                            homeViewModel.requestRefresh()
-                        }
-                    },
-                    onEditClick = {
-                        product?.let { p ->
-                            onEditNavigate(p.id)
-                        }
-                    },
-                    showFavorite = isLoggedIn,
-                    showCart = isLoggedIn
-                )
-            }
-
             if (loading) {
                 item {
                     Box(

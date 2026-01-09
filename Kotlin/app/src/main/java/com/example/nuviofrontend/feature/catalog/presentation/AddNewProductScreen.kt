@@ -148,251 +148,256 @@ fun AddNewProductScreen(
         attributeValuesMap.remove(attribute.name)
     }
 
-    Column(
+    Box(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 20.dp),
-    ){
-        CustomTopBar(
-            title = stringResource(R.string.add_new_product_title),
-            showBack = true,
-            onBack = onBackClick
-        )
-
-        LazyColumn(
+        .fillMaxSize()
+    ) {
+        Column(
             modifier = Modifier
                 .fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 120.dp, start = 10.dp, end = 10.dp)
         ) {
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(150.dp)
-                        .background((BackgroundBehindButton), RoundedCornerShape(12.dp))
-                        .clickable {
-                            imagePickerLauncher.launch("image/*")
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.CameraAlt,
-                        contentDescription = "",
-                        tint = Color.Gray,
-                        modifier = Modifier.size(48.dp)
-                    )
-                    Text(
-                        text = stringResource(R.string.add_image_text),
-                        color = Color.Gray,
-                        fontSize = 14.sp,
-                        modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 12.dp)
-                    )
-                }
-                if (viewModel.productImages.isNotEmpty()) {
+            CustomTopBar(
+                title = stringResource(R.string.add_new_product_title),
+                showBack = true,
+                onBack = onBackClick
+            )
+
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentPadding = PaddingValues(bottom = 120.dp, start = 10.dp, end = 10.dp)
+            ) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(150.dp)
+                            .background((BackgroundBehindButton), RoundedCornerShape(12.dp))
+                            .clickable {
+                                imagePickerLauncher.launch("image/*")
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.CameraAlt,
+                            contentDescription = "",
+                            tint = Color.Gray,
+                            modifier = Modifier.size(48.dp)
+                        )
+                        Text(
+                            text = stringResource(R.string.add_image_text),
+                            color = Color.Gray,
+                            fontSize = 14.sp,
+                            modifier = Modifier.align(Alignment.BottomCenter)
+                                .padding(bottom = 12.dp)
+                        )
+                    }
+                    if (viewModel.productImages.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(10.dp))
+                        SelectedImagesRow(
+                            images = viewModel.productImages,
+                            onRemoveImage = { removedUrl ->
+                                viewModel.productImages =
+                                    viewModel.productImages.filter { it != removedUrl }
+                            }
+                        )
+                    }
+
                     Spacer(modifier = Modifier.height(10.dp))
-                    SelectedImagesRow(
-                        images = viewModel.productImages,
-                        onRemoveImage = { removedUrl ->
-                            viewModel.productImages =
-                                viewModel.productImages.filter { it != removedUrl }
-                        }
-                    )
                 }
 
-                Spacer(modifier = Modifier.height(10.dp))
-            }
+                item {
+                    InfoCardContainer() {
+                        Text(
+                            text = stringResource(R.string.basic_information_product),
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Black
+                        )
+                        Spacer(modifier = Modifier.height(7.dp))
+                        Divider(color = BackgroundNavDark)
+                        Spacer(modifier = Modifier.height(7.dp))
 
-            item {
-                InfoCardContainer() {
-                    Text(
-                        text = stringResource(R.string.basic_information_product),
-                        fontSize = 17.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Black
-                    )
-                    Spacer(modifier = Modifier.height(7.dp))
-                    Divider(color = BackgroundNavDark)
-                    Spacer(modifier = Modifier.height(7.dp))
+                        CustomTextFieldAligned(
+                            value = productName,
+                            onValueChange = {
+                                productName = it
+                                viewModel.fieldErrors = viewModel.fieldErrors - "productName"
+                            },
+                            placeholder = stringResource(R.string.placeholder_product_name),
+                            label = stringResource(R.string.label_product_name),
+                            isError = viewModel.fieldErrors.containsKey("productName"),
+                            errorMessage = viewModel.fieldErrors["productName"],
+                            labelColor = Black
+                        )
 
-                    CustomTextFieldAligned(
-                        value = productName,
-                        onValueChange = {
-                            productName = it
-                            viewModel.fieldErrors = viewModel.fieldErrors - "productName"
-                        },
-                        placeholder = stringResource(R.string.placeholder_product_name),
-                        label = stringResource(R.string.label_product_name),
-                        isError = viewModel.fieldErrors.containsKey("productName"),
-                        errorMessage = viewModel.fieldErrors["productName"],
-                        labelColor = Black
-                    )
+                        CustomTextFieldAligned(
+                            value = price,
+                            onValueChange = {
+                                price = it
+                                viewModel.fieldErrors = viewModel.fieldErrors - "price"
+                            },
+                            placeholder = stringResource(R.string.placeholder_price),
+                            label = stringResource(R.string.label_price),
+                            isError = viewModel.fieldErrors.containsKey("price"),
+                            errorMessage = viewModel.fieldErrors["price"],
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            labelColor = Black
+                        )
 
-                    CustomTextFieldAligned(
-                        value = price,
-                        onValueChange = {
-                            price = it
-                            viewModel.fieldErrors = viewModel.fieldErrors - "price"
-                        },
-                        placeholder = stringResource(R.string.placeholder_price),
-                        label = stringResource(R.string.label_price),
-                        isError = viewModel.fieldErrors.containsKey("price"),
-                        errorMessage = viewModel.fieldErrors["price"],
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        labelColor = Black
-                    )
+                        CustomDropdownAddProduct(
+                            label = stringResource(R.string.brand),
+                            value = selectedBrand?.let { mapAttributeValue("brand", it) },
+                            items = brands.map { it.name },
+                            itemLabel = { mapAttributeValue("brand", it) },
+                            placeholder = stringResource(R.string.placeholder_brand),
+                            onItemSelected = {
+                                selectedBrand = it
+                                viewModel.fieldErrors = viewModel.fieldErrors - "brand"
+                            },
+                            isError = viewModel.fieldErrors.containsKey("brand"),
+                            errorMessage = viewModel.fieldErrors["brand"]
+                        )
 
-                    CustomDropdownAddProduct(
-                        label = stringResource(R.string.brand),
-                        value = selectedBrand?.let { mapAttributeValue("brand", it) },
-                        items = brands.map { it.name },
-                        itemLabel = { mapAttributeValue("brand", it) },
-                        placeholder = stringResource(R.string.placeholder_brand),
-                        onItemSelected = {
-                            selectedBrand = it
-                            viewModel.fieldErrors = viewModel.fieldErrors - "brand"
-                        },
-                        isError = viewModel.fieldErrors.containsKey("brand"),
-                        errorMessage = viewModel.fieldErrors["brand"]
-                    )
+                        CustomDropdownAddProduct(
+                            label = stringResource(R.string.category),
+                            value = selectedCategory?.let { mapAttributeValue("category", it) },
+                            items = categories.map { it.name },
+                            itemLabel = { mapAttributeValue("category", it) },
+                            placeholder = stringResource(R.string.placeholder_category),
+                            onItemSelected = {
+                                selectedCategory = it
+                                viewModel.fieldErrors = viewModel.fieldErrors - "category"
+                            },
+                            isError = viewModel.fieldErrors.containsKey("category"),
+                            errorMessage = viewModel.fieldErrors["category"]
+                        )
 
-                    CustomDropdownAddProduct(
-                        label = stringResource(R.string.category),
-                        value = selectedCategory?.let { mapAttributeValue("category", it) },
-                        items = categories.map { it.name },
-                        itemLabel = { mapAttributeValue("category", it) },
-                        placeholder = stringResource(R.string.placeholder_category),
-                        onItemSelected = {
-                            selectedCategory = it
-                            viewModel.fieldErrors = viewModel.fieldErrors - "category"
-                        },
-                        isError = viewModel.fieldErrors.containsKey("category"),
-                        errorMessage = viewModel.fieldErrors["category"]
-                    )
+                        CustomTextFieldAligned(
+                            value = quantity,
+                            onValueChange = {
+                                quantity = it
+                                viewModel.fieldErrors = viewModel.fieldErrors - "quantity"
+                            },
+                            placeholder = stringResource(R.string.placeholder_quantity),
+                            label = stringResource(R.string.label_quantity),
+                            isError = viewModel.fieldErrors.containsKey("quantity"),
+                            errorMessage = viewModel.fieldErrors["quantity"],
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            labelColor = Black
+                        )
 
-                    CustomTextFieldAligned(
-                        value = quantity,
-                        onValueChange = {
-                            quantity = it
-                            viewModel.fieldErrors = viewModel.fieldErrors - "quantity"
-                        },
-                        placeholder = stringResource(R.string.placeholder_quantity),
-                        label = stringResource(R.string.label_quantity),
-                        isError = viewModel.fieldErrors.containsKey("quantity"),
-                        errorMessage = viewModel.fieldErrors["quantity"],
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        labelColor = Black
-                    )
+                        CustomTextFieldAligned(
+                            value = modelNumber,
+                            onValueChange = {
+                                modelNumber = it
+                                viewModel.fieldErrors = viewModel.fieldErrors - "modelNumber"
+                            },
+                            placeholder = stringResource(R.string.placeholder_model_number),
+                            label = stringResource(R.string.label_model_number),
+                            isError = viewModel.fieldErrors.containsKey("modelNumber"),
+                            errorMessage = viewModel.fieldErrors["modelNumber"],
+                            labelColor = Black
+                        )
 
-                    CustomTextFieldAligned(
-                        value = modelNumber,
-                        onValueChange = {
-                            modelNumber = it
-                            viewModel.fieldErrors = viewModel.fieldErrors - "modelNumber"
-                        },
-                        placeholder = stringResource(R.string.placeholder_model_number),
-                        label = stringResource(R.string.label_model_number),
-                        isError = viewModel.fieldErrors.containsKey("modelNumber"),
-                        errorMessage = viewModel.fieldErrors["modelNumber"],
-                        labelColor = Black
-                    )
+                        CustomTextFieldAligned(
+                            value = sku,
+                            onValueChange = {
+                                sku = it
+                                viewModel.fieldErrors = viewModel.fieldErrors - "sku"
+                            },
+                            placeholder = stringResource(R.string.placeholder_sku),
+                            label = stringResource(R.string.label_sku),
+                            isError = viewModel.fieldErrors.containsKey("sku"),
+                            errorMessage = viewModel.fieldErrors["sku"],
+                            labelColor = Black
+                        )
 
-                    CustomTextFieldAligned(
-                        value = sku,
-                        onValueChange = {
-                            sku = it
-                            viewModel.fieldErrors = viewModel.fieldErrors - "sku"
-                        },
-                        placeholder = stringResource(R.string.placeholder_sku),
-                        label = stringResource(R.string.label_sku),
-                        isError = viewModel.fieldErrors.containsKey("sku"),
-                        errorMessage = viewModel.fieldErrors["sku"],
-                        labelColor = Black
-                    )
+                        CustomDescriptionField(
+                            value = description,
+                            onValueChange = {
+                                description = it
+                                viewModel.fieldErrors = viewModel.fieldErrors - "description"
+                            },
+                            placeholder = stringResource(R.string.placeholder_description),
+                            label = stringResource(R.string.label_description),
+                            isError = viewModel.fieldErrors.containsKey("description"),
+                            errorMessage = viewModel.fieldErrors["description"]
+                        )
+                    }
 
-                    CustomDescriptionField(
-                        value = description,
-                        onValueChange = {
-                            description = it
-                            viewModel.fieldErrors = viewModel.fieldErrors - "description"
-                        },
-                        placeholder = stringResource(R.string.placeholder_description),
-                        label = stringResource(R.string.label_description),
-                        isError = viewModel.fieldErrors.containsKey("description"),
-                        errorMessage = viewModel.fieldErrors["description"]
-                    )
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
-            }
-
-            item {
-                InfoCardContainer {
-                    AdditionalSpecificationsCard(
-                        allAttributes = allAttributes,
-                        addedAttributes = addedAttributes,
-                        onAddAttribute = { attr ->
-                            addedAttributes = addedAttributes + attr
-                            selectedAttribute = null
-                        },
-                        selectedAttribute = selectedAttribute,
-                        onSelectedAttributeChange = { selectedAttribute = it },
-                        attributeValuesMap = attributeValuesMap,
-                        onAttributeValueChange = { attr, value ->
-                            attributeValuesMap[attr] = value
-                        },
-                        onRemoveAttribute = { attr -> removeAttribute(attr) },
-                    )
+                item {
+                    InfoCardContainer {
+                        AdditionalSpecificationsCard(
+                            allAttributes = allAttributes,
+                            addedAttributes = addedAttributes,
+                            onAddAttribute = { attr ->
+                                addedAttributes = addedAttributes + attr
+                                selectedAttribute = null
+                            },
+                            selectedAttribute = selectedAttribute,
+                            onSelectedAttributeChange = { selectedAttribute = it },
+                            attributeValuesMap = attributeValuesMap,
+                            onAttributeValueChange = { attr, value ->
+                                attributeValuesMap[attr] = value
+                            },
+                            onRemoveAttribute = { attr -> removeAttribute(attr) },
+                        )
+                    }
                 }
-            }
 
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CustomButton(
-                        text = stringResource(R.string.save_button),
-                        onClick = {
-                            val brandId = brands.find { it.name == selectedBrand }?.id
-                            val categoryId = categories.find { it.name == selectedCategory }?.id
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CustomButton(
+                            text = stringResource(R.string.save_button),
+                            onClick = {
+                                val brandId = brands.find { it.name == selectedBrand }?.id
+                                val categoryId = categories.find { it.name == selectedCategory }?.id
 
-                            val isValid = viewModel.validateFields(
-                                productName = productName,
-                                price = price,
-                                brandId = brandId,
-                                categoryId = categoryId,
-                                quantity = quantity,
-                                modelNumber = modelNumber,
-                                sku = sku,
-                                description = description
-                            )
-
-                            if (isValid) {
-                                val basePrice = price.toDouble()
-                                val qty = quantity.toInt()
-                                val filteredAttributes = addedAttributes
-                                viewModel.addProduct(
-                                    name = productName,
-                                    description = description,
+                                val isValid = viewModel.validateFields(
+                                    productName = productName,
+                                    price = price,
+                                    brandId = brandId,
+                                    categoryId = categoryId,
+                                    quantity = quantity,
                                     modelNumber = modelNumber,
                                     sku = sku,
-                                    basePrice = basePrice,
-                                    brandId = brandId!!,
-                                    categoryId = categoryId!!,
-                                    quantity = qty,
-                                    selectedAttributes = filteredAttributes,
-                                    attributeValuesMap = attributeValuesMap,
-                                    imageUrls = viewModel.productImages
+                                    description = description
                                 )
-                            }
-                        },
-                        width = 304
-                    )
-                }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                                if (isValid) {
+                                    val basePrice = price.toDouble()
+                                    val qty = quantity.toInt()
+                                    val filteredAttributes = addedAttributes
+                                    viewModel.addProduct(
+                                        name = productName,
+                                        description = description,
+                                        modelNumber = modelNumber,
+                                        sku = sku,
+                                        basePrice = basePrice,
+                                        brandId = brandId!!,
+                                        categoryId = categoryId!!,
+                                        quantity = qty,
+                                        selectedAttributes = filteredAttributes,
+                                        attributeValuesMap = attributeValuesMap,
+                                        imageUrls = viewModel.productImages
+                                    )
+                                }
+                            },
+                            width = 304
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
             }
         }
     }

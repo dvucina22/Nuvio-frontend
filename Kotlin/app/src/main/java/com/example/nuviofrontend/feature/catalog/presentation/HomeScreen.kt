@@ -344,7 +344,7 @@ fun HomeScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(46.dp))
         }
 
         state.error?.let { error ->

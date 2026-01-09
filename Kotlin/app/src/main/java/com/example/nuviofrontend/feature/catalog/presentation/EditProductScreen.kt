@@ -173,221 +173,225 @@ fun EditProductScreen(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 20.dp),
+    Box(
+        modifier = Modifier.fillMaxSize(),
     ) {
-        CustomTopBar(
-            title = stringResource(R.string.edit_product_title),
-            showBack = true,
-            onBack = onBackClick
-        )
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 120.dp, start = 10.dp, end = 10.dp)
         ) {
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(150.dp)
-                        .background((BackgroundBehindButton), RoundedCornerShape(12.dp))
-                        .clickable {
-                            imagePickerLauncher.launch("image/*")
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.CameraAlt,
-                        contentDescription = "",
-                        tint = Color.Gray,
-                        modifier = Modifier.size(48.dp)
-                    )
-                    Text(
-                        text = stringResource(R.string.add_image_text),
-                        color = Color.Gray,
-                        fontSize = 14.sp,
-                        modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 12.dp)
-                    )
-                }
-                if (allImages.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(10.dp))
+            CustomTopBar(
+                title = stringResource(R.string.edit_product_title),
+                showBack = true,
+                onBack = onBackClick
+            )
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentPadding = PaddingValues(bottom = 120.dp, start = 10.dp, end = 10.dp)
+            ) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(150.dp)
+                            .background((BackgroundBehindButton), RoundedCornerShape(12.dp))
+                            .clickable {
+                                imagePickerLauncher.launch("image/*")
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.CameraAlt,
+                            contentDescription = "",
+                            tint = Color.Gray,
+                            modifier = Modifier.size(48.dp)
+                        )
+                        Text(
+                            text = stringResource(R.string.add_image_text),
+                            color = Color.Gray,
+                            fontSize = 14.sp,
+                            modifier = Modifier.align(Alignment.BottomCenter)
+                                .padding(bottom = 12.dp)
+                        )
+                    }
+                    if (allImages.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(10.dp))
 
-                    SelectedImagesRow(
-                        images = allImages,
-                        onRemoveImage = { imageUrl ->
-                            if (productImages.contains(imageUrl)) {
-                                productImages = productImages.filter { it != imageUrl }
-                            } else {
-                                initialImages = initialImages.filter { it != imageUrl }
+                        SelectedImagesRow(
+                            images = allImages,
+                            onRemoveImage = { imageUrl ->
+                                if (productImages.contains(imageUrl)) {
+                                    productImages = productImages.filter { it != imageUrl }
+                                } else {
+                                    initialImages = initialImages.filter { it != imageUrl }
+                                }
                             }
-                        }
-                    )
-                }
-                Spacer(modifier = Modifier.height(10.dp))
-            }
-
-            item {
-                InfoCardContainer {
-                    Text(
-                        text = stringResource(R.string.basic_information_product),
-                        fontSize = 17.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Black
-                    )
-                    Spacer(modifier = Modifier.height(7.dp))
-                    Divider(color = BackgroundNavDark)
-                    Spacer(modifier = Modifier.height(7.dp))
-
-                    CustomTextFieldAligned(
-                        value = productName,
-                        onValueChange = { productName = it },
-                        label = stringResource(R.string.label_product_name),
-                        placeholder = "",
-                        isError = fieldErrors.containsKey("productName"),
-                        errorMessage = fieldErrors["productName"]
-                    )
-
-                    CustomTextFieldAligned(
-                        value = price,
-                        onValueChange = { price = it },
-                        label = stringResource(R.string.label_price),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        placeholder = "",
-                        isError = fieldErrors.containsKey("price"),
-                        errorMessage = fieldErrors["price"]
-                    )
-
-                    CustomDropdownEditProduct(
-                        label = stringResource(R.string.brand),
-                        value = selectedBrand,
-                        items = viewModel.brands,
-                        itemLabel = { mapAttributeValue("brand", it.name) },
-                        placeholder = stringResource(R.string.placeholder_brand),
-                        onItemSelected = { selectedBrand = it },
-                        isError = fieldErrors.containsKey("brand"),
-                        errorMessage = fieldErrors["brand"]
-                    )
-
-
-                    CustomDropdownEditProduct(
-                        label = stringResource(R.string.category),
-                        value = selectedCategory,
-                        items = viewModel.categories,
-                        itemLabel = { mapAttributeValue("category", it.name) },
-                        placeholder = stringResource(R.string.placeholder_category),
-                        onItemSelected = { selectedCategory = it },
-                        isError = fieldErrors.containsKey("category"),
-                        errorMessage = fieldErrors["category"]
-                    )
-
-                    CustomTextFieldAligned(
-                        value = quantity,
-                        onValueChange = { quantity = it },
-                        label = stringResource(R.string.label_quantity),
-                        placeholder = "",
-                        isError = fieldErrors.containsKey("quantity"),
-                        errorMessage = fieldErrors["quantity"]
-                    )
-
-                    CustomTextFieldAligned(
-                        value = modelNumber,
-                        onValueChange = { modelNumber = it },
-                        label = stringResource(R.string.label_model_number),
-                        placeholder = "",
-                        isError = fieldErrors.containsKey("modelNumber"),
-                        errorMessage = fieldErrors["modelNumber"]
-                    )
-
-                    CustomTextFieldAligned(
-                        value = sku,
-                        onValueChange = { sku = it },
-                        label = stringResource(R.string.label_sku),
-                        placeholder = "",
-                        isError = fieldErrors.containsKey("sku"),
-                        errorMessage = fieldErrors["sku"]
-                    )
-
-                    CustomDescriptionField(
-                        value = description,
-                        onValueChange = { description = it },
-                        label = stringResource(R.string.label_description),
-                        placeholder = "",
-                        isError = fieldErrors.containsKey("description"),
-                        errorMessage = fieldErrors["description"]
-                    )
-                }
-                Spacer(modifier = Modifier.height(24.dp))
-            }
-
-            item {
-                InfoCardContainer {
-                    AdditionalSpecificationsCard(
-                        allAttributes = allAttributes,
-                        addedAttributes = addedAttributes,
-                        onAddAttribute = { attr ->
-                            addedAttributes = addedAttributes + attr
-                            selectedAttribute = null
-                        },
-                        selectedAttribute = selectedAttribute,
-                        onSelectedAttributeChange = { selectedAttribute = it },
-                        attributeValuesMap = attributeValuesMap,
-                        onAttributeValueChange = { attr, value ->
-                            attributeValuesMap[attr] = value
-                        },
-                        onRemoveAttribute = { attr ->
-                            addedAttributes = addedAttributes - attr
-                            attributeValuesMap.remove(attr.name)
-                        }
-                    )
-                }
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CustomButton(
-                        text = stringResource(R.string.save_button),
-                        onClick = {
-                            val valid = viewModel.validateFields(
-                                productName = productName,
-                                price = price,
-                                brandId = selectedBrand?.id,
-                                categoryId = selectedCategory?.id,
-                                quantity = quantity,
-                                modelNumber = modelNumber,
-                                sku = sku,
-                                description = description
-                            )
-
-                            if (!valid) return@CustomButton
-
-                            viewModel.updateProduct(
-                                id = productId,
-                                name = productName,
-                                description = description,
-                                modelNumber = modelNumber,
-                                sku = sku,
-                                basePrice = price.toDoubleOrNull(),
-                                brandId = selectedBrand?.id,
-                                categoryId = selectedCategory?.id,
-                                quantity = quantity.toIntOrNull(),
-                                selectedAttributes = addedAttributes,
-                                attributeValuesMap = attributeValuesMap,
-                                imageUrls = urlsToSend
-                            )
-                        },
-                        width = 304
-                    )
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
                 }
 
-                Spacer(modifier = Modifier.height(10.dp))
+                item {
+                    InfoCardContainer {
+                        Text(
+                            text = stringResource(R.string.basic_information_product),
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Black
+                        )
+                        Spacer(modifier = Modifier.height(7.dp))
+                        Divider(color = BackgroundNavDark)
+                        Spacer(modifier = Modifier.height(7.dp))
+
+                        CustomTextFieldAligned(
+                            value = productName,
+                            onValueChange = { productName = it },
+                            label = stringResource(R.string.label_product_name),
+                            placeholder = "",
+                            isError = fieldErrors.containsKey("productName"),
+                            errorMessage = fieldErrors["productName"]
+                        )
+
+                        CustomTextFieldAligned(
+                            value = price,
+                            onValueChange = { price = it },
+                            label = stringResource(R.string.label_price),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            placeholder = "",
+                            isError = fieldErrors.containsKey("price"),
+                            errorMessage = fieldErrors["price"]
+                        )
+
+                        CustomDropdownEditProduct(
+                            label = stringResource(R.string.brand),
+                            value = selectedBrand,
+                            items = viewModel.brands,
+                            itemLabel = { mapAttributeValue("brand", it.name) },
+                            placeholder = stringResource(R.string.placeholder_brand),
+                            onItemSelected = { selectedBrand = it },
+                            isError = fieldErrors.containsKey("brand"),
+                            errorMessage = fieldErrors["brand"]
+                        )
+
+
+                        CustomDropdownEditProduct(
+                            label = stringResource(R.string.category),
+                            value = selectedCategory,
+                            items = viewModel.categories,
+                            itemLabel = { mapAttributeValue("category", it.name) },
+                            placeholder = stringResource(R.string.placeholder_category),
+                            onItemSelected = { selectedCategory = it },
+                            isError = fieldErrors.containsKey("category"),
+                            errorMessage = fieldErrors["category"]
+                        )
+
+                        CustomTextFieldAligned(
+                            value = quantity,
+                            onValueChange = { quantity = it },
+                            label = stringResource(R.string.label_quantity),
+                            placeholder = "",
+                            isError = fieldErrors.containsKey("quantity"),
+                            errorMessage = fieldErrors["quantity"]
+                        )
+
+                        CustomTextFieldAligned(
+                            value = modelNumber,
+                            onValueChange = { modelNumber = it },
+                            label = stringResource(R.string.label_model_number),
+                            placeholder = "",
+                            isError = fieldErrors.containsKey("modelNumber"),
+                            errorMessage = fieldErrors["modelNumber"]
+                        )
+
+                        CustomTextFieldAligned(
+                            value = sku,
+                            onValueChange = { sku = it },
+                            label = stringResource(R.string.label_sku),
+                            placeholder = "",
+                            isError = fieldErrors.containsKey("sku"),
+                            errorMessage = fieldErrors["sku"]
+                        )
+
+                        CustomDescriptionField(
+                            value = description,
+                            onValueChange = { description = it },
+                            label = stringResource(R.string.label_description),
+                            placeholder = "",
+                            isError = fieldErrors.containsKey("description"),
+                            errorMessage = fieldErrors["description"]
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
+
+                item {
+                    InfoCardContainer {
+                        AdditionalSpecificationsCard(
+                            allAttributes = allAttributes,
+                            addedAttributes = addedAttributes,
+                            onAddAttribute = { attr ->
+                                addedAttributes = addedAttributes + attr
+                                selectedAttribute = null
+                            },
+                            selectedAttribute = selectedAttribute,
+                            onSelectedAttributeChange = { selectedAttribute = it },
+                            attributeValuesMap = attributeValuesMap,
+                            onAttributeValueChange = { attr, value ->
+                                attributeValuesMap[attr] = value
+                            },
+                            onRemoveAttribute = { attr ->
+                                addedAttributes = addedAttributes - attr
+                                attributeValuesMap.remove(attr.name)
+                            }
+                        )
+                    }
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CustomButton(
+                            text = stringResource(R.string.save_button),
+                            onClick = {
+                                val valid = viewModel.validateFields(
+                                    productName = productName,
+                                    price = price,
+                                    brandId = selectedBrand?.id,
+                                    categoryId = selectedCategory?.id,
+                                    quantity = quantity,
+                                    modelNumber = modelNumber,
+                                    sku = sku,
+                                    description = description
+                                )
+
+                                if (!valid) return@CustomButton
+
+                                viewModel.updateProduct(
+                                    id = productId,
+                                    name = productName,
+                                    description = description,
+                                    modelNumber = modelNumber,
+                                    sku = sku,
+                                    basePrice = price.toDoubleOrNull(),
+                                    brandId = selectedBrand?.id,
+                                    categoryId = selectedCategory?.id,
+                                    quantity = quantity.toIntOrNull(),
+                                    selectedAttributes = addedAttributes,
+                                    attributeValuesMap = attributeValuesMap,
+                                    imageUrls = urlsToSend
+                                )
+                            },
+                            width = 304
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+                }
             }
         }
     }

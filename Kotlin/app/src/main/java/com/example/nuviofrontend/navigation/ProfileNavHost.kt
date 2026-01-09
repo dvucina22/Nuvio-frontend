@@ -23,6 +23,7 @@ import com.example.nuviofrontend.feature.profile.presentation.ProfileEditViewMod
 import com.example.nuviofrontend.feature.profile.presentation.ProfileScreen
 import com.example.nuviofrontend.feature.profile.presentation.ProfileViewModel
 import com.example.nuviofrontend.feature.profile.presentation.UsersScreen
+import com.example.nuviofrontend.feature.support.presentation.SupportScreen
 
 sealed class ProfileRoute(val route: String) {
     object Main : ProfileRoute("profile_main")
@@ -30,6 +31,7 @@ sealed class ProfileRoute(val route: String) {
     object EditProfile : ProfileRoute("profile_edit")
     object SavedCards : ProfileRoute("profile_saved_cards")
     object Users : ProfileRoute("users")
+    object Support: ProfileRoute("support")
 }
 
 @Composable
@@ -65,7 +67,8 @@ fun ProfileNavHost(
                 onEdit = { navController.navigate(ProfileRoute.EditProfile.route) },
                 onChangePassword = { navController.navigate(ProfileRoute.ChangePassword.route) },
                 onNavigateToSavedCards = { navController.navigate(ProfileRoute.SavedCards.route) },
-                onNavigateToUsers = { navController.navigate(ProfileRoute.Users.route) }
+                onNavigateToUsers = { navController.navigate(ProfileRoute.Users.route) },
+                onNavigateToSupport = { navController.navigate(ProfileRoute.Support.route) }
             )
         }
 
@@ -166,6 +169,11 @@ fun ProfileNavHost(
         }
         composable(ProfileRoute.Users.route) {
             UsersScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+        composable(ProfileRoute.Support.route){
+            SupportScreen(
                 onBack = { navController.popBackStack() }
             )
         }

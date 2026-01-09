@@ -45,9 +45,7 @@ fun UsersScreen(
     var confirmDeactivateId by remember { mutableStateOf<String?>(null) }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 20.dp)
+        modifier = Modifier.fillMaxSize()
     ) {
         CustomTopBar(
             title = stringResource(R.string.users_title),
