@@ -113,7 +113,7 @@ fun CustomTextField(
                     onValueChange = onValueChange,
                     singleLine = true,
                     cursorBrush = SolidColor(White),
-                    textStyle = textStyle.copy(color = White, textAlign = TextAlign.Start),
+                    textStyle = textStyle.copy(color = Black, textAlign = TextAlign.Start),
                     visualTransformation = visualTransformation,
                     decorationBox = { innerTextField ->
                         Row(

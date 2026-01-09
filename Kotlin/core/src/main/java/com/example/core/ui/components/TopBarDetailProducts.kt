@@ -3,7 +3,6 @@ package com.example.core.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
@@ -17,9 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.core.ui.theme.BackgroundBehindButton
-import com.example.core.ui.theme.White
 import com.example.core.ui.theme.Error
+import com.example.core.ui.theme.IconDark
 
 @Composable
 fun TopBarDetailProducts(
@@ -45,7 +43,7 @@ fun TopBarDetailProducts(
         Icon(
             imageVector = Icons.Default.ArrowBack,
             contentDescription = "Back",
-            tint = Color.White,
+            tint = Color.Black,
             modifier = Modifier
                 .size(28.dp)
                 .clickable { onBack() }
@@ -54,75 +52,44 @@ fun TopBarDetailProducts(
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (showFavorite) {
-                Box(
-                    modifier = Modifier
-                        .size(35.dp)
-                        .background(color = BackgroundBehindButton, shape = RoundedCornerShape(5.dp))
-                        .clickable { onFavoriteClick() },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Favorite,
-                        tint = if (isFavorite) Error else White,
-                        contentDescription = "Favorite",
-                        modifier = Modifier.size(23.dp)
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(10.dp))
-            }
-
-            if (showCart) {
-                Box(
-                    modifier = Modifier
-                        .size(35.dp)
-                        .background(color = BackgroundBehindButton, shape = RoundedCornerShape(5.dp))
-                        .clickable { onCartClick() },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.ShoppingCart,
-                        contentDescription = "Cart",
-                        tint = White,
-                        modifier = Modifier.size(23.dp)
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(10.dp))
-            }
-
             if (showEdit) {
-                Box(
-                    modifier = Modifier
-                        .size(35.dp)
-                        .background(color = BackgroundBehindButton, shape = RoundedCornerShape(5.dp))
-                        .clickable { onEditClick() },
-                    contentAlignment = Alignment.Center
-                ) {
+                IconActionBox(onClick = onEditClick) {
                     Icon(
                         imageVector = Icons.Outlined.Edit,
-                        contentDescription = "Edit",
-                        tint = White,
-                        modifier = Modifier.size(23.dp)
+                        tint = IconDark,
+                        contentDescription = "Edit"
                     )
                 }
                 Spacer(modifier = Modifier.width(10.dp))
             }
 
             if (showDelete) {
-                Box(
-                    modifier = Modifier
-                        .size(35.dp)
-                        .background(color = BackgroundBehindButton, shape = RoundedCornerShape(5.dp))
-                        .clickable { onDeleteClick() },
-                    contentAlignment = Alignment.Center
-                ) {
+                IconActionBox(onClick = onDeleteClick) {
                     Icon(
                         imageVector = Icons.Outlined.Delete,
-                        contentDescription = "Delete",
-                        tint = White,
-                        modifier = Modifier.size(23.dp)
+                        tint = Error,
+                        contentDescription = "Delete"
+                    )
+                }
+                Spacer(modifier = Modifier.width(10.dp))
+            }
+            if (showFavorite) {
+                IconActionBox(onClick = onFavoriteClick) {
+                    Icon(
+                        imageVector = Icons.Filled.Favorite,
+                        tint = if (isFavorite) Error else IconDark,
+                        contentDescription = "Favorite"
+                    )
+                }
+                Spacer(modifier = Modifier.width(10.dp))
+            }
+
+            if (showCart) {
+                IconActionBox(onClick = onCartClick) {
+                    Icon(
+                        imageVector = Icons.Default.ShoppingCart,
+                        tint = IconDark,
+                        contentDescription = "Cart"
                     )
                 }
             }

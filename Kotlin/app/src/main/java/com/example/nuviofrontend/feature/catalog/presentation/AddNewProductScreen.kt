@@ -59,6 +59,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
@@ -75,7 +76,9 @@ import com.example.core.catalog.dto.AttributeFilter
 import com.example.core.ui.components.CustomButton
 import com.example.core.ui.components.CustomDescriptionField
 import com.example.core.ui.components.CustomTextField
+import com.example.core.ui.components.CustomTextFieldAligned
 import com.example.core.ui.components.CustomTopBar
+import com.example.core.ui.components.IconActionBox
 import com.example.core.ui.components.SelectedImagesRow
 import com.example.core.ui.theme.BackgroundBehindButton
 import com.example.core.ui.theme.BackgroundColorInput
@@ -83,6 +86,7 @@ import com.example.core.ui.theme.BackgroundNavDark
 import com.example.core.ui.theme.Black
 import com.example.core.ui.theme.ButtonColorSelected
 import com.example.core.ui.theme.CardItemBackground
+import com.example.core.ui.theme.CardItemBackgroundLight
 import com.example.core.ui.theme.ColorInput
 import com.example.core.ui.theme.Error
 import com.example.core.ui.theme.White
@@ -199,153 +203,146 @@ fun AddNewProductScreen(
             }
 
             item {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                color = CardItemBackground,
-                                shape = RoundedCornerShape(6.dp)
-                            )
-                    ) {
-                        Text(
-                            text = stringResource(R.string.basic_information_product),
-                            fontSize = 16.sp,
-                            color = Color.White,
-                            modifier = Modifier.padding(start = 32.dp, top = 10.dp)
-                        )
-                        Spacer(modifier = Modifier.height(7.dp))
-                        Divider(color = BackgroundNavDark)
-                        Spacer(modifier = Modifier.height(7.dp))
+                InfoCardContainer() {
+                    Text(
+                        text = stringResource(R.string.basic_information_product),
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Black
+                    )
+                    Spacer(modifier = Modifier.height(7.dp))
+                    Divider(color = BackgroundNavDark)
+                    Spacer(modifier = Modifier.height(7.dp))
 
-                        CustomTextField(
-                            value = productName,
-                            onValueChange = {
-                                productName = it
-                                viewModel.fieldErrors = viewModel.fieldErrors - "productName"
-                            },
-                            placeholder = stringResource(R.string.placeholder_product_name),
-                            label = stringResource(R.string.label_product_name),
-                            isError = viewModel.fieldErrors.containsKey("productName"),
-                            errorMessage = viewModel.fieldErrors["productName"],
-                            labelColor = White
-                        )
+                    CustomTextFieldAligned(
+                        value = productName,
+                        onValueChange = {
+                            productName = it
+                            viewModel.fieldErrors = viewModel.fieldErrors - "productName"
+                        },
+                        placeholder = stringResource(R.string.placeholder_product_name),
+                        label = stringResource(R.string.label_product_name),
+                        isError = viewModel.fieldErrors.containsKey("productName"),
+                        errorMessage = viewModel.fieldErrors["productName"],
+                        labelColor = Black
+                    )
 
-                        CustomTextField(
-                            value = price,
-                            onValueChange = {
-                                price = it
-                                viewModel.fieldErrors = viewModel.fieldErrors - "price"
-                            },
-                            placeholder = stringResource(R.string.placeholder_price),
-                            label = stringResource(R.string.label_price),
-                            isError = viewModel.fieldErrors.containsKey("price"),
-                            errorMessage = viewModel.fieldErrors["price"],
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            labelColor = White
-                        )
+                    CustomTextFieldAligned(
+                        value = price,
+                        onValueChange = {
+                            price = it
+                            viewModel.fieldErrors = viewModel.fieldErrors - "price"
+                        },
+                        placeholder = stringResource(R.string.placeholder_price),
+                        label = stringResource(R.string.label_price),
+                        isError = viewModel.fieldErrors.containsKey("price"),
+                        errorMessage = viewModel.fieldErrors["price"],
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        labelColor = Black
+                    )
 
-                        CustomDropdownAddProduct(
-                            label = stringResource(R.string.brand),
-                            value = selectedBrand?.let { mapAttributeValue("brand", it) },
-                            items = brands.map { it.name },
-                            itemLabel = { mapAttributeValue("brand", it) },
-                            placeholder = stringResource(R.string.placeholder_brand),
-                            onItemSelected = {
-                                selectedBrand = it
-                                viewModel.fieldErrors = viewModel.fieldErrors - "brand"
-                            },
-                            isError = viewModel.fieldErrors.containsKey("brand"),
-                            errorMessage = viewModel.fieldErrors["brand"]
-                        )
+                    CustomDropdownAddProduct(
+                        label = stringResource(R.string.brand),
+                        value = selectedBrand?.let { mapAttributeValue("brand", it) },
+                        items = brands.map { it.name },
+                        itemLabel = { mapAttributeValue("brand", it) },
+                        placeholder = stringResource(R.string.placeholder_brand),
+                        onItemSelected = {
+                            selectedBrand = it
+                            viewModel.fieldErrors = viewModel.fieldErrors - "brand"
+                        },
+                        isError = viewModel.fieldErrors.containsKey("brand"),
+                        errorMessage = viewModel.fieldErrors["brand"]
+                    )
 
-                        CustomDropdownAddProduct(
-                            label = stringResource(R.string.category),
-                            value = selectedCategory?.let { mapAttributeValue("category", it) },
-                            items = categories.map { it.name },
-                            itemLabel = { mapAttributeValue("category", it) },
-                            placeholder = stringResource(R.string.placeholder_category),
-                            onItemSelected = {
-                                selectedCategory = it
-                                viewModel.fieldErrors = viewModel.fieldErrors - "category"
-                            },
-                            isError = viewModel.fieldErrors.containsKey("category"),
-                            errorMessage = viewModel.fieldErrors["category"]
-                        )
+                    CustomDropdownAddProduct(
+                        label = stringResource(R.string.category),
+                        value = selectedCategory?.let { mapAttributeValue("category", it) },
+                        items = categories.map { it.name },
+                        itemLabel = { mapAttributeValue("category", it) },
+                        placeholder = stringResource(R.string.placeholder_category),
+                        onItemSelected = {
+                            selectedCategory = it
+                            viewModel.fieldErrors = viewModel.fieldErrors - "category"
+                        },
+                        isError = viewModel.fieldErrors.containsKey("category"),
+                        errorMessage = viewModel.fieldErrors["category"]
+                    )
 
-                        CustomTextField(
-                            value = quantity,
-                            onValueChange = {
-                                quantity = it
-                                viewModel.fieldErrors = viewModel.fieldErrors - "quantity"
-                            },
-                            placeholder = stringResource(R.string.placeholder_quantity),
-                            label = stringResource(R.string.label_quantity),
-                            isError = viewModel.fieldErrors.containsKey("quantity"),
-                            errorMessage = viewModel.fieldErrors["quantity"],
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            labelColor = White
-                        )
+                    CustomTextFieldAligned(
+                        value = quantity,
+                        onValueChange = {
+                            quantity = it
+                            viewModel.fieldErrors = viewModel.fieldErrors - "quantity"
+                        },
+                        placeholder = stringResource(R.string.placeholder_quantity),
+                        label = stringResource(R.string.label_quantity),
+                        isError = viewModel.fieldErrors.containsKey("quantity"),
+                        errorMessage = viewModel.fieldErrors["quantity"],
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        labelColor = Black
+                    )
 
-                        CustomTextField(
-                            value = modelNumber,
-                            onValueChange = {
-                                modelNumber = it
-                                viewModel.fieldErrors = viewModel.fieldErrors - "modelNumber"
-                            },
-                            placeholder = stringResource(R.string.placeholder_model_number),
-                            label = stringResource(R.string.label_model_number),
-                            isError = viewModel.fieldErrors.containsKey("modelNumber"),
-                            errorMessage = viewModel.fieldErrors["modelNumber"],
-                            labelColor = White
-                        )
+                    CustomTextFieldAligned(
+                        value = modelNumber,
+                        onValueChange = {
+                            modelNumber = it
+                            viewModel.fieldErrors = viewModel.fieldErrors - "modelNumber"
+                        },
+                        placeholder = stringResource(R.string.placeholder_model_number),
+                        label = stringResource(R.string.label_model_number),
+                        isError = viewModel.fieldErrors.containsKey("modelNumber"),
+                        errorMessage = viewModel.fieldErrors["modelNumber"],
+                        labelColor = Black
+                    )
 
-                        CustomTextField(
-                            value = sku,
-                            onValueChange = {
-                                sku = it
-                                viewModel.fieldErrors = viewModel.fieldErrors - "sku"
-                            },
-                            placeholder = stringResource(R.string.placeholder_sku),
-                            label = stringResource(R.string.label_sku),
-                            isError = viewModel.fieldErrors.containsKey("sku"),
-                            errorMessage = viewModel.fieldErrors["sku"],
-                            labelColor = White
-                        )
+                    CustomTextFieldAligned(
+                        value = sku,
+                        onValueChange = {
+                            sku = it
+                            viewModel.fieldErrors = viewModel.fieldErrors - "sku"
+                        },
+                        placeholder = stringResource(R.string.placeholder_sku),
+                        label = stringResource(R.string.label_sku),
+                        isError = viewModel.fieldErrors.containsKey("sku"),
+                        errorMessage = viewModel.fieldErrors["sku"],
+                        labelColor = Black
+                    )
 
-                        CustomDescriptionField(
-                            value = description,
-                            onValueChange = {
-                                description = it
-                                viewModel.fieldErrors = viewModel.fieldErrors - "description"
-                            },
-                            placeholder = stringResource(R.string.placeholder_description),
-                            label = stringResource(R.string.label_description),
-                            isError = viewModel.fieldErrors.containsKey("description"),
-                            errorMessage = viewModel.fieldErrors["description"]
-                        )
-                    }
+                    CustomDescriptionField(
+                        value = description,
+                        onValueChange = {
+                            description = it
+                            viewModel.fieldErrors = viewModel.fieldErrors - "description"
+                        },
+                        placeholder = stringResource(R.string.placeholder_description),
+                        label = stringResource(R.string.label_description),
+                        isError = viewModel.fieldErrors.containsKey("description"),
+                        errorMessage = viewModel.fieldErrors["description"]
+                    )
                 }
+
                 Spacer(modifier = Modifier.height(24.dp))
             }
 
             item {
-                AdditionalSpecificationsCard(
-                    allAttributes = allAttributes,
-                    addedAttributes = addedAttributes,
-                    onAddAttribute = { attr ->
-                        addedAttributes = addedAttributes + attr
-                        selectedAttribute = null
-                    },
-                    selectedAttribute = selectedAttribute,
-                    onSelectedAttributeChange = { selectedAttribute = it },
-                    attributeValuesMap = attributeValuesMap,
-                    onAttributeValueChange = { attr, value -> attributeValuesMap[attr] = value },
-                    onRemoveAttribute = { attr -> removeAttribute(attr) },
-                )
+                InfoCardContainer {
+                    AdditionalSpecificationsCard(
+                        allAttributes = allAttributes,
+                        addedAttributes = addedAttributes,
+                        onAddAttribute = { attr ->
+                            addedAttributes = addedAttributes + attr
+                            selectedAttribute = null
+                        },
+                        selectedAttribute = selectedAttribute,
+                        onSelectedAttributeChange = { selectedAttribute = it },
+                        attributeValuesMap = attributeValuesMap,
+                        onAttributeValueChange = { attr, value ->
+                            attributeValuesMap[attr] = value
+                        },
+                        onRemoveAttribute = { attr -> removeAttribute(attr) },
+                    )
+                }
             }
 
             item {
@@ -421,66 +418,48 @@ fun AdditionalSpecificationsCard(
         }
 
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(CardItemBackground, RoundedCornerShape(6.dp))
+        modifier = Modifier.fillMaxWidth()
     ) {
         Text(
             text = stringResource(R.string.additional_specifications_title),
-            fontSize = 16.sp,
-            color = Color.White,
-            modifier = Modifier.padding(start = 32.dp, bottom = 10.dp, top = 10.dp)
+            fontSize = 17.sp,
+            fontWeight = FontWeight.Bold,
+            color = Black
         )
         Divider(color = BackgroundNavDark)
         Spacer(modifier = Modifier.height(8.dp))
 
         addedAttributes.forEach { attribute ->
             val values = attribute.items.map { it.value }
-            val selectedValue = attributeValuesMap[attribute.name]
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 32.dp, end = 40.dp)
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Box(modifier = Modifier.weight(0.7f)) {
-                    CustomDropdownAddProduct(
-                        label = mapAttributeName(attribute.name ?: ""),
-                        value = attributeValuesMap[attribute.name],
-                        items = values,
-                        itemLabel = { mapAttributeValue(attribute.name ?: "", it) },
-                        placeholder = stringResource(R.string.placeholder_select_attribute),
-                        onItemSelected = { value ->
-                            attributeValuesMap[attribute.name ?: ""] = value
-                        },
-                        modifier = Modifier.width(250.dp)
+                CustomDropdownAddProduct(
+                    label = mapAttributeName(attribute.name ?: ""),
+                    value = attributeValuesMap[attribute.name],
+                    items = values,
+                    itemLabel = { mapAttributeValue(attribute.name ?: "", it) },
+                    placeholder = stringResource(R.string.placeholder_select_attribute),
+                    onItemSelected = { value -> attributeValuesMap[attribute.name ?: ""] = value },
+                    modifier = Modifier.weight(1f)
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                IconActionBox(
+                    modifier = Modifier.offset(y = 5.dp).size(40.dp),
+                    onClick = { onRemoveAttribute(attribute) }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.DeleteOutline,
+                        contentDescription = "Delete",
+                        tint = Error,
+                        modifier = Modifier.size(22.dp)
                     )
                 }
-
-                Spacer(modifier = Modifier.width(5.dp))
-
-                Box(
-                    modifier = Modifier.offset(y = 5.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(35.dp)
-                            .background(BackgroundBehindButton, RoundedCornerShape(5.dp))
-                            .clickable { onRemoveAttribute(attribute) },
-                        contentAlignment = Alignment.Center
-                    ) {
-
-                        Icon(
-                            imageVector = Icons.Default.DeleteOutline,
-                            contentDescription = "",
-                            tint = Black,
-                            modifier = Modifier.size(22.dp)
-                        )
-                    }
-                }
             }
-            Spacer(modifier = Modifier.height(6.dp))
         }
 
         if (remainingAttributes.isNotEmpty()) {
@@ -488,47 +467,37 @@ fun AdditionalSpecificationsCard(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 32.dp, end = 40.dp)
             ) {
-                Box(modifier = Modifier.weight(0.7f)) {
-                    CustomDropdownAddProduct(
-                        label = stringResource(R.string.placeholder_add_attribute),
-                        value = selectedAttribute?.name?.let { mapAttributeName(it) },
-                        items = remainingAttributes.map { it.name ?: "" },
-                        itemLabel = { mapAttributeName(it) },
-                        placeholder = stringResource(R.string.placeholder_add_attribute),
-                        onItemSelected = { selectedName ->
-                            val attr = allAttributes.find { it.name == selectedName }
-                            if (attr != null) onSelectedAttributeChange(attr)
-                        },
-                        modifier = Modifier.width(250.dp)
-                    )
-                }
+                CustomDropdownAddProduct(
+                    label = stringResource(R.string.placeholder_add_attribute),
+                    value = selectedAttribute?.name?.let { mapAttributeName(it) },
+                    items = remainingAttributes.map { it.name ?: "" },
+                    itemLabel = { mapAttributeName(it) },
+                    placeholder = stringResource(R.string.placeholder_add_attribute),
+                    onItemSelected = { selectedName ->
+                        val attr = allAttributes.find { it.name == selectedName }
+                        if (attr != null) onSelectedAttributeChange(attr)
+                    },
+                    modifier = Modifier.weight(1f)
+                )
 
-                Spacer(modifier = Modifier.width(5.dp))
+                Spacer(modifier = Modifier.width(8.dp))
 
-                Box(
-                    modifier = Modifier.offset(y = 5.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(34.dp)
-                            .background(BackgroundBehindButton, RoundedCornerShape(5.dp))
-                            .clickable {
-                                selectedAttribute?.let {
-                                    onAddAttribute(it)
-                                    onSelectedAttributeChange(null)
-                                }
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.AddCircleOutline,
-                            contentDescription = "",
-                            tint = Black,
-                            modifier = Modifier.size(22.dp)
-                        )
+                IconActionBox(
+                    modifier = Modifier.offset(y = 5.dp).size(40.dp),
+                    onClick = {
+                        selectedAttribute?.let {
+                            onAddAttribute(it)
+                            onSelectedAttributeChange(null)
+                        }
                     }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.AddCircleOutline,
+                        contentDescription = "Add",
+                        tint = Black,
+                        modifier = Modifier.size(22.dp)
+                    )
                 }
             }
         }
@@ -571,16 +540,17 @@ fun <T> CustomDropdownAddProduct(
         label?.let {
             Text(
                 text = it,
-                color = White,
+                color = Black,
                 style = textStyle,
                 modifier = Modifier
-                    .width(304.dp)
+                    .fillMaxWidth()
                     .padding(bottom = 4.dp)
             )
         }
 
         Box(
-            modifier = Modifier.width(304.dp)
+            modifier = Modifier
+                .fillMaxWidth()
                 .onGloballyPositioned { layoutCoordinates ->
                     triggeredWidth = with(density) {
                         layoutCoordinates.size.width.toDp()
@@ -590,7 +560,7 @@ fun <T> CustomDropdownAddProduct(
         ) {
             Row(
                 modifier = Modifier
-                    .width(304.dp)
+                    .fillMaxWidth()
                     .height(40.dp)
                     .clip(RoundedCornerShape(8.dp))
                     .background(BackgroundColorInput.copy(alpha = 0.3f))
@@ -613,8 +583,8 @@ fun <T> CustomDropdownAddProduct(
                     text = value?.let { itemLabel(it) } ?: placeholder,
                     style = textStyle.copy(
                         color = if (value == null)
-                            ColorInput.copy(alpha = 0.7f)
-                        else White
+                            Black.copy(alpha = 0.7f)
+                        else Black
                     ),
                     modifier = Modifier.weight(1f)
                 )
@@ -622,7 +592,7 @@ fun <T> CustomDropdownAddProduct(
                 Icon(
                     painter = painterResource(id = R.drawable.ic_arrow_down),
                     contentDescription = null,
-                    tint = White,
+                    tint = Black,
                     modifier = Modifier
                         .size(20.dp)
                         .rotate(arrowRotation)
@@ -655,7 +625,7 @@ fun <T> CustomDropdownAddProduct(
                         modifier = Modifier
                             .width(triggeredWidth)
                             .clip(RoundedCornerShape(8.dp))
-                            .background(ButtonColorSelected)
+                            .background(BackgroundNavDark)
                     ) {
                         items.forEachIndexed { index, item ->
                             Box(
@@ -673,7 +643,7 @@ fun <T> CustomDropdownAddProduct(
                             ) {
                                 Text(
                                     text = itemLabel(item),
-                                    color = White,
+                                    color = Black,
                                     style = textStyle
                                 )
                             }
@@ -683,7 +653,7 @@ fun <T> CustomDropdownAddProduct(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .height(1.dp)
-                                        .background(Color.Black.copy(alpha = 0.1f))
+                                        .background(BackgroundNavDark)
                                 )
                             }
                         }
