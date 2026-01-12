@@ -93,6 +93,7 @@ dependencies {
 
     implementation(project(":core"))
     implementation(project(":auth"))
+    implementation(project(":auth-oauth"))
 
     implementation("androidx.activity:activity-ktx:1.8.2")
     implementation("androidx.activity:activity-compose:1.8.2")

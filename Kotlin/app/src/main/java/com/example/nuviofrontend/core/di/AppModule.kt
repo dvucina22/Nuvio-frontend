@@ -53,17 +53,6 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideGoogleSignInClient(@ApplicationContext context: Context): GoogleSignInClient {
-        val serverClientId = context.getString(R.string.server_client_id)
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestEmail()
-            .requestIdToken(serverClientId)
-            .build()
-        return GoogleSignIn.getClient(context, gso)
-    }
-
-    @Provides
-    @Singleton
     fun provideUserService(apiService: ApiService): UserService {
         return UserService(apiService)
     }

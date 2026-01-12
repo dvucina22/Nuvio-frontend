@@ -1,8 +1,6 @@
 package com.example.auth.presentation.login
 
 import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,7 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -28,12 +25,17 @@ import androidx.compose.ui.unit.sp
 import com.example.core.ui.components.CustomButton
 import com.example.core.ui.components.CustomTextField
 import com.example.core.ui.theme.Black
+import com.example.core.ui.theme.White
 import com.example.auth.R as AuthR
 import com.example.core.R as CoreR
-import com.example.core.ui.theme.White
 
 @Composable
-fun LoginScreen(onNavigateToRegister: () -> Unit, onNavigateToHome: () -> Unit, viewModel: LoginViewModel) {
+fun LoginScreen(
+    onNavigateToRegister: () -> Unit,
+    onNavigateToHome: () -> Unit,
+    viewModel: LoginViewModel,
+    extraContent: @Composable (() -> Unit)? = null
+) {
     val scrollState = rememberScrollState()
     val loginState by viewModel.loginState.collectAsState()
     val emailError by viewModel.emailError.collectAsState()
@@ -59,10 +61,6 @@ fun LoginScreen(onNavigateToRegister: () -> Unit, onNavigateToHome: () -> Unit, 
             else -> Unit
         }
     }
-
-    val googleLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result -> viewModel.handleGoogleResult(result) }
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -99,7 +97,7 @@ fun LoginScreen(onNavigateToRegister: () -> Unit, onNavigateToHome: () -> Unit, 
                 onPasswordChange = { password = it },
                 onLogin = { viewModel.login(email, password) },
                 onNavigateToRegister = onNavigateToRegister,
-                onGoogleLoginClick = { googleLauncher.launch(viewModel.googleSignInIntent()) }
+                extraContent = extraContent
             )
         }
     }
@@ -116,7 +114,7 @@ fun LoginForm(
     onPasswordChange: (String) -> Unit,
     onLogin: () -> Unit,
     onNavigateToRegister: () -> Unit,
-    onGoogleLoginClick: () -> Unit
+    extraContent: @Composable (() -> Unit)? = null
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
 
@@ -167,14 +165,10 @@ fun LoginForm(
             onClick = onLogin
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        CustomButton(
-            text = stringResource(id = AuthR.string.button_login_google),
-            onClick = onGoogleLoginClick,
-            iconRes = CoreR.drawable.google_icon,
-            iconSize = 40
-        )
+        if (extraContent != null) {
+            Spacer(modifier = Modifier.height(8.dp))
+            extraContent()
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
 

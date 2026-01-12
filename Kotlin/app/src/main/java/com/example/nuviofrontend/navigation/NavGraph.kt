@@ -21,6 +21,7 @@ import com.example.auth.presentation.AuthViewModel
 import com.example.auth.presentation.login.LoginScreen
 import com.example.auth.presentation.login.LoginViewModel
 import com.example.auth.presentation.register.RegisterScreen
+import com.example.auth_oauth.presentation.ui.GoogleLoginAction
 import com.example.core.R
 import com.example.nuviofrontend.MainScreen
 import com.example.nuviofrontend.feature.profile.presentation.ProfileEditScreen
@@ -62,15 +63,23 @@ fun AppNavGraph(navController: NavHostController) {
 
         composable(Screen.Login.route) {
             val loginViewModel: LoginViewModel = hiltViewModel()
+
+            val navigateHome = {
+                navController.navigate(Screen.MainAppScreen.route) {
+                    popUpTo(0)
+                    launchSingleTop = true
+                }
+            }
+
             LoginScreen(
                 onNavigateToRegister = { navController.navigate(Screen.Register.route) },
-                onNavigateToHome = {
-                    navController.navigate(Screen.MainAppScreen.route) {
-                        popUpTo(0)
-                        launchSingleTop = true
-                    }
-                },
-                viewModel = loginViewModel
+                onNavigateToHome = navigateHome,
+                viewModel = loginViewModel,
+                extraContent = {
+                    GoogleLoginAction(
+                        onSuccess = navigateHome
+                    )
+                }
             )
         }
 
