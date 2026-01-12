@@ -327,4 +327,8 @@
     <string name="users_error_deactivate">Greška pri deaktivaciji korisnika</string>
 
     <string name="support_title">Pomoć</string>
+
+    <string name="transaction_auth_code">Autorizacijski kod</string>
+    <string name="transaction_response_code">Kod odgovora</string>
+
 </resources>
