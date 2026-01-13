@@ -28,17 +28,16 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.auth.presentation.AuthViewModel
 import com.example.core.R
+import com.example.core.settings.CurrencyConverter
 import com.example.core.ui.components.CustomPopupWarning
 import com.example.core.ui.components.ProductImageCarousel
 import com.example.core.ui.components.TopBarDetailProducts
 import com.example.core.ui.theme.AccentColor
 import com.example.core.ui.theme.AppTypography
 import com.example.core.ui.theme.BackgroundNavDark
-import com.example.core.ui.theme.Black
-import com.example.core.ui.theme.CardItemBackground
 import com.example.core.ui.theme.CardItemBackgroundLight
-import com.example.core.ui.theme.White
 import com.example.nuviofrontend.feature.cart.presentation.CartViewModel
+import com.example.nuviofrontend.feature.settings.presentation.SettingsViewModel
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -48,7 +47,8 @@ fun DetailProductScreen(
     homeViewModel: HomeViewModel = hiltViewModel(),
     managementViewModel: ProductManagementViewModel = hiltViewModel(),
     onBack: () -> Unit,
-    onEditNavigate: (Long) -> Unit
+    onEditNavigate: (Long) -> Unit,
+    settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
     val product by viewModel.product.collectAsState()
     val loading by viewModel.isLoading.collectAsState()
@@ -65,6 +65,9 @@ fun DetailProductScreen(
     var productIdToDelete by remember { mutableStateOf<Long?>(null) }
 
     val isScreenActive by remember { mutableStateOf(true) }
+
+    val selectedCurrencyState = settingsViewModel.currencyFlow.collectAsState(initial = 1)
+    val selectedCurrency = selectedCurrencyState.value
 
     LaunchedEffect(isScreenActive) {
         if (isScreenActive) {
@@ -173,13 +176,13 @@ fun DetailProductScreen(
                         Text(
                             text = formatProductName(p.name),
                             style = AppTypography.displayLarge,
-                            color = Black,
+                            color = MaterialTheme.colorScheme.onBackground,
                             modifier = Modifier.weight(1f)
                         )
 
                         Card(
                             shape = RoundedCornerShape(6.dp),
-                            colors = CardDefaults.cardColors(containerColor = CardItemBackgroundLight),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.7f)),
                             modifier = Modifier.padding(start = 8.dp)
                         ) {
                             Box(
@@ -188,7 +191,7 @@ fun DetailProductScreen(
                                     .padding(horizontal = 12.dp, vertical = 4.dp)
                             ) {
                                 Text(
-                                    text = "${"%.2f".format(p.basePrice)}€",
+                                    text = CurrencyConverter.convertPrice(p.basePrice, selectedCurrency),
                                     color = AccentColor,
                                     style = AppTypography.displayLarge.copy(
                                         fontWeight = FontWeight.Medium,
@@ -204,7 +207,7 @@ fun DetailProductScreen(
                     InfoCardContainer {
                         Text(
                             text = stringResource(R.string.product_info),
-                            color = Black,
+                            color = MaterialTheme.colorScheme.onBackground,
                             style = AppTypography.displayLarge.copy(fontSize = 16.sp)
                         )
 
@@ -237,7 +240,7 @@ fun DetailProductScreen(
                     InfoCardContainer {
                         Text(
                             stringResource(R.string.product_description),
-                            color = Black,
+                            color = MaterialTheme.colorScheme.onBackground,
                             style = AppTypography.displayLarge.copy(fontSize = 16.sp),
                             modifier = Modifier.padding(vertical = 6.dp)
                         )
@@ -248,7 +251,7 @@ fun DetailProductScreen(
                         )
                         Text(
                             p.description ?: stringResource(R.string.no_description),
-                            color = Black.copy(alpha = 0.85f),
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.85f),
                             modifier = Modifier.padding(vertical = 6.dp)
                         )
                     }
@@ -341,14 +344,14 @@ fun InfoAboutProd(label: String, value: String) {
     ) {
         Text(
             text = label,
-            color = Black,
+            color = MaterialTheme.colorScheme.onBackground,
             style = AppTypography.titleSmall.copy(fontSize = 15.sp),
             modifier = Modifier.weight(1f)
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = value,
-            color = Black,
+            color = MaterialTheme.colorScheme.onBackground,
             style = AppTypography.titleSmall.copy(fontSize = 15.sp),
             modifier = Modifier.weight(1f),
             textAlign = TextAlign.End
@@ -367,14 +370,14 @@ fun InfoCardContainer(
             .shadow(
                 elevation = 2.dp,
                 shape = RoundedCornerShape(12.dp),
-                ambientColor = Color.Black.copy(alpha = 0.03f),
-                spotColor = Color.Black.copy(alpha = 0.03f)
+                ambientColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.03f),
+                spotColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.03f)
             )
             .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xD8D9D9D9))
+            .background(MaterialTheme.colorScheme.surfaceContainer)
             .border(
                 width = 1.dp,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.surfaceVariant,
                 shape = RoundedCornerShape(12.dp)
             )
     ) {
@@ -384,4 +387,5 @@ fun InfoCardContainer(
         )
     }
 }
+
 

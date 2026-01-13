@@ -29,6 +29,7 @@ import com.example.nuviofrontend.feature.profile.presentation.ProfileEditViewMod
 import com.example.nuviofrontend.feature.sale.presentation.CheckoutScreen
 import com.example.nuviofrontend.feature.sale.presentation.TransactionResultScreen
 import com.example.nuviofrontend.feature.profile.presentation.UsersScreen
+import com.example.nuviofrontend.feature.settings.presentation.SettingsViewModel
 
 @Composable
 fun AppNavGraph(navController: NavHostController) {
@@ -48,6 +49,8 @@ fun AppNavGraph(navController: NavHostController) {
         }
 
         composable(Screen.MainScreen.route) {
+            val settingsViewModel: SettingsViewModel = hiltViewModel()
+            val themeIndex by settingsViewModel.themeFlow.collectAsState(initial = 0)
             MainScreen(
                 onNavigateToRegister = { navController.navigate(Screen.Register.route) },
                 onNavigateToLogin = { navController.navigate(Screen.Login.route) },
@@ -56,7 +59,8 @@ fun AppNavGraph(navController: NavHostController) {
                         popUpTo(0)
                         launchSingleTop = true
                     }
-                }
+                },
+                themeIndex = themeIndex
             )
         }
 
@@ -88,6 +92,8 @@ fun AppNavGraph(navController: NavHostController) {
         composable(Screen.MainAppScreen.route) {
             val authVm: AuthViewModel = hiltViewModel()
             val ui by authVm.uiState.collectAsState()
+            val settingsViewModel: SettingsViewModel = hiltViewModel()
+            val themeIndex by settingsViewModel.themeFlow.collectAsState(initial = 0)
 
             MainAppScreen(
                 isLoggedIn = ui.isLoggedIn,
@@ -108,7 +114,8 @@ fun AppNavGraph(navController: NavHostController) {
                 },
                 onNavigateToUsers = {
                     navController.navigate(Screen.Users.route)
-                }
+                },
+                themeIndex = themeIndex
             )
         }
 

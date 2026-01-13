@@ -76,7 +76,7 @@ fun <T> CustomDropdown(
         label?.let {
             Text(
                 text = it,
-                color = Black,
+                color = MaterialTheme.colorScheme.onBackground,
                 style = textStyle,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -93,8 +93,8 @@ fun <T> CustomDropdown(
                     .height(40.dp)
                     .clip(RoundedCornerShape(8.dp))
                     .background(
-                        if (enabled) BackgroundColorInput.copy(alpha = 0.3f)
-                        else BackgroundColorInput.copy(alpha = 0.15f)
+                        if (enabled) MaterialTheme.colorScheme.surfaceContainerLowest.copy(alpha = 0.3f)
+                        else MaterialTheme.colorScheme.surfaceContainerLowest.copy(alpha = 0.15f)
                     )
                     .border(
                         width = if (isError) 1.dp else 0.dp,
@@ -125,9 +125,9 @@ fun <T> CustomDropdown(
                     text = value?.let { itemLabel(it) } ?: placeholder,
                     style = textStyle.copy(
                         color = when {
-                            !enabled -> ColorInput.copy(alpha = 0.4f)
-                            value == null -> ColorInput.copy(alpha = 0.7f)
-                            else -> Black
+                            !enabled -> MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f)
+                            value == null ->  MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                            else ->  MaterialTheme.colorScheme.onBackground
                         }
                     ),
                     modifier = Modifier.weight(1f)
@@ -136,7 +136,7 @@ fun <T> CustomDropdown(
                 Icon(
                     painter = painterResource(id = R.drawable.ic_arrow_down),
                     contentDescription = null,
-                    tint = if (enabled) Black else Black.copy(alpha = 0.4f),
+                    tint = if (enabled)  MaterialTheme.colorScheme.onBackground else  MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f),
                     modifier = Modifier
                         .size(20.dp)
                         .rotate(arrowRotation)
@@ -149,7 +149,7 @@ fun <T> CustomDropdown(
                 modifier = Modifier
                     .width(304.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(BackgroundNavDark.copy(alpha = 0.85f))
+                    .background( MaterialTheme.colorScheme.surface.copy(alpha = 0.85f))
             ) {
                 items.forEachIndexed { index, item ->
                     val color = getItemColor?.invoke(item)
@@ -170,7 +170,7 @@ fun <T> CustomDropdown(
                                 }
                                 Text(
                                     text = itemLabel(item),
-                                    color = Color.Black,
+                                    color = MaterialTheme.colorScheme.onBackground,
                                     style = textStyle
                                 )
                             }
@@ -184,7 +184,7 @@ fun <T> CustomDropdown(
                             .background(Color.White.copy(alpha = 0.08f))
                             .padding(horizontal = 4.dp),
                         colors = MenuDefaults.itemColors(
-                            textColor = Color.Black
+                            textColor =  MaterialTheme.colorScheme.onBackground
                         )
                     )
 
@@ -193,7 +193,7 @@ fun <T> CustomDropdown(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(1.dp)
-                                .background(Color.Black.copy(alpha = 0.1f))
+                                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.1f))
                         )
                     }
                 }

@@ -39,9 +39,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.core.R
+import androidx.compose.ui.res.stringResource
 import com.example.core.ui.components.CustomButton
 import com.example.core.ui.components.CustomTopBar
 import com.example.core.ui.components.ProfileHeader
+import com.example.core.ui.theme.AccentColor
 import com.example.core.ui.theme.BackgroundNavDark
 import com.example.core.ui.theme.IconDark
 import com.example.core.ui.theme.White
@@ -56,6 +58,7 @@ fun ProfileScreen(
     onNavigateToSavedCards: () -> Unit = {},
     onNavigateToUsers: () -> Unit = {},
     onNavigateToSupport: () -> Unit = {},
+    onNavigateToSettings: () -> Unit = {}
 ) {
     val profileState by viewModel.profileState.collectAsState()
     val isLoggedIn = profileState.isLoaded && profileState.email.isNotBlank()
@@ -91,7 +94,7 @@ fun ProfileScreen(
                 Column {
                     Text(
                         text = stringResource(R.string.profile_title),
-                        color = Color(0xFF1C1C1C),
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -123,7 +126,9 @@ fun ProfileScreen(
                 Divider(color = BackgroundNavDark)
 
                 if (isLoggedIn) {
-                    ProfileMenuItem(Icons.Default.Settings, stringResource(R.string.settings))
+                    ProfileMenuItem(Icons.Default.Settings, stringResource(R.string.settings)){
+                        onNavigateToSettings()
+                    }
                     ProfileMenuItem(
                         Icons.Default.CreditCard,
                         stringResource(R.string.saved_cards)
@@ -182,7 +187,7 @@ fun ProfileMenuItem(
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = IconDark,
+            tint = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.size(22.dp)
         )
 
@@ -190,7 +195,7 @@ fun ProfileMenuItem(
 
         Text(
             text = title,
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.weight(1f),
             style = MaterialTheme.typography.titleSmall
         )
@@ -198,7 +203,7 @@ fun ProfileMenuItem(
         Icon(
             imageVector = Icons.Default.KeyboardArrowRight,
             contentDescription = null,
-            tint = IconDark,
+            tint = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.size(22.dp)
         )
     }

@@ -8,7 +8,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,10 +28,14 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.core.R
 import com.example.core.cart.dto.CartItemDto
+import com.example.core.settings.CurrencyConverter
+import com.example.core.ui.theme.AccentColor
+import com.example.core.ui.theme.Error
 
 @Composable
 fun CartProductCard(
     item: CartItemDto,
+    selectedCurrency: Int,
     onIncrease: () -> Unit,
     onDecrease: () -> Unit,
     onFavorite: () -> Unit,
@@ -48,10 +54,10 @@ fun CartProductCard(
                 spotColor = Color(0xFF000000).copy(alpha = 0.03f)
             )
             .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFFD8D9D9))
+            .background(MaterialTheme.colorScheme.surfaceContainer)
             .border(
                 width = 1.dp,
-                color = Color(0xFFCACACA),
+                color = MaterialTheme.colorScheme.surfaceDim,
                 shape = RoundedCornerShape(12.dp)
             )
             .clickable(onClick = onClick)
@@ -60,12 +66,11 @@ fun CartProductCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .heightIn(min = 160.dp)
         ) {
             Box(
                 modifier = Modifier
                     .width(140.dp)
-                    .heightIn(min = 160.dp)
+                    .wrapContentHeight()
             ) {
                 AsyncImage(
                     model = item.imageUrl?.takeIf { it.isNotEmpty() } ?: R.drawable.random_laptop,
@@ -85,12 +90,12 @@ fun CartProductCard(
                             shape = RoundedCornerShape(8.dp)
                         )
                         .clip(RoundedCornerShape(8.dp))
-                        .background(Color(0xDD1C1C1C))
+                        .background(MaterialTheme.colorScheme.surfaceContainerLowest.copy(alpha = 0.2f))
                         .padding(horizontal = 10.dp, vertical = 6.dp)
                 ) {
                     Text(
                         text = item.category,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -101,8 +106,7 @@ fun CartProductCard(
                 modifier = Modifier
                     .weight(1f)
                     .wrapContentHeight()
-                    .heightIn(min = 160.dp)
-                    .padding(14.dp),
+                    .padding(top = 14.dp, bottom = 8.dp, start = 14.dp, end = 14.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Column {
@@ -116,7 +120,7 @@ fun CartProductCard(
                                 .replace("_", " ")
                                 .split(" ")
                                 .joinToString(" ") { it.replaceFirstChar { c -> c.uppercase() } },
-                            color = Color(0xFF1C1C1C),
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
                             maxLines = 2,
@@ -130,14 +134,14 @@ fun CartProductCard(
                             modifier = Modifier
                                 .size(28.dp)
                                 .clip(CircleShape)
-                                .background(Color(0xFFFFE5E5))
+                                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
                                 .clickable { onDelete() },
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
                                 contentDescription = "Delete",
-                                tint = Color(0xFFFF6B6B),
+                                tint = Error,
                                 modifier = Modifier.size(16.dp)
                             )
                         }
@@ -149,86 +153,95 @@ fun CartProductCard(
                         item.attributes.map { CartItemAttribute(it.name, it.value) }
                     ).take(3)
 
-                    orderedAttributes.forEach { attr ->
-                        Text(
-                            text = "• ${formatAttributeValue(attr.name, attr.value)}",
-                            color = Color(0xFF6B7280),
-                            fontSize = 11.sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Spacer(modifier = Modifier.height(1.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        orderedAttributes.forEachIndexed { index, attr ->
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                AttributeIcon(attr.name)
+
+                                Spacer(modifier = Modifier.width(4.dp))
+
+                                Text(
+                                    text = formatAttributeValue(attr.name, attr.value),
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    fontSize = 11.sp,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+
+                            if (index != orderedAttributes.lastIndex) {
+                                Spacer(modifier = Modifier.width(12.dp))
+                            }
+                        }
                     }
-                }
 
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = "€${String.format("%.2f", item.basePrice * item.quantity)}",
-                    color = Color(0xFF004CBB),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Quantity:",
-                        color = Color(0xFF6B7280),
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-
-                    Spacer(modifier = Modifier.width(12.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .size(28.dp)
-                                .clip(CircleShape)
-                                .background(Color(0xFFCACACA))
-                                .clickable { onDecrease() },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_remove),
-                                contentDescription = "Decrease",
-                                tint = Color(0xFF1C1C1C),
-                                modifier = Modifier.size(16.dp)
-                            )
-                        }
-
                         Text(
-                            text = "${item.quantity}",
-                            color = Color(0xFF1C1C1C),
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.width(24.dp),
-                            textAlign = TextAlign.Center
+                            text = CurrencyConverter.convertPrice(
+                                item.basePrice * item.quantity,
+                                selectedCurrency
+                            ),
+                            color = AccentColor,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
                         )
 
-                        Box(
-                            modifier = Modifier
-                                .size(28.dp)
-                                .clip(CircleShape)
-                                .background(Color(0xFF004CBB))
-                                .clickable { onIncrease() },
-                            contentAlignment = Alignment.Center
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_add),
-                                contentDescription = "Increase",
-                                tint = Color.White,
-                                modifier = Modifier.size(16.dp)
+                            Box(
+                                modifier = Modifier
+                                    .size(25.dp)
+                                    .clip(CircleShape)
+                                    .background(MaterialTheme.colorScheme.surface)
+                                    .clickable { onDecrease() },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_remove),
+                                    contentDescription = "Decrease",
+                                    tint = MaterialTheme.colorScheme.onBackground,
+                                    modifier = Modifier.size(14.dp)
+                                )
+                            }
+
+                            Text(
+                                text = "${item.quantity}",
+                                color = MaterialTheme.colorScheme.onBackground,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier.width(24.dp),
+                                textAlign = TextAlign.Center
                             )
+
+                            Box(
+                                modifier = Modifier
+                                    .size(25.dp)
+                                    .clip(CircleShape)
+                                    .background(AccentColor)
+                                    .clickable { onIncrease() },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_add),
+                                    contentDescription = "Increase",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(14.dp)
+                                )
+                            }
                         }
                     }
                 }
@@ -242,16 +255,32 @@ interface Attribute {
     val value: String
 }
 
-data class ProductAttribute(
-    override val name: String,
-    override val value: String,
-    val order: Int
-) : Attribute
-
 data class CartItemAttribute(
     override val name: String,
     override val value: String
 ) : Attribute
+
+@Composable
+private fun AttributeIcon(name: String) {
+    val iconRes = when (name.lowercase()) {
+        "battery_wh" -> R.drawable.ic_battery
+        "display_size" -> R.drawable.ic_display
+        "weight_kg" -> R.drawable.ic_weight
+        "ram" -> R.drawable.ic_ram
+        "storage" -> R.drawable.ic_storage
+        "processor" -> R.drawable.ic_processor
+        "gpu" -> R.drawable.ic_gpu
+        "os" -> R.drawable.ic_os
+        else -> R.drawable.ic_info
+    }
+
+    Icon(
+        painter = painterResource(iconRes),
+        contentDescription = null,
+        modifier = Modifier.size(14.dp),
+        tint = MaterialTheme.colorScheme.onBackground
+    )
+}
 
 private fun <T : Attribute> getOrderedAttributes(attributes: List<T>): List<T> {
     val attributeOrder = mapOf(
@@ -272,14 +301,14 @@ private fun <T : Attribute> getOrderedAttributes(attributes: List<T>): List<T> {
 
 private fun formatAttributeValue(attrName: String, attrValue: String): String {
     return when(attrName.lowercase()) {
-        "display_size" -> "Display: ${attrValue.replace("_", ".")}″"
-        "battery_wh" -> "Battery: $attrValue Wh"
-        "weight_kg" -> "Weight: $attrValue kg"
-        "ram" -> "RAM: $attrValue GB"
-        "storage" -> "Storage: $attrValue GB"
-        "processor" -> "CPU: ${attrValue.replace("_", " ")}"
-        "gpu" -> "GPU: ${attrValue.replace("_", " ")}"
-        "os" -> "OS: ${attrValue.replace("_", " ")}"
+        "display_size" -> "${attrValue.replace("_", ",")}″"
+        "battery_wh" -> "${attrValue.replace("_", ",")} Wh"
+        "weight_kg" -> "${attrValue.replace("_", ",")} kg"
+        "ram" -> "$attrValue GB"
+        "storage" -> "$attrValue GB"
+        "processor" -> "${attrValue.replace("_", " ")}"
+        "gpu" -> "${attrValue.replace("_", " ")}"
+        "os" -> "${attrValue.replace("_", " ")}"
         else -> "${attrName.replace("_", " ").replaceFirstChar { it.uppercase() }}: ${attrValue.replace("_", " ")}"
     }
 }

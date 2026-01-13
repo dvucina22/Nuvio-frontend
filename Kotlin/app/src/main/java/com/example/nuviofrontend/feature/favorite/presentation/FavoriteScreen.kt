@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -22,15 +23,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.core.R
 import com.example.core.catalog.dto.Product
 import com.example.core.ui.components.ProductCard
-import com.example.core.ui.theme.Black
 import com.example.core.ui.theme.IconSelectedTintDark
+import com.example.nuviofrontend.feature.settings.presentation.SettingsViewModel
 
 @Composable
 fun FavoriteScreen(
     viewModel: FavoriteViewModel = hiltViewModel(),
-    onProductClick: (Long) -> Unit
+    onProductClick: (Long) -> Unit,
+    settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val selectedCurrency by settingsViewModel.currencyFlow.collectAsState(initial = 1)
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -52,14 +55,14 @@ fun FavoriteScreen(
             ) {
                 Column {
                     Text(
-                        text = stringResource(id = R.string.favorites_title),
-                        color = Black,
+                        text = stringResource(R.string.favorites_title),
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
                         text = stringResource(R.string.your_saved_products),
-                        color = Color(0xFF344351),
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontSize = 14.sp
                     )
                 }
@@ -87,7 +90,7 @@ fun FavoriteScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = stringResource(id = R.string.favorites_empty_message),
+                            text = stringResource(R.string.favorites_empty_message),
                             color = Color(0xFF344351),
                             fontSize = 14.sp
                         )
@@ -97,6 +100,7 @@ fun FavoriteScreen(
                 else -> {
                     FavoriteResultsList(
                         products = state.products,
+                        selectedCurrency = selectedCurrency,
                         favoriteProductIds = state.favoriteProductIds,
                         isLoadingMore = state.isLoadingMore,
                         onToggleFavorite = { productId, shouldBeFavorite ->
@@ -120,7 +124,7 @@ fun FavoriteScreen(
                     .padding(16.dp),
                 action = {
                     TextButton(onClick = { viewModel.clearError() }) {
-                        Text(text = stringResource(id = R.string.favorites_dismiss))
+                        Text(text = stringResource(R.string.favorites_dismiss))
                     }
                 }
             ) {
@@ -137,7 +141,8 @@ private fun FavoriteResultsList(
     isLoadingMore: Boolean,
     onToggleFavorite: (productId: Long, shouldBeFavorite: Boolean) -> Unit,
     onLoadMore: () -> Unit,
-    onProductClick: (Long) -> Unit
+    onProductClick: (Long) -> Unit,
+    selectedCurrency: Int
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -156,6 +161,7 @@ private fun FavoriteResultsList(
 
             ProductCard(
                 product = product,
+                selectedCurrency = selectedCurrency,
                 isFavorite = isFavorite,
                 onFavoriteChange = { shouldBeFavorite ->
                     onToggleFavorite(product.id, shouldBeFavorite)

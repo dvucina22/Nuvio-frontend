@@ -1,7 +1,5 @@
 package com.example.core.ui.components
 
-import android.R.attr.fontWeight
-import android.R.attr.maxLines
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,6 +14,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,6 +28,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -37,9 +37,9 @@ import androidx.compose.ui.window.Popup
 import coil.compose.AsyncImage
 import com.example.core.R
 import com.example.core.catalog.dto.Product
+import com.example.core.settings.CurrencyConverter
 import com.example.core.ui.theme.AccentColor
-import com.example.core.ui.theme.BackgroundBehindButton
-import com.example.core.ui.theme.Black
+import com.example.core.ui.theme.Error
 import com.example.core.ui.theme.White
 
 @Composable
@@ -53,7 +53,8 @@ fun ProductCard(
     onDelete: (Long) -> Unit = {},
     showMenu: Boolean = false,
     isAdmin: Boolean = false,
-    isSeller: Boolean = false
+    isSeller: Boolean = false,
+    selectedCurrency: Int = 1,
 ) {
     var menuOpen by remember { mutableStateOf(false) }
 
@@ -69,10 +70,10 @@ fun ProductCard(
                 spotColor = Color(0xFF000000).copy(alpha = 0.03f)
             )
             .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xD8D9D9D9))
+            .background(MaterialTheme.colorScheme.surfaceContainer)
             .border(
                 width = 1.dp,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.surfaceDim,
                 shape = RoundedCornerShape(12.dp)
             )
             .clickable(onClick = onClick)
@@ -104,14 +105,14 @@ fun ProductCard(
                             shape = CircleShape
                         )
                         .clip(CircleShape)
-                        .background(Color(0xDD1A1F2E))
+                        .background(MaterialTheme.colorScheme.surfaceContainer)
                         .clickable { onFavoriteChange(!isFavorite) },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                         contentDescription = "Favorite",
-                        tint = if (isFavorite) Color(0xFFFF6B6B) else Color.White,
+                        tint = if (isFavorite) Error else MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier.size(18.dp)
                     )
                 }
@@ -127,7 +128,7 @@ fun ProductCard(
                             .padding(horizontal = 8.dp, vertical = 4.dp)
                     ) {
                         Text(
-                            text = "Out of Stock",
+                            text = stringResource(R.string.out_of_stock),
                             color = White,
                             fontSize = 9.sp,
                             fontWeight = FontWeight.Bold
@@ -143,7 +144,7 @@ fun ProductCard(
                             .padding(horizontal = 8.dp, vertical = 0.dp)
                     ) {
                         Text(
-                            text = "Low Stock",
+                            text = stringResource(R.string.low_stock),
                             color = Color.White,
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold
@@ -181,7 +182,7 @@ fun ProductCard(
                         if (product.modelNumber?.isNotEmpty() == true) {
                             Text(
                                 text = product.modelNumber!!,
-                                color = Color(0xFF1D1D1D),
+                                color = MaterialTheme.colorScheme.onBackground,
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Medium,
                                 maxLines = 1,
@@ -196,14 +197,14 @@ fun ProductCard(
                                     modifier = Modifier
                                         .size(24.dp)
                                         .clip(CircleShape)
-                                        .background(BackgroundBehindButton)
+                                        .background(MaterialTheme.colorScheme.surfaceContainer)
                                         .clickable { menuOpen = true },
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.MoreVert,
                                         contentDescription = "More",
-                                        tint = Black,
+                                        tint = MaterialTheme.colorScheme.onBackground,
                                         modifier = Modifier.size(16.dp)
                                     )
                                 }
@@ -219,10 +220,10 @@ fun ProductCard(
                                                     elevation = 8.dp,
                                                     shape = RoundedCornerShape(10.dp)
                                                 )
-                                                .background(Color(0xFF252D3D), RoundedCornerShape(10.dp))
+                                                .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(10.dp))
                                                 .border(
                                                     width = 1.dp,
-                                                    color = Color(0xFF353D4D),
+                                                    color = MaterialTheme.colorScheme.surfaceDim,
                                                     shape = RoundedCornerShape(10.dp)
                                                 )
                                                 .padding(4.dp)
@@ -230,7 +231,7 @@ fun ProductCard(
                                         ) {
                                             MenuItem(
                                                 icon = Icons.Default.Edit,
-                                                label = "Uredi"
+                                                label = stringResource(R.string.edit_button)
                                             ) {
                                                 menuOpen = false
                                                 onEdit(product.id)
@@ -246,7 +247,7 @@ fun ProductCard(
 
                                             MenuItem(
                                                 icon = Icons.Default.Delete,
-                                                label = "Obriši",
+                                                label = stringResource(R.string.delete),
                                                 isDestructive = true
                                             ) {
                                                 menuOpen = false
@@ -263,7 +264,7 @@ fun ProductCard(
 
                     Text(
                         text = product.name,
-                        color = Black,
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold,
                         maxLines = 2,
@@ -275,7 +276,7 @@ fun ProductCard(
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = product.category,
-                            color = Color(0xFF1D1D1D),
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontSize = 12.sp,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
@@ -284,7 +285,7 @@ fun ProductCard(
                 }
 
                 Text(
-                    text = "€${String.format("%.2f", product.basePrice)}",
+                    text = CurrencyConverter.convertPrice(product.basePrice, selectedCurrency),
                     color = AccentColor,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
@@ -317,13 +318,13 @@ fun MenuItem(
         Icon(
             imageVector = icon,
             contentDescription = label,
-            tint = if (isDestructive) Color(0xFFFF6B6B) else Color.White,
+            tint = if (isDestructive) Error else MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.size(14.dp)
         )
         Spacer(modifier = Modifier.width(10.dp))
         Text(
             text = label,
-            color = if (isDestructive) Color(0xFFFF6B6B) else Color.White,
+            color = if (isDestructive) Error else MaterialTheme.colorScheme.onBackground,
             fontSize = 12.sp,
             fontWeight = FontWeight.Medium
         )

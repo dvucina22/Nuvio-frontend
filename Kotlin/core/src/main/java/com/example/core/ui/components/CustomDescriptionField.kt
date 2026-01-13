@@ -64,7 +64,7 @@ fun CustomDescriptionField(
         label?.let {
             Text(
                 text = it,
-                color = Black,
+                color = MaterialTheme.colorScheme.onBackground,
                 style = textStyle,
                 modifier = Modifier.padding(bottom = 4.dp),
                 textAlign = TextAlign.Start
@@ -80,7 +80,7 @@ fun CustomDescriptionField(
                 singleLine = false,
                 cursorBrush = SolidColor(Black),
                 textStyle = textStyle.copy(
-                    color = Black,
+                    color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Start,
                     lineHeight = textStyle.fontSize * 1.2f
                 ),
@@ -91,10 +91,10 @@ fun CustomDescriptionField(
                     .fillMaxWidth()
                     .heightIn(min = (minLines * 24).dp, max = (maxLines * 24).dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(BackgroundColorInput.copy(alpha = 0.3f))
+                    .background(MaterialTheme.colorScheme.surfaceContainerLowest.copy(alpha = 0.7f))
                     .border(
                         width = if (isError) 1.dp else 0.dp,
-                        color = if (isError) Error else if (isFocused) White.copy(alpha = 0.5f) else Color.Transparent,
+                        color = if (isError) Error else if (isFocused) MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f) else Color.Transparent,
                         shape = RoundedCornerShape(8.dp)
                     )
                     .onFocusChanged { isFocused = it.isFocused }
@@ -104,7 +104,7 @@ fun CustomDescriptionField(
                         if (value.isEmpty()) {
                             Text(
                                 text = placeholder,
-                                style = textStyle.copy(color = Black.copy(alpha = 0.7f))
+                                style = textStyle.copy(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f))
                             )
                         }
                         innerTextField()

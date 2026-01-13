@@ -24,14 +24,21 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.core.R
 import com.example.auth.presentation.AuthViewModel
 import com.example.core.cart.dto.CartItemDto
+import com.example.core.settings.CurrencyConverter
+import androidx.compose.ui.res.stringResource
 import com.example.core.ui.components.CartProductCard
 import com.example.core.ui.components.CustomPopupWarning
+import com.example.core.ui.theme.AccentColor
+import com.example.core.ui.theme.BackgroundNavDark
+import com.example.core.ui.theme.Error
+import com.example.nuviofrontend.feature.settings.presentation.SettingsViewModel
 
 @Composable
 fun CartScreen(
     viewModel: CartViewModel = hiltViewModel(),
     onProductClick: (Long) -> Unit,
-    onNavigateToCheckout: () -> Unit
+    onNavigateToCheckout: () -> Unit,
+    settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
     val cartItems by viewModel.cartItems.collectAsState()
     val error by viewModel.error.collectAsState()
@@ -41,6 +48,9 @@ fun CartScreen(
     val authViewModel: AuthViewModel = hiltViewModel()
     val authState by authViewModel.uiState.collectAsState()
     val isLoggedIn = authState.isLoggedIn
+
+    val selectedCurrencyState = settingsViewModel.currencyFlow.collectAsState(initial = 1)
+    val selectedCurrency = selectedCurrencyState.value
 
     LaunchedEffect(isLoggedIn) {
         if (isLoggedIn) {
@@ -83,13 +93,13 @@ fun CartScreen(
                 Column {
                     Text(
                         text = stringResource(R.string.cart_title),
-                        color = Color(0xFF1C1C1C),
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
                         text = if (isLoggedIn && cartItems.isNotEmpty()) "${cartItems.size} items" else "Your shopping cart",
-                        color = Color(0xFF344351),
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontSize = 14.sp
                     )
                 }
@@ -106,7 +116,7 @@ fun CartScreen(
                 ) {
                     Text(
                         text = stringResource(R.string.cart_login_required),
-                        color = Color(0xFF344351),
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontSize = 16.sp
                     )
                 }
@@ -124,7 +134,7 @@ fun CartScreen(
                                     .padding(top = 32.dp),
                                 contentAlignment = Alignment.Center
                             ) {
-                                CircularProgressIndicator(color = Color(0xFF004CBB))
+                                CircularProgressIndicator(color = AccentColor)
                             }
                         }
                         return@LazyColumn
@@ -140,7 +150,7 @@ fun CartScreen(
                             ) {
                                 Text(
                                     text = stringResource(R.string.cart_empty_message),
-                                    color = Color(0xFF344351),
+                                    color = MaterialTheme.colorScheme.onBackground,
                                     fontSize = 16.sp
                                 )
                             }
@@ -152,7 +162,7 @@ fun CartScreen(
                         item {
                             Text(
                                 text = "Error: $error",
-                                color = Color(0xFFFF6B6B),
+                                color = Error,
                                 modifier = Modifier.padding(8.dp)
                             )
                         }
@@ -161,6 +171,7 @@ fun CartScreen(
                     items(cartItems) { item ->
                         CartProductCard(
                             item = item,
+                            selectedCurrency = selectedCurrency,
                             onIncrease = { viewModel.increaseQuantity(item.id) },
                             onDecrease = { viewModel.decreaseQuantity(item.id) },
                             onFavorite = { viewModel.toggleFavorite(item.id) },
@@ -171,7 +182,7 @@ fun CartScreen(
 
                     item {
                         Spacer(modifier = Modifier.height(8.dp))
-                        SummarySection(cartItems)
+                        SummarySection(cartItems = cartItems, settingsViewModel = settingsViewModel)
                     }
 
                     item {
@@ -195,42 +206,54 @@ fun CartScreen(
 @Composable
 fun SummarySection(
     cartItems: List<CartItemDto>,
-    deliveryCost: Double = 5.0
+    deliveryCost: Double = 5.0,
+    settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
     val itemsTotal = cartItems.sumOf { it.basePrice * it.quantity }
     val totalWithDelivery = itemsTotal + deliveryCost
 
+    val selectedCurrency by settingsViewModel.currencyFlow.collectAsState(initial = 1)
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .shadow(
-                elevation = 2.dp,
-                shape = RoundedCornerShape(12.dp)
-            )
             .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFFD8D9D9))
+            .background(MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.8f))
             .border(
                 width = 1.dp,
-                color = Color(0xFFCACACA),
+                color = MaterialTheme.colorScheme.surfaceDim,
                 shape = RoundedCornerShape(12.dp)
             )
     ) {
         Column(Modifier.padding(16.dp)) {
-            SummaryItem(stringResource(R.string.summary_total), "€${String.format("%.2f", itemsTotal)}")
+            SummaryItem(
+                stringResource(R.string.summary_total),
+                CurrencyConverter.convertPrice(itemsTotal, selectedCurrency)
+            )
+
             Spacer(modifier = Modifier.height(8.dp))
-            SummaryItem(stringResource(R.string.summary_delivery), "€${String.format("%.2f", deliveryCost)}")
+
+            SummaryItem(
+                stringResource(R.string.summary_delivery),
+                CurrencyConverter.convertPrice(deliveryCost, selectedCurrency)
+            )
+
             Spacer(modifier = Modifier.height(8.dp))
-            SummaryItem(stringResource(R.string.summary_discount), "€${String.format("%.2f", 0.0)}")
+
+            SummaryItem(
+                stringResource(R.string.summary_discount),
+                CurrencyConverter.convertPrice(0.0, selectedCurrency)
+            )
 
             Divider(
-                color = Color(0xFFCACACA),
+                color = BackgroundNavDark,
                 thickness = 1.dp,
                 modifier = Modifier.padding(vertical = 12.dp)
             )
 
             SummaryItem(
                 stringResource(R.string.summary_total_with_discount),
-                "€${String.format("%.2f", totalWithDelivery)}",
+                CurrencyConverter.convertPrice(totalWithDelivery, selectedCurrency),
                 bold = true
             )
         }
@@ -245,13 +268,13 @@ fun SummaryItem(label: String, value: String, bold: Boolean = false) {
     ) {
         Text(
             label,
-            color = Color(0xFF1C1C1C),
+            color = MaterialTheme.colorScheme.onBackground,
             fontSize = 14.sp,
             fontWeight = if (bold) FontWeight.Bold else FontWeight.Normal
         )
         Text(
             value,
-            color = Color(0xFF004CBB),
+            color = AccentColor,
             fontSize = 14.sp,
             fontWeight = if (bold) FontWeight.Bold else FontWeight.SemiBold
         )
@@ -272,7 +295,7 @@ fun CheckoutButton(
             .height(52.dp),
         shape = RoundedCornerShape(12.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFF004CBB),
+            containerColor = AccentColor,
             contentColor = Color.White,
             disabledContainerColor = Color(0xFFCACACA),
             disabledContentColor = Color(0xFF6B7280)

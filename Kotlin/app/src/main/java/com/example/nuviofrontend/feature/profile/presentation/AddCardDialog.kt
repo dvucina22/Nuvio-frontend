@@ -2,6 +2,7 @@ package com.example.nuviofrontend.feature.profile.presentation
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -38,7 +40,9 @@ import com.example.core.R
 import com.example.core.ui.components.CustomTextField
 import com.example.core.ui.components.SmallCustomButton
 import com.example.core.ui.theme.BackgroundNavDark
-import com.example.core.ui.theme.WarningPopUpBackground
+import com.example.core.ui.theme.Black
+import com.example.core.ui.theme.ButtonColorDark
+import com.example.core.ui.theme.CardItemBackgroundLight
 import com.example.core.ui.theme.White
 
 @Composable
@@ -56,7 +60,8 @@ fun AddCardDialog(
                 .wrapContentHeight()
                 .width(362.dp)
                 .clip(RoundedCornerShape(12.dp))
-                .background(WarningPopUpBackground)
+                .background(MaterialTheme.colorScheme.surfaceContainer)
+                .border(width = 1.dp, color = MaterialTheme.colorScheme.surfaceDim)
                 .padding(16.dp)
         ) {
             var cardName by remember { mutableStateOf("") }
@@ -97,12 +102,13 @@ fun AddCardDialog(
                     Image(
                         painter = painterResource(id = cardLogo),
                         contentDescription = "Add Card Icon",
-                        modifier = Modifier.size(width = 20.dp, height = 16.dp)
+                        modifier = Modifier.size(width = 20.dp, height = 16.dp),
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = stringResource(R.string.new_card),
-                        color = White,
+                        color = MaterialTheme.colorScheme.onBackground,
                         style = MaterialTheme.typography.titleSmall
                     )
                 }
@@ -192,7 +198,8 @@ fun AddCardDialog(
                 ) {
                     SmallCustomButton(
                         text = stringResource(R.string.cancel),
-                        onClick = onDismiss
+                        onClick = onDismiss,
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
                     )
 
                     SmallCustomButton(

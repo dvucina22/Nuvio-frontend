@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,6 +33,7 @@ import com.example.nuviofrontend.feature.cart.presentation.CartScreen
 import com.example.nuviofrontend.feature.search.presentation.SearchScreen
 import com.example.core.R
 import com.example.core.ui.theme.AccentColor
+import com.example.core.ui.theme.CardItemBackgroundDark
 import com.example.core.ui.theme.LightOverlay
 import com.example.core.ui.theme.IconUnselectedTintDark
 import com.example.nuviofrontend.feature.catalog.presentation.AddNewProductScreen
@@ -57,7 +59,8 @@ fun MainAppScreen(
     onSignOut: () -> Unit,
     onNavigateToLogin: () -> Unit,
     onNavigateToProfileEdit: () -> Unit,
-    onNavigateToUsers: () -> Unit
+    onNavigateToUsers: () -> Unit,
+    themeIndex: Int
 ) {
     val navController = rememberNavController()
     val tabs = HomeTab.values()
@@ -70,9 +73,11 @@ fun MainAppScreen(
         "transaction_failure"
     )
 
+    val backgroundRes = if (themeIndex == 1) R.drawable.background_dark else R.drawable.background_light
+
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
-            painter = painterResource(id = R.drawable.background_light),
+            painter = painterResource(id = backgroundRes),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
@@ -290,10 +295,10 @@ fun CustomBottomNavBar(
                 .clip(RoundedCornerShape(12.dp))
                 .border(
                     width = 1.dp,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.surfaceDim,
                     shape = RoundedCornerShape(12.dp)
                 )
-                .background(LightOverlay),
+                .background(MaterialTheme.colorScheme.surfaceVariant),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceAround
         ) {

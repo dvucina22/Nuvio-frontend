@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,7 +26,7 @@ fun IconActionBox(
         modifier = modifier
             .size(44.dp)
             .clip(RoundedCornerShape(8.dp))
-            .background(LightOverlay)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .border(
                 width = 1.dp,
                 color = AccentColor.copy(alpha = 0.8f),

@@ -26,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.core.R
+import androidx.compose.ui.res.stringResource
 import com.example.core.ui.components.CustomButton
 import com.example.core.ui.components.CustomDropdown
 import com.example.core.ui.components.CustomTextField

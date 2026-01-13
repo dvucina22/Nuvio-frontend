@@ -14,16 +14,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Help
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material.icons.filled.Support
 import androidx.compose.material.icons.filled.SupportAgent
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -37,49 +34,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.core.R
 import com.example.core.ui.components.CustomTopBar
 import com.example.core.ui.theme.AccentColor
-import com.example.core.ui.theme.BackgroundNavDark
-import com.example.core.ui.theme.Black
-import com.example.core.ui.theme.CardItemBackgroundLight
+import com.example.nuviofrontend.feature.catalog.presentation.InfoCardContainer
 
 @Composable
 fun SupportScreen(
     onBack: () -> Unit = {},
 ) {
-    val faqQuestions = listOf(
-        "Kako da naručim laptop?" to """
-            1. Odaberi željeni laptop iz ponude
-            2. Dodaj ga u košaricu
-            3. Klikni na gumb plaćanje
-            4. Unesi podatke
-            5. Potvrdi narudžbu
-        """.trimIndent(),
-        "Koje su sve mogućnosti plaćanja?" to """
-            Plaćanje je moguće na sljedeći način:
-            Kreditnom ili debitnom karticom
+    val faqQuestions = stringArrayResource(R.array.faq_questions)
+    val faqAnswers = stringArrayResource(R.array.faq_answers)
 
-            Metoda plaćanja je sigurna i zaštićena.
-        """.trimIndent(),
-        "Koliko traje dostava?" to """
-            Dostava traje 2-5 radnih dana, ovisno o lokaciji.
-        """.trimIndent(),
-        "Kako kontaktirati podršku?" to """
-            Našu korisničku podršku možeš kontaktirati:
-            E-mail: support@nuvio.com
-            Telefon: +385 1 123-4567
-            Radno vrijeme: pon-pet, 9:00-17:00
-
-            Naš tim će ti rado pomoći.
-        """.trimIndent()
-    )
+    val faqItems = remember {
+        faqQuestions.zip(faqAnswers)
+    }
     Box(modifier = Modifier.fillMaxSize()) {
         val scrollState = rememberScrollState()
         Column(
@@ -104,14 +77,14 @@ fun SupportScreen(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Najčešće postavljena pitanja",
+                        text = stringResource(R.string.faq),
                         style = MaterialTheme.typography.displayLarge
                     )
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                faqQuestions.forEach { (question, answer) ->
+                faqItems.forEach { (question, answer) ->
                     var expanded by remember { mutableStateOf(false) }
 
                     Box(
@@ -119,27 +92,28 @@ fun SupportScreen(
                             .fillMaxWidth()
                             .padding(vertical = 4.dp)
                             .clip(RoundedCornerShape(6.dp))
-                            .background(CardItemBackgroundLight)
+                            .background(MaterialTheme.colorScheme.surfaceContainer)
                     ) {
                         Column(modifier = Modifier.fillMaxWidth()) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable { expanded = !expanded }
-                                    .padding(12.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = question,
-                                    modifier = Modifier.weight(1f),
-                                    color = Black
-                                )
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_arrow_down),
-                                    contentDescription = null,
-                                    tint = Black,
-                                    modifier = Modifier.rotate(if (expanded) 180f else 0f)
-                                )
+                            InfoCardContainer {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable { expanded = !expanded },
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = question,
+                                        modifier = Modifier.weight(1f),
+                                        color = MaterialTheme.colorScheme.onBackground
+                                    )
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_arrow_down),
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onBackground,
+                                        modifier = Modifier.rotate(if (expanded) 180f else 0f)
+                                    )
+                                }
                             }
 
                             if (expanded) {
@@ -148,7 +122,7 @@ fun SupportScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(horizontal = 12.dp, vertical = 8.dp),
-                                    color = Black
+                                    color = MaterialTheme.colorScheme.onBackground
                                 )
                             }
                         }
@@ -156,6 +130,7 @@ fun SupportScreen(
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
+
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
@@ -166,8 +141,9 @@ fun SupportScreen(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Kontakt podrška",
-                        style = MaterialTheme.typography.displayLarge
+                        text = stringResource(R.string.contact_help_center),
+                        style = MaterialTheme.typography.displayLarge,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 }
 
@@ -175,67 +151,88 @@ fun SupportScreen(
 
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .background(CardItemBackgroundLight, RoundedCornerShape(6.dp))
-                        .padding(16.dp),
+                        .fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Icon(
-                            imageVector = Icons.Filled.Email,
-                            contentDescription = null,
-                            tint = AccentColor,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Column {
-                            Text(text = "Email")
-                            Text(
-                                text = "support@nuvio.com",
-                                color = AccentColor,
-                                style = MaterialTheme.typography.bodySmall
+                    InfoCardContainer {
+                        Row(
+                            verticalAlignment = Alignment.Top,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Email,
+                                contentDescription = null,
+                                tint = AccentColor,
+                                modifier = Modifier.size(24.dp)
                             )
+                            Column {
+                                Text(
+                                    text = stringResource(R.string.label_email),
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+                                Text(
+                                    text = "support@nuvio.com",
+                                    color = AccentColor,
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
                         }
-                    }
+                        Spacer(modifier = Modifier.height(6.dp))
 
-                    Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Icon(
-                            imageVector = Icons.Filled.Phone,
-                            contentDescription = null,
-                            tint = AccentColor,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Column {
-                            Text(text = "Telefon")
-                            Text(
-                                text = "+385 1 123-4567",
-                                color = AccentColor,
-                                style = MaterialTheme.typography.bodySmall
+                        Row(
+                            verticalAlignment = Alignment.Top,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Phone,
+                                contentDescription = null,
+                                tint = AccentColor,
+                                modifier = Modifier.size(24.dp)
                             )
+                            Column {
+                                Text(
+                                    text = stringResource(R.string.info_phone),
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+                                Text(
+                                    text = "+385 1 123-4567",
+                                    color = AccentColor,
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
                         }
-                    }
+                        Spacer(modifier = Modifier.height(6.dp))
 
-                    Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Icon(
-                            imageVector = Icons.Filled.Schedule,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Column {
-                            Text(text = "Radno vrijeme")
-                            Text(
-                                text = "Ponedjeljak - petak",
-                                style = MaterialTheme.typography.bodySmall
+                        Row(
+                            verticalAlignment = Alignment.Top,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Schedule,
+                                contentDescription = null,
+                                tint = AccentColor,
+                                modifier = Modifier.size(24.dp)
                             )
-                            Text(
-                                text = "8:00 - 17:00",
-                                style = MaterialTheme.typography.titleSmall
-                            )
+                            Column {
+                                Text(
+                                    text = stringResource(R.string.working_time),
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+                                Text(
+                                    text = stringResource(R.string.mon_fri),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+                                Text(
+                                    text = "8:00 - 17:00",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+                            }
                         }
                     }
+                    Spacer(modifier = Modifier.height(120.dp))
                 }
-
-                Spacer(modifier = Modifier.height(100.dp))
             }
         }
     }

@@ -25,6 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
 import com.example.core.ui.components.CustomButton
 import com.example.core.ui.components.CustomTextField
 import com.example.core.ui.theme.Black
@@ -125,7 +126,7 @@ fun LoginForm(
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(
-            text = stringResource(id = AuthR.string.login_title),
+            text = stringResource(AuthR.string.login_title),
             color = White,
             style = MaterialTheme.typography.displayLarge,
             textAlign = TextAlign.Center,
@@ -137,8 +138,8 @@ fun LoginForm(
         CustomTextField(
             value = email,
             onValueChange = onEmailChange,
-            label = stringResource(id = AuthR.string.label_email),
-            placeholder = stringResource(id = AuthR.string.placeholder_email),
+            label = stringResource(AuthR.string.label_email),
+            placeholder = stringResource(AuthR.string.placeholder_email),
             textStyle = MaterialTheme.typography.labelSmall,
             isError = emailError != null,
             errorMessage = emailError,
@@ -148,8 +149,8 @@ fun LoginForm(
         CustomTextField(
             value = password,
             onValueChange = onPasswordChange,
-            label = stringResource(id = AuthR.string.label_password),
-            placeholder = stringResource(id = AuthR.string.placeholder_password),
+            label = stringResource(AuthR.string.label_password),
+            placeholder = stringResource(AuthR.string.placeholder_password),
             isPassword = true,
             passwordVisible = passwordVisible,
             onPasswordVisibilityChange = { passwordVisible = !passwordVisible },
@@ -163,14 +164,14 @@ fun LoginForm(
         }
 
         CustomButton(
-            text = stringResource(id = AuthR.string.button_login),
+            text = stringResource(AuthR.string.button_login),
             onClick = onLogin
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         CustomButton(
-            text = stringResource(id = AuthR.string.button_login_google),
+            text = stringResource(AuthR.string.button_login_google),
             onClick = onGoogleLoginClick,
             iconRes = CoreR.drawable.google_icon,
             iconSize = 40
@@ -179,8 +180,8 @@ fun LoginForm(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = stringResource(id = AuthR.string.text_register_prompt),
-            color = Black,
+            text = stringResource(AuthR.string.text_register_prompt),
+            color = MaterialTheme.colorScheme.onBackground,
             fontSize = 14.sp,
             style = MaterialTheme.typography.labelSmall,
             textAlign = TextAlign.Center,
