@@ -361,4 +361,7 @@
     <string name="display">Prikaz</string>
     <string name="light">Svjetlo</string>
     <string name="dark">Tamno</string>
+
+    <string name="transaction_auth_code">Autorizacijski kod</string>
+    <string name="transaction_response_code">Kod odgovora</string>
 </resources>

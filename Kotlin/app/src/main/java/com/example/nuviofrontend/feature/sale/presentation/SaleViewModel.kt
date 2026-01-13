@@ -201,11 +201,19 @@ class SaleViewModel @Inject constructor(
                 val result = saleRepository.makeSale(request)
 
                 result.onSuccess { response ->
-                    if (response.status == "APPROVED") {
+                    if (!response.success) {
+                        // Handle API error response
+                        val errorMsg = response.error?.message ?: "Unknown error"
+                        handlePaymentFailure(errorMsg)
+                    } else if (response.data?.status == "APPROVED") {
+                        // Payment approved
                         _checkoutResult.value = CheckoutResult.Success(response)
                         _state.value = _state.value.copy(isProcessing = false, retryCount = 0)
                     } else {
-                        handlePaymentFailure("Payment ${response.status.lowercase()}")
+                        // Payment declined
+                        val status = response.data?.status?.lowercase() ?: "declined"
+                        val responseCode = response.data?.responseCode ?: ""
+                        handlePaymentFailure("Payment $status (Code: $responseCode)")
                     }
                 }.onFailure { error ->
                     handlePaymentFailure(error.message ?: "Payment failed")

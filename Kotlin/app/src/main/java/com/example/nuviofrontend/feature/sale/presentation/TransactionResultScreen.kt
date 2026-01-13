@@ -82,7 +82,8 @@ fun TransactionResultScreen(
                 textAlign = TextAlign.Center
             )
 
-            if (isSuccess && saleResponse != null) {
+            if (isSuccess && saleResponse?.data != null) {
+                val transactionData = saleResponse.data!!
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -104,19 +105,25 @@ fun TransactionResultScreen(
 
                     InfoRow(
                         label = stringResource(R.string.transaction_id),
-                        value = "#${saleResponse.id}"
+                        value = "#${transactionData.id}"
                     )
                     InfoRow(
                         label = stringResource(R.string.transaction_status),
-                        value = saleResponse.status
+                        value = transactionData.status
                     )
+                    transactionData.authCode?.let { authCode ->
+                        InfoRow(
+                            label = stringResource(R.string.transaction_auth_code),
+                            value = authCode
+                        )
+                    }
                     InfoRow(
-                        label = stringResource(R.string.transaction_amount),
-                        value = "€${String.format("%.2f", saleResponse.amount / 100.0)}"
+                        label = stringResource(R.string.transaction_response_code),
+                        value = transactionData.responseCode
                     )
                     InfoRow(
                         label = stringResource(R.string.transaction_date),
-                        formatDate(saleResponse.createdAt)
+                        value = formatDate(transactionData.createdAt)
                     )
                 }
             }

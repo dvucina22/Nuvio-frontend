@@ -1,8 +1,6 @@
 package com.example.auth.presentation.login
 
 import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,7 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -25,16 +22,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.res.stringResource
 import com.example.core.ui.components.CustomButton
 import com.example.core.ui.components.CustomTextField
 import com.example.core.ui.theme.Black
+import com.example.core.ui.theme.White
 import com.example.auth.R as AuthR
 import com.example.core.R as CoreR
-import com.example.core.ui.theme.White
 
 @Composable
-fun LoginScreen(onNavigateToRegister: () -> Unit, onNavigateToHome: () -> Unit, viewModel: LoginViewModel) {
+fun LoginScreen(
+    onNavigateToRegister: () -> Unit,
+    onNavigateToHome: () -> Unit,
+    viewModel: LoginViewModel,
+    extraContent: @Composable (() -> Unit)? = null
+) {
     val scrollState = rememberScrollState()
     val loginState by viewModel.loginState.collectAsState()
     val emailError by viewModel.emailError.collectAsState()
@@ -60,10 +61,6 @@ fun LoginScreen(onNavigateToRegister: () -> Unit, onNavigateToHome: () -> Unit, 
             else -> Unit
         }
     }
-
-    val googleLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result -> viewModel.handleGoogleResult(result) }
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -100,7 +97,7 @@ fun LoginScreen(onNavigateToRegister: () -> Unit, onNavigateToHome: () -> Unit, 
                 onPasswordChange = { password = it },
                 onLogin = { viewModel.login(email, password) },
                 onNavigateToRegister = onNavigateToRegister,
-                onGoogleLoginClick = { googleLauncher.launch(viewModel.googleSignInIntent()) }
+                extraContent = extraContent
             )
         }
     }
@@ -117,7 +114,7 @@ fun LoginForm(
     onPasswordChange: (String) -> Unit,
     onLogin: () -> Unit,
     onNavigateToRegister: () -> Unit,
-    onGoogleLoginClick: () -> Unit
+    extraContent: @Composable (() -> Unit)? = null
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
 
@@ -126,8 +123,8 @@ fun LoginForm(
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(
-            text = stringResource(AuthR.string.login_title),
-            color = White,
+            text = stringResource(id = AuthR.string.login_title),
+            color = MaterialTheme.colorScheme.onBackground,
             style = MaterialTheme.typography.displayLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier
@@ -138,8 +135,8 @@ fun LoginForm(
         CustomTextField(
             value = email,
             onValueChange = onEmailChange,
-            label = stringResource(AuthR.string.label_email),
-            placeholder = stringResource(AuthR.string.placeholder_email),
+            label = stringResource(id = AuthR.string.label_email),
+            placeholder = stringResource(id = AuthR.string.placeholder_email),
             textStyle = MaterialTheme.typography.labelSmall,
             isError = emailError != null,
             errorMessage = emailError,
@@ -149,8 +146,8 @@ fun LoginForm(
         CustomTextField(
             value = password,
             onValueChange = onPasswordChange,
-            label = stringResource(AuthR.string.label_password),
-            placeholder = stringResource(AuthR.string.placeholder_password),
+            label = stringResource(id = AuthR.string.label_password),
+            placeholder = stringResource(id = AuthR.string.placeholder_password),
             isPassword = true,
             passwordVisible = passwordVisible,
             onPasswordVisibilityChange = { passwordVisible = !passwordVisible },
@@ -164,23 +161,19 @@ fun LoginForm(
         }
 
         CustomButton(
-            text = stringResource(AuthR.string.button_login),
+            text = stringResource(id = AuthR.string.button_login),
             onClick = onLogin
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        CustomButton(
-            text = stringResource(AuthR.string.button_login_google),
-            onClick = onGoogleLoginClick,
-            iconRes = CoreR.drawable.google_icon,
-            iconSize = 40
-        )
+        if (extraContent != null) {
+            Spacer(modifier = Modifier.height(8.dp))
+            extraContent()
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = stringResource(AuthR.string.text_register_prompt),
+            text = stringResource(id = AuthR.string.text_register_prompt),
             color = MaterialTheme.colorScheme.onBackground,
             fontSize = 14.sp,
             style = MaterialTheme.typography.labelSmall,

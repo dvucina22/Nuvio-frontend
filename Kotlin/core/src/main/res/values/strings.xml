@@ -358,4 +358,7 @@
     <string name="display">Display</string>
     <string name="light">Light</string>
     <string name="dark">Dark</string>
+
+    <string name="transaction_auth_code">Authorization code</string>
+    <string name="transaction_response_code">Reponse code</string>
 </resources>
