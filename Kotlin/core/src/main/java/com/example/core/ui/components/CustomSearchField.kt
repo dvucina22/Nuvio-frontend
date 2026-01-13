@@ -50,7 +50,7 @@ fun SearchField(
         label?.let {
             Text(
                 text = it,
-                color = Black,
+                color = MaterialTheme.colorScheme.onBackground,
                 style = MaterialTheme.typography.labelSmall.copy(
                     fontWeight = FontWeight.Bold
                 ),
@@ -67,9 +67,9 @@ fun SearchField(
             value = value,
             onValueChange = onValueChange,
             singleLine = true,
-            cursorBrush = SolidColor(Black),
+            cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
             textStyle = MaterialTheme.typography.bodySmall.copy(
-                color = Black,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Bold
             ),
             keyboardOptions = KeyboardOptions.Default.copy(
@@ -87,7 +87,7 @@ fun SearchField(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(
-                            LightOverlay.copy(alpha = 0.8f),
+                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f),
                             shape
                         )
                         .border(
@@ -101,7 +101,7 @@ fun SearchField(
                     Icon(
                         painter = painterResource(id = R.drawable.ic_search),
                         contentDescription = "Search",
-                        tint = IconDark,
+                        tint = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier.size(20.dp)
                     )
 
@@ -112,7 +112,7 @@ fun SearchField(
                             Text(
                                 text = placeholder,
                                 style = MaterialTheme.typography.bodySmall.copy(
-                                    color = IconDark.copy(alpha = 0.8f),
+                                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
                                     fontWeight = FontWeight.Bold
                                 )
                             )
@@ -129,7 +129,7 @@ fun SearchField(
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_clear),
                                 contentDescription = "Clear search",
-                                tint = Black
+                                tint = MaterialTheme.colorScheme.onBackground
                             )
                         }
                     }

@@ -65,9 +65,11 @@ import com.example.core.R
 import com.example.core.catalog.dto.AttributeFilter
 import com.example.core.catalog.dto.Brand
 import com.example.core.catalog.dto.Category
+import com.example.core.settings.CurrencyConverter
+import com.example.core.settings.CurrencyConverter.format
+import androidx.compose.ui.res.stringResource
 import com.example.core.ui.components.CustomButton
 import com.example.core.ui.components.CustomDescriptionField
-import com.example.core.ui.components.CustomTextField
 import com.example.core.ui.components.CustomTextFieldAligned
 import com.example.core.ui.components.CustomTopBar
 import com.example.core.ui.components.SelectedImagesRow
@@ -75,12 +77,9 @@ import com.example.core.ui.theme.BackgroundBehindButton
 import com.example.core.ui.theme.BackgroundColorInput
 import com.example.core.ui.theme.BackgroundNavDark
 import com.example.core.ui.theme.Black
-import com.example.core.ui.theme.ButtonColorSelected
-import com.example.core.ui.theme.CardItemBackground
-import com.example.core.ui.theme.CardItemBackgroundLight
-import com.example.core.ui.theme.ColorInput
 import com.example.core.ui.theme.Error
 import com.example.core.ui.theme.White
+import com.example.nuviofrontend.feature.settings.presentation.SettingsViewModel
 import kotlin.collections.forEach
 import kotlin.collections.set
 
@@ -90,7 +89,8 @@ fun EditProductScreen(
     onBackClick: () -> Unit = {},
     productId: Long,
     viewModel: ProductManagementViewModel = hiltViewModel(),
-    homeViewModel: HomeViewModel = hiltViewModel()
+    homeViewModel: HomeViewModel = hiltViewModel(),
+    settingsViewModel: SettingsViewModel = hiltViewModel()
 ){
     val context = LocalContext.current
 
@@ -116,6 +116,8 @@ fun EditProductScreen(
     val allAttributes = viewModel.attributes
     val urlsToSend = initialImages + productImages
 
+    val selectedCurrency by settingsViewModel.currencyFlow.collectAsState(initial = 1)
+
     LaunchedEffect(productId, viewModel.categories) {
         if (viewModel.categories.isEmpty()) return@LaunchedEffect
 
@@ -126,7 +128,10 @@ fun EditProductScreen(
             description = product.description ?: ""
             modelNumber = product.modelNumber ?: ""
             sku = product.sku ?: ""
-            price = "%.2f".format(product.basePrice)
+            price = CurrencyConverter.fromEuro(
+                amountInEuro = product.basePrice,
+                currencyIndex = selectedCurrency
+            ).format(2)
             quantity = product.quantity?.toString() ?: "0"
 
             selectedBrand = viewModel.brands.find { it.id == product.brand.id }
@@ -204,7 +209,7 @@ fun EditProductScreen(
                         Icon(
                             imageVector = Icons.Default.CameraAlt,
                             contentDescription = "",
-                            tint = Color.Gray,
+                            tint = MaterialTheme.colorScheme.onBackground,
                             modifier = Modifier.size(48.dp)
                         )
                         Text(
@@ -238,7 +243,7 @@ fun EditProductScreen(
                             text = stringResource(R.string.basic_information_product),
                             fontSize = 17.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Black
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                         Spacer(modifier = Modifier.height(7.dp))
                         Divider(color = BackgroundNavDark)
@@ -253,10 +258,16 @@ fun EditProductScreen(
                             errorMessage = fieldErrors["productName"]
                         )
 
+                        val priceLabel = if (selectedCurrency == 0) {
+                            stringResource(R.string.label_price_dolar)
+                        } else {
+                            stringResource(R.string.label_price_euro)
+                        }
+
                         CustomTextFieldAligned(
                             value = price,
                             onValueChange = { price = it },
-                            label = stringResource(R.string.label_price),
+                            label = priceLabel,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             placeholder = "",
                             isError = fieldErrors.containsKey("price"),
@@ -370,14 +381,14 @@ fun EditProductScreen(
                                 )
 
                                 if (!valid) return@CustomButton
-
+                                val basePrice = CurrencyConverter.toEuro(price.toDouble(), selectedCurrency)
                                 viewModel.updateProduct(
                                     id = productId,
                                     name = productName,
                                     description = description,
                                     modelNumber = modelNumber,
                                     sku = sku,
-                                    basePrice = price.toDoubleOrNull(),
+                                    basePrice = basePrice,
                                     brandId = selectedBrand?.id,
                                     categoryId = selectedCategory?.id,
                                     quantity = quantity.toIntOrNull(),
@@ -430,7 +441,7 @@ fun <T> CustomDropdownEditProduct(
         label?.let {
             Text(
                 text = it,
-                color = Black,
+                color = MaterialTheme.colorScheme.onBackground,
                 style = textStyle,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -452,7 +463,7 @@ fun <T> CustomDropdownEditProduct(
                     .fillMaxWidth()
                     .height(40.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(BackgroundColorInput.copy(alpha = 0.3f))
+                    .background(MaterialTheme.colorScheme.surfaceContainerLowest.copy(alpha = 0.7f))
                     .border(
                         width = if (isError) 1.dp else 0.dp,
                         color = if (isError) Error else Color.Transparent,
@@ -472,8 +483,8 @@ fun <T> CustomDropdownEditProduct(
                     text = value?.let { itemLabel(it) } ?: placeholder,
                     style = textStyle.copy(
                         color = if (value == null)
-                            Black.copy(alpha = 0.7f)
-                        else Black
+                            MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                        else MaterialTheme.colorScheme.onBackground
                     ),
                     modifier = Modifier.weight(1f)
                 )
@@ -481,7 +492,7 @@ fun <T> CustomDropdownEditProduct(
                 Icon(
                     painter = painterResource(id = R.drawable.ic_arrow_down),
                     contentDescription = null,
-                    tint = Black,
+                    tint = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
                         .size(20.dp)
                         .rotate(arrowRotation)
@@ -521,7 +532,7 @@ fun <T> CustomDropdownEditProduct(
                         modifier = Modifier
                             .width(triggeredWidth)
                             .clip(RoundedCornerShape(8.dp))
-                            .background(BackgroundNavDark)
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
                     ) {
                         items.forEachIndexed { index, item ->
                             Box(
@@ -539,7 +550,7 @@ fun <T> CustomDropdownEditProduct(
                             ) {
                                 Text(
                                     text = itemLabel(item),
-                                    color = Black,
+                                    color = MaterialTheme.colorScheme.onBackground,
                                     style = textStyle
                                 )
                             }
@@ -549,7 +560,7 @@ fun <T> CustomDropdownEditProduct(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .height(1.dp)
-                                        .background(Color.Black.copy(alpha = 0.1f))
+                                        .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.1f))
                                 )
                             }
                         }

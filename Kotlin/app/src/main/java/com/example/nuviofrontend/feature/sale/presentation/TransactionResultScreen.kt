@@ -26,6 +26,10 @@ import androidx.compose.ui.unit.dp
 import com.example.core.R
 import androidx.compose.ui.unit.sp
 import com.example.core.sale.dto.SaleResponse
+import androidx.compose.ui.res.stringResource
+import com.example.core.ui.theme.AccentColor
+import com.example.core.ui.theme.Success
+import com.example.core.ui.theme.WhiteSoft
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -62,7 +66,7 @@ fun TransactionResultScreen(
                 Icon(
                     imageVector = if (isSuccess) Icons.Default.CheckCircle else Icons.Default.Error,
                     contentDescription = null,
-                    tint = if (isSuccess) Color(0xFF4CAF50) else Color(0xFFF44336),
+                    tint = if (isSuccess) Success else com.example.core.ui.theme.Error,
                     modifier = Modifier.size(80.dp)
                 )
             }
@@ -72,7 +76,7 @@ fun TransactionResultScreen(
                     stringResource(R.string.payment_success_title)
                 else
                     stringResource(R.string.payment_failed_title),
-                color = Color(0xFF1C1C1C),
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center
@@ -83,17 +87,16 @@ fun TransactionResultScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .shadow(2.dp, RoundedCornerShape(12.dp))
                         .clip(RoundedCornerShape(12.dp))
-                        .background(Color(0xFFD8D9D9))
-                        .border(1.dp, Color(0xFFCACACA), RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.surfaceContainer)
+                        .border(1.dp, MaterialTheme.colorScheme.surfaceDim, RoundedCornerShape(12.dp))
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
 
                     Text(
                         text = stringResource(R.string.transaction_details_title),
-                        color = Color(0xFF1C1C1C),
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -132,7 +135,7 @@ fun TransactionResultScreen(
                     errorMessage != null -> errorMessage
                     else -> stringResource(R.string.payment_failed_retry_message)
                 },
-                color = Color(0xFF6B7280),
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 16.sp,
                 textAlign = TextAlign.Center,
                 lineHeight = 24.sp
@@ -153,7 +156,7 @@ fun TransactionResultScreen(
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFF004CBB),
-                            contentColor = Color.White
+                            contentColor = WhiteSoft
                         )
                     ) {
                         Icon(
@@ -173,9 +176,9 @@ fun TransactionResultScreen(
                         onClick = onViewOrders,
                         modifier = Modifier.fillMaxWidth().height(52.dp),
                         shape = RoundedCornerShape(12.dp),
-                        border = BorderStroke(1.dp, Color(0xFF004CBB)),
+                        border = BorderStroke(1.dp, AccentColor),
                         colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = Color(0xFF004CBB)
+                            contentColor = AccentColor
                         )
                     ) {
                         Text(
@@ -194,7 +197,7 @@ fun TransactionResultScreen(
                             modifier = Modifier.fillMaxWidth().height(52.dp),
                             shape = RoundedCornerShape(12.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF004CBB),
+                                containerColor = AccentColor,
                                 contentColor = Color.White
                             )
                         ) {
@@ -218,7 +221,7 @@ fun TransactionResultScreen(
                             modifier = Modifier.fillMaxWidth().height(52.dp),
                             shape = RoundedCornerShape(12.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF004CBB),
+                                containerColor = AccentColor,
                                 contentColor = Color.White
                             )
                         ) {
@@ -233,10 +236,10 @@ fun TransactionResultScreen(
                             onClick = onGoToHome,
                             modifier = Modifier.fillMaxWidth().height(52.dp),
                             shape = RoundedCornerShape(12.dp),
-                            border = BorderStroke(1.dp, Color(0xFF6B7280)),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.onBackground),
                             colors = ButtonDefaults.outlinedButtonColors(
-                                contentColor = Color(0xFF6B7280)
-                            )
+                                contentColor = MaterialTheme.colorScheme.onBackground
+                            ),
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Home,

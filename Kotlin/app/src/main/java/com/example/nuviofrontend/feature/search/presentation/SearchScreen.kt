@@ -29,6 +29,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SheetState
@@ -52,7 +53,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -62,10 +62,12 @@ import com.example.core.catalog.dto.Brand
 import com.example.core.catalog.dto.Category
 import com.example.core.catalog.dto.Product
 import com.example.core.ui.components.CustomRangeSlider
+import com.example.core.ui.components.IconActionBox
 import com.example.core.ui.components.ProductCard
 import com.example.core.ui.components.SearchField
 import com.example.core.ui.theme.AccentColor
 import com.example.core.ui.theme.BackgroundNavDark
+import com.example.core.ui.theme.BackgroundNavDarkDark
 import com.example.core.ui.theme.Black
 import com.example.core.ui.theme.GrayOne
 import com.example.core.ui.theme.IconDark
@@ -73,13 +75,16 @@ import com.example.core.ui.theme.IconSelectedTintDark
 import com.example.core.ui.theme.LightOverlay
 import com.example.core.ui.theme.SelectedItemBackgroundDark
 import com.example.core.ui.theme.White
+import com.example.core.ui.theme.WhiteSoft
+import com.example.nuviofrontend.feature.settings.presentation.SettingsViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel(),
-    onProductClick: (Long) -> Unit
+    onProductClick: (Long) -> Unit,
+    settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -93,97 +98,109 @@ fun SearchScreen(
         }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(bottom = 80.dp, top = 36.dp, start = 10.dp, end = 10.dp)
-    ) {
+    val selectedCurrency by settingsViewModel.currencyFlow.collectAsState(initial = 1)
+
+    Box(modifier = Modifier.fillMaxSize()) {
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 80.dp, top = 20.dp)
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth()
-                    .padding(end = 16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        start = 20.dp,
+                        end = 20.dp,
+                        top = 26.dp,
+                        bottom = 13.dp
+                    ),
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                SearchField(
-                    modifier = Modifier.weight(1f),
-                    value = state.query,
-                    onValueChange = { viewModel.onQueryChange(it) },
-                    placeholder = stringResource(id = R.string.search_products),
-                    label = null
-                )
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Box(
-                    modifier = Modifier
-                        .width(44.dp)
-                        .height(44.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(LightOverlay)
-                        .border(
-                            width = 1.dp,
-                            color = AccentColor.copy(alpha = 0.8f),
-                            shape = RoundedCornerShape(8.dp)
-                        )
+                Column {
+                    Text(
+                        text = stringResource(R.string.search_title),
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+            Column(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(end = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(
-                        onClick = { showFilterSheet = true },
-                        modifier = Modifier.fillMaxSize()
+                    SearchField(
+                        modifier = Modifier.weight(1f),
+                        value = state.query,
+                        onValueChange = { viewModel.onQueryChange(it) },
+                        placeholder = stringResource(R.string.search_products),
+                        label = null
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    IconActionBox(
+                        onClick = { showFilterSheet = true }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Tune,
-                            contentDescription = stringResource(id = R.string.filter),
-                            tint = IconDark
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            when {
-                state.isLoading -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 32.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(color = IconSelectedTintDark)
-                    }
-                }
-
-                state.results.isEmpty() &&
-                        state.query.isNotBlank() &&
-                        state.error == null -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 32.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.no_results),
-                            color = White
+                            contentDescription = stringResource(R.string.filter),
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 }
 
-                state.results.isNotEmpty() -> {
-                    SearchResultsGrid(
-                        products = state.results,
-                        isLoadingMore = state.isLoadingMore,
-                        favoriteProductIds = state.favoriteProductIds,
-                        onLoadMore = { viewModel.loadMore() },
-                        onToggleFavorite = { productId, shouldBeFavorite ->
-                            viewModel.setFavorite(productId, shouldBeFavorite)
-                        },
-                        onProductClick = { productId ->
-                            onProductClick(productId)
+                Spacer(modifier = Modifier.height(16.dp))
+
+                when {
+                    state.isLoading -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 32.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(color = IconSelectedTintDark)
                         }
-                    )
+                    }
+
+                    state.results.isEmpty() &&
+                            state.query.isNotBlank() &&
+                            state.error == null -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 32.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = stringResource(R.string.no_results),
+                                color = MaterialTheme.colorScheme.surfaceContainerLowest
+                            )
+                        }
+                    }
+
+                    state.results.isNotEmpty() -> {
+                        SearchResultsGrid(
+                            products = state.results,
+                            isLoadingMore = state.isLoadingMore,
+                            favoriteProductIds = state.favoriteProductIds,
+                            onLoadMore = { viewModel.loadMore() },
+                            onToggleFavorite = { productId, shouldBeFavorite ->
+                                viewModel.setFavorite(productId, shouldBeFavorite)
+                            },
+                            onProductClick = { productId ->
+                                onProductClick(productId)
+                            },
+                            selectedCurrency = selectedCurrency
+                        )
+                    }
                 }
             }
         }
@@ -194,8 +211,14 @@ fun SearchScreen(
                     .align(Alignment.BottomCenter)
                     .padding(bottom = 8.dp),
                 action = {
-                    TextButton(onClick = { viewModel.clearError() }) {
-                        Text(text = stringResource(id = R.string.dismiss))
+                    TextButton(
+                        onClick = { viewModel.clearError() },
+                        colors = ButtonDefaults.textButtonColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+                            contentColor = WhiteSoft
+                        )
+                    ) {
+                        Text(text = stringResource(R.string.dismiss))
                     }
                 }
             ) {
@@ -208,7 +231,7 @@ fun SearchScreen(
                 onDismissRequest = { showFilterSheet = false },
                 sheetState = sheetState,
                 shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-                containerColor = BackgroundNavDark
+                containerColor = MaterialTheme.colorScheme.surface
             ) {
                 SearchFilterSheetContent(
                     sheetState = sheetState,
@@ -249,7 +272,8 @@ private fun SearchResultsGrid(
     favoriteProductIds: Set<Long>,
     onLoadMore: () -> Unit,
     onToggleFavorite: (productId: Long, shouldBeFavorite: Boolean) -> Unit,
-    onProductClick: (Long) -> Unit
+    onProductClick: (Long) -> Unit,
+    selectedCurrency: Int
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -265,6 +289,7 @@ private fun SearchResultsGrid(
 
             ProductCard(
                 product = product,
+                selectedCurrency = selectedCurrency,
                 isFavorite = favoriteProductIds.contains(product.id),
                 onFavoriteChange = { shouldBeFavorite ->
                     onToggleFavorite(product.id, shouldBeFavorite)
@@ -306,9 +331,9 @@ private fun SearchFilterSheetContent(
     val scrollState = rememberScrollState()
 
     val sortOptions = listOf(
-        "newest" to stringResource(id = R.string.sort_newest),
-        "price_asc" to stringResource(id = R.string.sort_price_asc),
-        "price_desc" to stringResource(id = R.string.sort_price_desc)
+        "newest" to stringResource(R.string.sort_newest),
+        "price_asc" to stringResource(R.string.sort_price_asc),
+        "price_desc" to stringResource(R.string.sort_price_desc)
     )
 
     val categoryPairs = categories.map { it.id to it.name }
@@ -340,8 +365,8 @@ private fun SearchFilterSheetContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = stringResource(id = R.string.filter),
-            color = White,
+            text = stringResource(R.string.filter),
+            color = MaterialTheme.colorScheme.onBackground,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold
         )
@@ -358,7 +383,7 @@ private fun SearchFilterSheetContent(
                 CircularProgressIndicator(color = IconSelectedTintDark)
             }
         } else {
-            FilterSection(title = stringResource(id = R.string.sort_by)) {
+            FilterSection(title = stringResource(R.string.sort_by)) {
                 FlowRow(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -402,7 +427,7 @@ private fun SearchFilterSheetContent(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            FilterSection(title = stringResource(id = R.string.brand)) {
+            FilterSection(title = stringResource(R.string.brand)) {
                 FlowRow(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -428,7 +453,7 @@ private fun SearchFilterSheetContent(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            FilterSection(title = stringResource(id = R.string.price_range)) {
+            FilterSection(title = stringResource(R.string.price_range)) {
                 CustomRangeSlider(
                     value = filterState.priceRange,
                     onValueChange = { onFilterStateChange(filterState.copy(priceRange = it)) },
@@ -445,7 +470,9 @@ private fun SearchFilterSheetContent(
                 if (valuesList.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    FilterSection(title = attributeSectionTitle(attrName)) {
+                    FilterSection(
+                        title = attributeSectionTitle(attrName)
+                    ) {
                         FlowRow(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -483,7 +510,7 @@ private fun SearchFilterSheetContent(
             Spacer(modifier = Modifier.height(24.dp))
 
             FilterSwitchRow(
-                label = stringResource(id = R.string.only_in_stock),
+                label = stringResource(R.string.only_in_stock),
                 checked = filterState.inStockOnly,
                 onCheckedChange = { onFilterStateChange(filterState.copy(inStockOnly = it)) }
             )
@@ -491,7 +518,7 @@ private fun SearchFilterSheetContent(
             Spacer(modifier = Modifier.height(16.dp))
 
             FilterSwitchRow(
-                label = stringResource(id = R.string.only_favorites),
+                label = stringResource(R.string.only_favorites),
                 checked = filterState.favoritesOnly,
                 onCheckedChange = { onFilterStateChange(filterState.copy(favoritesOnly = it)) }
             )
@@ -507,10 +534,9 @@ private fun SearchFilterSheetContent(
                 modifier = Modifier.weight(1f),
                 onClick = onReset,
                 colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = GrayOne,
-                    contentColor = Black
+                    containerColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
+                    contentColor = MaterialTheme.colorScheme.onBackground
                 ),
-                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF6A7479)),
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
@@ -545,7 +571,7 @@ private fun FilterSection(
     Column {
         Text(
             text = title,
-            color = White,
+            color = MaterialTheme.colorScheme.onBackground,
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold
         )
@@ -565,14 +591,14 @@ private fun FilterChip(
             .clip(RoundedCornerShape(8.dp))
             .background(
                 if (selected) AccentColor
-                else GrayOne
+                else MaterialTheme.colorScheme.surfaceContainerLowest
             )
             .clickable(onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Text(
             text = label,
-            color = if (selected) White else Black,
+            color = if (selected) White else MaterialTheme.colorScheme.onBackground,
             fontSize = 14.sp,
             fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal
         )
@@ -589,14 +615,14 @@ private fun FilterSwitchRow(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFFD1D5D7))
+            .background(MaterialTheme.colorScheme.surfaceContainerLowest)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = label,
-            color = Black,
+            color = MaterialTheme.colorScheme.onBackground,
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium
         )
@@ -616,13 +642,13 @@ private fun FilterSwitchRow(
 @Composable
 private fun attributeSectionTitle(name: String): String {
     return when (name) {
-        "os" -> stringResource(id = R.string.attribute_os)
-        "display_size" -> stringResource(id = R.string.attribute_display_size)
-        "display_resolution" -> stringResource(id = R.string.attribute_display_resolution)
-        "color" -> stringResource(id = R.string.attribute_color)
-        "build_material" -> stringResource(id = R.string.attribute_build_material)
-        "weight_kg" -> stringResource(id = R.string.attribute_weight)
-        "battery_wh" -> stringResource(id = R.string.attribute_battery)
+        "os" -> stringResource(R.string.attribute_os)
+        "display_size" -> stringResource(R.string.attribute_display_size)
+        "display_resolution" -> stringResource(R.string.attribute_display_resolution)
+        "color" -> stringResource(R.string.attribute_color)
+        "build_material" -> stringResource(R.string.attribute_build_material)
+        "weight_kg" -> stringResource( R.string.attribute_weight)
+        "battery_wh" -> stringResource(R.string.attribute_battery)
         else -> name
     }
 }
@@ -637,18 +663,18 @@ private fun attributeValueLabel(attributeName: String, value: String): String {
         }
 
         "color" -> when (value) {
-            "black" -> stringResource(id = R.string.color_black)
-            "midnight" -> stringResource(id = R.string.color_midnight)
-            "platinum" -> stringResource(id = R.string.color_platinum)
-            "silver" -> stringResource(id = R.string.color_silver)
-            "space_gray" -> stringResource(id = R.string.color_space_gray)
+            "black" -> stringResource(R.string.color_black)
+            "midnight" -> stringResource(R.string.color_midnight)
+            "platinum" -> stringResource(R.string.color_platinum)
+            "silver" -> stringResource(R.string.color_silver)
+            "space_gray" -> stringResource(R.string.color_space_gray)
             else -> value
         }
 
         "build_material" -> when (value) {
-            "aluminum" -> stringResource(id = R.string.material_aluminum)
-            "carbon_fiber" -> stringResource(id = R.string.material_carbon_fiber)
-            "plastic" -> stringResource(id = R.string.material_plastic)
+            "aluminum" -> stringResource(R.string.material_aluminum)
+            "carbon_fiber" -> stringResource(R.string.material_carbon_fiber)
+            "plastic" -> stringResource(R.string.material_plastic)
             else -> value
         }
 

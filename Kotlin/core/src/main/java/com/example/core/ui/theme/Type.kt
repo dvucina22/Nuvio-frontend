@@ -55,4 +55,9 @@ val AppTypography = Typography(
         fontSize = 15.sp,
         letterSpacing = 0.5.sp
     ),
+    displaySmall = TextStyle(
+        fontFamily = MontserratRegular,
+        fontSize = 13.sp,
+        letterSpacing = 0.5.sp
+    )
 )

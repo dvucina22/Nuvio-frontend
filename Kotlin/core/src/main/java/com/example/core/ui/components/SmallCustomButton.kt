@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.core.ui.theme.AccentColor
 import com.example.core.ui.theme.ButtonColorDark
 
 @Composable
@@ -19,7 +20,7 @@ fun SmallCustomButton(
     modifier: Modifier = Modifier,
     width: Int? = null,
     height: Int = 32,
-    containerColor: Color = ButtonColorDark
+    containerColor: Color = AccentColor
 ) {
     Button(
         onClick = onClick,
@@ -34,7 +35,7 @@ fun SmallCustomButton(
         Text(
             text = text,
             color = Color.White,
-            style = MaterialTheme.typography.bodySmall
+            style = MaterialTheme.typography.displaySmall
         )
     }
 }

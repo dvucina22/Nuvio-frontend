@@ -3,332 +3,362 @@
 
     <string name="nuvio">Nuvio</string>
 
-    <string name="login_title">Prijava</string>
+    <string name="login_title">Login</string>
     <string name="label_email">Email</string>
-    <string name="text_guest">Nastavi kao gost</string>
-    <string name="label_password">Lozinka</string>
-    <string name="placeholder_email">Unesite email</string>
-    <string name="placeholder_password">Unesite lozinku</string>
-    <string name="button_login">Prijava</string>
-    <string name="text_register_prompt">Nemate račun? Registrirajte se.</string>
-    <string name="toast_invalid_credentials">Unesite ispravne podatke!</string>
-    <string name="logo_content_description">Logo aplikacije</string>
+    <string name="text_guest">Continue as guest</string>
+    <string name="label_password">Password</string>
+    <string name="placeholder_email">Enter email</string>
+    <string name="placeholder_password">Enter password</string>
+    <string name="button_login">Login</string>
+    <string name="text_register_prompt">Don\'t have an account? Register.</string>
+    <string name="toast_invalid_credentials">Please enter valid credentials!</string>
+    <string name="logo_content_description">App logo</string>
 
-    <string name="error_email_empty">Email ne smije biti prazan</string>
-    <string name="error_email_invalid">Neispravan format email adrese</string>
-    <string name="error_password_empty">Lozinka ne smije biti prazna</string>
+    <string name="error_email_empty">Email cannot be empty</string>
+    <string name="error_email_invalid">Invalid email format</string>
+    <string name="error_password_empty">Password cannot be empty</string>
 
-    <string name="error_login_invalid_credentials">Pogrešni podaci za prijavu.</string>
-    <string name="error_login_forbidden">Nemate dopuštenje za pristup.</string>
-    <string name="error_server_generic">Pogreška na poslužitelju (%1$d).</string>
-    <string name="error_network">Provjerite internetsku vezu.</string>
-    <string name="error_unknown">Nepoznata pogreška.</string>
-    <string name="welcome_message">Dobro došli!</string>
+    <string name="error_login_invalid_credentials">Invalid login credentials.</string>
+    <string name="error_login_forbidden">You are not allowed to access.</string>
+    <string name="error_server_generic">Server error %s.</string>
+    <string name="error_network">Check your internet connection.</string>
+    <string name="error_unknown">Unknown error.</string>
+    <string name="welcome_message">Welcome!</string>
 
     <string name="server_client_id">34592663945-alnaa3u2tbns05c68mjv41u7hrqkrbtq.apps.googleusercontent.com</string>
-    <string name="button_login_google">Nastavi s Google računom</string>
-    <string name="error_google_signin_cancelled">Google prijava je otkazana.</string>
-    <string name="error_google_no_idtoken">Nije moguće dohvatiti Google ID token.</string>
+    <string name="button_login_google">Continue with Google</string>
+    <string name="error_google_signin_cancelled">Google sign-in cancelled.</string>
+    <string name="error_google_no_idtoken">Cannot retrieve Google ID token.</string>
 
-    <string name="register_successful">Registracija uspješna!</string>
-    <string name="registration_title">Registracija</string>
-    <string name="label_first_name">Ime</string>
-    <string name="label_last_name">Prezime</string>
-    <string name="label_phone_number">Broj telefona</string>
-    <string name="label_confirm_password">Potvrdite lozinku</string>
+    <string name="register_successful">Registration successful!</string>
+    <string name="registration_title">Register</string>
+    <string name="label_first_name">First Name</string>
+    <string name="label_last_name">Last Name</string>
+    <string name="label_phone_number">Phone number</string>
+    <string name="label_confirm_password">Confirm password</string>
 
-    <string name="error_email_required">Email je obavezan</string>
-    <string name="error_password_required">Lozinka je obavezna</string>
-    <string name="error_password_complexity">Lozinka mora imati najmanje 8 znakova, jedno veliko slovo i jedan broj</string>
-    <string name="error_confirm_password_empty">Potvrda lozinke je obavezna</string>
-    <string name="error_passwords_mismatch">Lozinke se ne podudaraju</string>
-    <string name="error_email_exists">Email je zauzet</string>
-    <string name="error_generic">Greška (%1$d)</string>
+    <string name="error_email_required">Email is required</string>
+    <string name="error_password_required">Password is required</string>
+    <string name="error_password_complexity">Password must have at least 8 characters, one uppercase letter, and one number</string>
+    <string name="error_confirm_password_empty">Password confirmation is required</string>
+    <string name="error_passwords_mismatch">Passwords do not match</string>
+    <string name="error_email_exists">Email is already taken</string>
+    <string name="error_generic">Error (%1$d)</string>
 
-    <string name="products">Proizvodi</string>
-    <string name="favorites">Favoriti</string>
-    <string name="cart">Košarica</string>
-    <string name="order_history">Povijest narudžbi</string>
-    <string name="my_profile">Moj profil</string>
-    <string name="sign_out">Odjava</string>
+    <string name="products">Products</string>
+    <string name="favorites">Favorites</string>
+    <string name="cart">Cart</string>
+    <string name="order_history">Order history</string>
+    <string name="my_profile">My profile</string>
+    <string name="sign_out">Sign out</string>
 
-    <string name="hello_user">Pozdrav, %1$s</string>
-    <string name="hello_world">Pozdrav!</string>
-    <string name="hello_guest">Pozdrav, gost!</string>
+    <string name="hello_user">Hello, %1$s</string>
+    <string name="hello_world">Hello!</string>
+    <string name="hello_guest">Hello, guest!</string>
 
-    <string name="profile_update_success">Profil je uspješno ažuriran</string>
-    <string name="profile_title">Profil</string>
-    <string name="guest">Gost</string>
-    <string name="not_logged_in">Niste prijavljeni</string>
-    <string name="edit_button">Uredi</string>
-    <string name="login_button">Prijavi se</string>
-    <string name="settings">Postavke</string>
-    <string name="saved_cards">Spremljene kartice</string>
-    <string name="change_password">Promijenite lozinku</string>
-    <string name="users">Korisnici</string>
-    <string name="help">Pomoć</string>
+    <string name="profile_update_success">Profile updated successfully</string>
+    <string name="profile_title">Profile</string>
+    <string name="guest">Guest</string>
+    <string name="not_logged_in">Not logged in</string>
+    <string name="edit_button">Edit</string>
+    <string name="login_button">Login</string>
+    <string name="settings">Settings</string>
+    <string name="saved_cards">Saved cards</string>
+    <string name="change_password">Change password</string>
+    <string name="users">Users</string>
+    <string name="help">Help</string>
 
-    <string name="edit_profile_title">Uredi profil</string>
-    <string name="back_button">Natrag</string>
-    <string name="placeholder_first_name">Unesite ime</string>
-    <string name="placeholder_last_name">Unesite prezime</string>
-    <string name="label_phone">Broj telefona</string>
-    <string name="placeholder_phone">Unesite broj telefona</string>
-    <string name="save_button">Spremi</string>
-    <string name="label_gender">Spol</string>
-    <string name="placeholder_gender">Odaberite spol</string>
-    <string name="gender_male">Muško</string>
-    <string name="gender_female">Žensko</string>
-    <string name="gender_other">Ostalo</string>
+    <string name="edit_profile_title">Edit profile</string>
+    <string name="back_button">Back</string>
+    <string name="placeholder_first_name">Enter first name</string>
+    <string name="placeholder_last_name">Enter last name</string>
+    <string name="label_phone">Phone number</string>
+    <string name="placeholder_phone">Enter phone number</string>
+    <string name="save_button">Save</string>
+    <string name="label_gender">Gender</string>
+    <string name="placeholder_gender">Select gender</string>
+    <string name="gender_male">Male</string>
+    <string name="gender_female">Female</string>
+    <string name="gender_other">Other</string>
 
-    <string name="change_password_title">Promjena lozinke</string>
-    <string name="old_password_label">Stara lozinka</string>
-    <string name="old_password_placeholder">Unesite staru lozinku</string>
-    <string name="new_password_label">Nova lozinka</string>
-    <string name="new_password_placeholder">Unesite novu lozinku</string>
-    <string name="confirm_password_label">Ponovljena nova lozinka</string>
-    <string name="confirm_password_placeholder">Ponovite novu lozinku</string>
+    <string name="change_password_title">Change password</string>
+    <string name="old_password_label">Old password</string>
+    <string name="old_password_placeholder">Enter old password</string>
+    <string name="new_password_label">New password</string>
+    <string name="new_password_placeholder">Enter new password</string>
+    <string name="confirm_password_label">Confirm new password</string>
+    <string name="confirm_password_placeholder">Repeat new password</string>
 
-    <string name="old_password">Stara lozinka</string>
-    <string name="new_password">Nova lozinka</string>
-    <string name="confirm_password">Ponovljena nova lozinka</string>
-    <string name="placeholder_old_password">Unesite staru lozinku</string>
-    <string name="placeholder_new_password">Unesite novu lozinku</string>
-    <string name="placeholder_confirm_password">Ponovite novu lozinku</string>
-    <string name="button_save">Spremi</string>
-    <string name="error_server_generic2">Pogreška na poslužitelju%s.</string>
+    <string name="old_password">Old password</string>
+    <string name="new_password">New password</string>
+    <string name="confirm_password">Confirm new password</string>
+    <string name="placeholder_old_password">Enter old password</string>
+    <string name="placeholder_new_password">Enter new password</string>
+    <string name="placeholder_confirm_password">Repeat new password</string>
+    <string name="button_save">Save</string>
+    <string name="error_server_generic2">Server error %s.</string>
 
-    <string name="error_old_password_empty">Stara lozinka je obavezna</string>
-    <string name="error_new_password_empty">Nova lozinka je obavezna</string>
-    <string name="error_old_password_invalid">Unijeli ste krivu staru lozinku</string>
-    <string name="error_missing_fields">Nisu unesena sva polja</string>
+    <string name="error_old_password_empty">Old password is required</string>
+    <string name="error_new_password_empty">New password is required</string>
+    <string name="error_old_password_invalid">Incorrect old password</string>
+    <string name="error_missing_fields">Some fields are missing</string>
 
-    <string name="toast_password_changed">Lozinka uspješno promijenjena</string>
+    <string name="toast_password_changed">Password changed successfully</string>
 
-    <string name="welcome_male">Dobrodošao %1$s</string>
-    <string name="welcome_female">Dobrodošla %1$s</string>
-    <string name="welcome_neutral">Dobrodošli %1$s</string>
+    <string name="welcome_male">Welcome %1$s</string>
+    <string name="welcome_female">Welcome %1$s</string>
+    <string name="welcome_neutral">Welcome %1$s</string>
 
-    <string name="new_card">Nova kartica</string>
-    <string name="card_number">Broj kartice</string>
-    <string name="card_name">Naziv</string>
-    <string name="cancel">Odustani</string>
-    <string name="month">Mjesec</string>
-    <string name="year">Godina</string>
-    <string name="full_name">Ime i prezime</string>
-    <string name="card_number_empty">Broj kartice ne smije biti prazan</string>
-    <string name="card_number_length">Broj kartice mora imati 16 znamenki</string>
-    <string name="card_name_empty">Naziv kartice ne smije biti prazan</string>
-    <string name="expiry_empty">Datum isteka ne smije biti prazan</string>
-    <string name="full_name_empty">Ime i prezime ne smije biti prazno</string>
-    <string name="due_date">Datum isteka</string>
+    <string name="new_card">New card</string>
+    <string name="card_number">Card number</string>
+    <string name="card_name">Name</string>
+    <string name="cancel">Cancel</string>
+    <string name="month">Month</string>
+    <string name="year">Year</string>
+    <string name="full_name">Full name</string>
+    <string name="card_number_empty">Card number cannot be empty</string>
+    <string name="card_number_length">Card number must be 16 digits</string>
+    <string name="card_name_empty">Card name cannot be empty</string>
+    <string name="expiry_empty">Expiry date cannot be empty</string>
+    <string name="full_name_empty">Full name cannot be empty</string>
+    <string name="due_date">Expiry date</string>
 
-    <string name="saved_cards_title">Spremljene kartice</string>
-    <string name="no_saved_cards">Nema spremljenih kartica</string>
-    <string name="warning">Upozorenje</string>
-    <string name="delete_card_confirm">Jeste li sigurni da želite obrisati karticu?</string>
-    <string name="delete">Obriši</string>
-    <string name="transactions">Transakcije</string>
-    <string name="set_as_primary">Postavi kao glavnu</string>
-    <string name="card_number_label">Broj kartice</string>
-    <string name="next">Nastavi</string>
+    <string name="saved_cards_title">Saved cards</string>
+    <string name="no_saved_cards">No saved cards</string>
+    <string name="warning">Warning</string>
+    <string name="delete_card_confirm">Are you sure you want to delete this card?</string>
+    <string name="delete">Delete</string>
+    <string name="transactions">Transactions</string>
+    <string name="set_as_primary">Set as primary</string>
+    <string name="card_number_label">Card number</string>
+    <string name="next">Next</string>
 
-    <string name="search_products">Pretraži proizvode...</string>
-    <string name="dismiss">Odbaci</string>
-    <string name="no_results">Nema rezultata.</string>
-    <string name="filter">Filteri</string>
-    <string name="sort_by">Sortiraj prema</string>
-    <string name="reset">Poništi</string>
-    <string name="apply">Primijeni</string>
-    <string name="category">Kategorija</string>
-    <string name="brand">Brend</string>
-    <string name="price_range">Raspon cijene</string>
+    <string name="search_products">Search products...</string>
+    <string name="search_title">Searching</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="no_results">No results.</string>
+    <string name="filter">Filters</string>
+    <string name="sort_by">Sort by</string>
+    <string name="reset">Reset</string>
+    <string name="apply">Apply</string>
+    <string name="category">Category</string>
+    <string name="brand">Brand</string>
+    <string name="price_range">Price range</string>
     <string name="ram">RAM</string>
-    <string name="processor">Procesor</string>
-    <string name="storage">Pohrana</string>
-    <string name="only_in_stock">Samo artikli na zalihi</string>
-    <string name="only_favorites">Samo favoriti</string>
-    <string name="sort_newest">Najnovije</string>
-    <string name="sort_price_asc">Cijena: Rastuće</string>
-    <string name="sort_price_desc">Cijena: Padajuće</string>
+    <string name="processor">Processor</string>
+    <string name="storage">Storage</string>
+    <string name="only_in_stock">Only in stock</string>
+    <string name="only_favorites">Only favorites</string>
+    <string name="sort_newest">Newest</string>
+    <string name="sort_price_asc">Price: Low to High</string>
+    <string name="sort_price_desc">Price: High to Low</string>
 
-    <string name="favorites_title">Favoriti</string>
-    <string name="favorites_empty_message">Nema zabilježenih favorita.</string>
-    <string name="favorites_dismiss">Odustani</string>
+    <string name="favorites_title">Favorites</string>
+    <string name="favorites_empty_message">No favorites saved.</string>
+    <string name="favorites_dismiss">Dismiss</string>
 
-    <string name="favorites_error_load">Greška u dohvaćanju favorita</string>
-    <string name="favorites_error_update">Greška kod ažuriranja favorita</string>
+    <string name="low_stock">Low stock</string>
+    <string name="out_of_stock">Out of stock</string>
 
-    <string name="attribute_os">Operacijski sustav</string>
-    <string name="attribute_display_size">Veličina zaslona</string>
-    <string name="attribute_display_resolution">Rezolucija zaslona</string>
-    <string name="attribute_color">Boja</string>
-    <string name="attribute_build_material">Materijal izrade</string>
-    <string name="attribute_weight">Masa</string>
-    <string name="attribute_battery">Kapacitet baterije</string>
+    <string name="favorites_error_load">Failed to load favorites</string>
+    <string name="favorites_error_update">Failed to update favorites</string>
+
+    <string name="attribute_os">Operating system</string>
+    <string name="attribute_display_size">Screen size</string>
+    <string name="attribute_display_resolution">Screen resolution</string>
+    <string name="attribute_color">Color</string>
+    <string name="attribute_build_material">Build material</string>
+    <string name="attribute_weight">Weight</string>
+    <string name="attribute_battery">Battery capacity</string>
 
     <string name="os_macos">macOS</string>
     <string name="os_windows_11">Windows 11</string>
 
-    <string name="color_black">Crna</string>
+    <string name="color_black">Black</string>
     <string name="color_midnight">Midnight</string>
     <string name="color_platinum">Platinum</string>
-    <string name="color_silver">Srebrna</string>
+    <string name="color_silver">Silver</string>
     <string name="color_space_gray">Space Gray</string>
 
-    <string name="material_aluminum">Aluminij</string>
-    <string name="material_carbon_fiber">Karbon</string>
-    <string name="material_plastic">Plastika</string>
+    <string name="material_aluminum">Aluminum</string>
+    <string name="material_carbon_fiber">Carbon</string>
+    <string name="material_plastic">Plastic</string>
+    <string name="display_size">Display size</string>
+    <string name="display_resolution">Resolution</string>
+    <string name="color">Color</string>
+    <string name="os">Operating system</string>
+    <string name="build_material">Build material</string>
+    <string name="weight_kg">Weight</string>
+    <string name="battery_wh">Battery</string>
+    <string name="product_added">Product added successfully</string>
 
-    <string name="cart_title">Košarica</string>
-    <string name="delete_item_confirm">Jeste li sigurni da želite obrisati ovaj proizvod?</string>
-    <string name="loading_message">Učitavanje...</string>
-    <string name="cart_empty_message">Nemate ni jedan proizvod u košarici</string>
-    <string name="error_label">Greška: %1$s</string>
-    <string name="checkout_button_text">Nastavi na plaćanje</string>
-    <string name="summary_total">Ukupno</string>
-    <string name="summary_delivery">Dostava</string>
-    <string name="summary_discount">Popust</string>
-    <string name="summary_total_with_discount">Ukupno s popustom</string>
+    <string name="cart_title">Cart</string>
+    <string name="delete_item_confirm">Are you sure you want to delete this product?</string>
+    <string name="loading_message">Loading...</string>
+    <string name="cart_empty_message">Your cart is empty</string>
+    <string name="error_label">Error: %1$s</string>
+    <string name="checkout_button_text">Proceed to payment</string>
+    <string name="summary_total">Total</string>
+    <string name="summary_delivery">Delivery</string>
+    <string name="summary_discount">Discount</string>
+    <string name="summary_total_with_discount">Total with discount</string>
 
-    <string name="product_details_title">Detalji proizvoda</string>
-    <string name="attributes_title">Atributi</string>
-    <string name="product_description">Opis proizvoda</string>
-    <string name="product_info">Informacije o proizvodu</string>
+    <string name="product_details_title">Product details</string>
+    <string name="attributes_title">Attributes</string>
+    <string name="product_description">Product description</string>
+    <string name="product_info">Product information</string>
 
-    <string name="add_new_product_title">Dodaj novi proizvod</string>
-    <string name="basic_information_product">Osnovne informacije o proizvodu</string>
-    <string name="label_product_name">Naziv proizvoda</string>
-    <string name="placeholder_product_name">Unesite naziv proizvoda</string>
-    <string name="label_price">Cijena (€)</string>
-    <string name="placeholder_price">Unesite cijenu</string>
-    <string name="label_quantity">Količina</string>
-    <string name="placeholder_quantity">Unesite količinu</string>
-    <string name="label_model_number">Broj modela</string>
-    <string name="placeholder_model_number">Unesite broj modela</string>
+    <string name="add_new_product_title">Add new product</string>
+    <string name="basic_information_product">Basic product information</string>
+    <string name="label_product_name">Product name</string>
+    <string name="placeholder_product_name">Enter product name</string>
+    <string name="label_price_euro">Price (€)</string>
+    <string name="label_price_dolar">Price ($)</string>
+    <string name="placeholder_price">Enter price</string>
+    <string name="label_quantity">Quantity</string>
+    <string name="placeholder_quantity">Enter quantity</string>
+    <string name="label_model_number">Model number</string>
+    <string name="placeholder_model_number">Enter model number</string>
     <string name="label_sku">SKU</string>
-    <string name="placeholder_sku">Unesite SKU</string>
-    <string name="label_description">Opis proizvoda</string>
-    <string name="placeholder_description">Unesite opis proizvoda</string>
-    <string name="placeholder_brand">Odaberite brand</string>
-    <string name="placeholder_category">Odaberite kategoriju</string>
-    <string name="placeholder_select_attribute">Odaberite vrijednost</string>
-    <string name="placeholder_add_attribute">Odaberite specifikaciju</string>
-    <string name="error_product_name_required">Naziv proizvoda je obavezan</string>
-    <string name="error_price_required">Cijena je obavezna</string>
-    <string name="error_price_invalid">Cijena ne smije biti negativna</string>
-    <string name="error_quantity_required">Količina je obavezna</string>
-    <string name="error_quantity_invalid">Količina ne smije biti negativna</string>
-    <string name="error_model_number_required">Broj modela je obavezan</string>
-    <string name="error_sku_required">SKU je obavezan</string>
-    <string name="error_description_required">Opis proizvoda je obavezan</string>
-    <string name="error_brand_required">Brand je obavezan</string>
-    <string name="error_category_required">Kategorija je obavezna</string>
-    <string name="additional_specifications_title">Dodatne informacije o proizvodu</string>
-    <string name="add_image_text">Dodirnite za dodavanje slike</string>
+    <string name="placeholder_sku">Enter SKU</string>
+    <string name="label_description">Product description</string>
+    <string name="placeholder_description">Enter product description</string>
+    <string name="placeholder_brand">Select brand</string>
+    <string name="placeholder_category">Select category</string>
+    <string name="placeholder_select_attribute">Select value</string>
+    <string name="placeholder_add_attribute">Select specification</string>
+    <string name="error_product_name_required">Product name is required</string>
+    <string name="error_price_required">Price is required</string>
+    <string name="error_price_invalid">Price cannot be negative</string>
+    <string name="error_quantity_required">Quantity is required</string>
+    <string name="error_quantity_invalid">Quantity cannot be negative</string>
+    <string name="error_model_number_required">Model number is required</string>
+    <string name="error_sku_required">SKU is required</string>
+    <string name="error_description_required">Product description is required</string>
+    <string name="error_brand_required">Brand is required</string>
+    <string name="error_category_required">Category is required</string>
+    <string name="additional_specifications_title">Additional product information</string>
+    <string name="add_image_text">Tap to add image</string>
 
-    <string name="edit_product_title">Uredi prozivod</string>
-    <string name="edit_product_done">Proizvod ažuriran!</string>
+    <string name="edit_product_title">Edit product</string>
+    <string name="edit_product_done">Product updated!</string>
 
-    <string name="category_all">Sve</string>
-    <string name="category_gaming">Igre</string>
-    <string name="category_multimedia">Multimedija</string>
-    <string name="category_business">Poslovno</string>
+    <string name="category_all">All</string>
+    <string name="category_gaming">Gaming</string>
+    <string name="category_multimedia">Multimedia</string>
+    <string name="category_business">Business</string>
 
-    <string name="banner_best_deals">Dobre ponude tijekom cijele godine</string>
-    <string name="banner_christmas_sale">Božićni popusti</string>
-    <string name="banner_new_year_laptop">Nova godina, novi laptop</string>
+    <string name="banner_best_deals">Great deals all year round</string>
+    <string name="banner_christmas_sale">Christmas Sale</string>
+    <string name="banner_new_year_laptop">New Year, New Laptop</string>
 
-    <string name="banner_btn_shop_now">Kupi sada</string>
-    <string name="banner_btn_explore">Istraži</string>
-    <string name="banner_btn_view_deals">Pogledaj ponude</string>
+    <string name="banner_btn_shop_now">Shop now</string>
+    <string name="banner_btn_explore">Explore</string>
+    <string name="banner_btn_view_deals">View deals</string>
 
-    <string name="what_are_you_looking_for">Što danas tražite?</string>
+    <string name="what_are_you_looking_for">What are you looking for today?</string>
 
-    <string name="shop_by_category">Kupuj po kategoriji</string>
-    <string name="latest_arrivals">Najnoviji proizvodi</string>
-    <string name="popular_brands">Popularni brendovi</string>
-    <string name="recommended_for_you">Preporučeno za tebe</string>
+    <string name="shop_by_category">Shop by category</string>
+    <string name="latest_arrivals">Latest arrivals</string>
+    <string name="popular_brands">Popular brands</string>
+    <string name="recommended_for_you">Recommended for you</string>
 
-    <string name="see_all">Pogledaj sve</string>
-    <string name="your_saved_products">Vaši spremljeni proizvodi</string>
+    <string name="see_all">See all</string>
+    <string name="your_saved_products">Your saved products</string>
 
-    <string name="checkout_title">Plaćanje</string>
-    <string name="checkout_subtitle">Dovršite svoju kupnju</string>
+    <string name="checkout_title">Checkout</string>
+    <string name="checkout_subtitle">Complete your purchase</string>
 
-    <string name="order_summary">Sažetak narudžbe (%1$d artikala)</string>
+    <string name="order_summary">Order summary (%1$d items)</string>
 
-    <string name="billing_information">Podaci za naplatu</string>
-    <string name="user_info_not_available">Korisnički podaci nisu dostupni</string>
-    <string name="info_name">Ime</string>
+    <string name="billing_information">Billing information</string>
+    <string name="user_info_not_available">User information not available</string>
+    <string name="info_name">Name</string>
     <string name="info_email">Email</string>
-    <string name="info_phone">Telefon</string>
+    <string name="info_phone">Phone</string>
 
-    <string name="payment_method">Način plaćanja</string>
-    <string name="payment_new_card">Nova kartica</string>
-    <string name="payment_use_saved_card">Koristi spremljenu karticu</string>
-    <string name="payment_select_saved_card">Odaberi spremljenu karticu</string>
-    <string name="payment_enter_card_details">Unesite podatke o kartici</string>
+    <string name="payment_method">Payment method</string>
+    <string name="payment_new_card">New card</string>
+    <string name="payment_use_saved_card">Use saved card</string>
+    <string name="payment_select_saved_card">Select saved card</string>
+    <string name="payment_enter_card_details">Enter card details</string>
 
     <string name="expiry_mm">MM</string>
-    <string name="expiry_yy">GG</string>
-    <string name="full_name_on_card">Ime i prezime na kartici</string>
-    <string name="card_expires">Istječe %1$02d/%2$d</string>
-    <string name="total">Ukupno</string>
-    <string name="pay_button">PLATI</string>
+    <string name="expiry_yy">YY</string>
+    <string name="full_name_on_card">Full name on card</string>
+    <string name="card_expires">Expires %1$02d/%2$d</string>
+    <string name="total">Total</string>
+    <string name="pay_button">PAY</string>
 
-    <string name="payment_success_title">Plaćanje uspješno!</string>
-    <string name="payment_failed_title">Plaćanje nije uspjelo</string>
+    <string name="payment_success_title">Payment successful!</string>
+    <string name="payment_failed_title">Payment failed</string>
 
-    <string name="transaction_details_title">Detalji transakcije</string>
-    <string name="transaction_id">ID transakcije</string>
+    <string name="transaction_details_title">Transaction details</string>
+    <string name="transaction_id">Transaction ID</string>
     <string name="transaction_status">Status</string>
-    <string name="transaction_amount">Iznos</string>
-    <string name="transaction_date">Datum</string>
+    <string name="transaction_amount">Amount</string>
+    <string name="transaction_date">Date</string>
 
-    <string name="payment_success_message">
-    Vaša narudžba je uspješno zaprimljena.\nHvala na kupnji!
-    </string>
+    <string name="payment_success_message">Your order has been successfully received.\nThank you for your purchase!</string>
+    <string name="payment_failed_retry_message">We couldn\'t process your payment.\nPlease try again or use another payment method.</string>
+    <string name="payment_failed_max_retries">Payment failed after multiple attempts.\nPlease try again later.</string>
 
-    <string name="payment_failed_retry_message">
-    Nismo uspjeli obraditi vašu uplatu.\nPokušajte ponovno ili koristite drugi način plaćanja.
-    </string>
+    <string name="go_to_home">Back to home</string>
+    <string name="view_orders">View orders</string>
+    <string name="try_again">Try again</string>
 
-    <string name="payment_failed_max_retries">
-    Plaćanje nije uspjelo nakon više pokušaja.\nMolimo pokušajte kasnije.
-    </string>
+    <string name="users_title">Users and roles</string>
+    <string name="users_search_placeholder">Search users...</string>
+    <string name="users_empty">No users.</string>
+    <string name="users_snackbar_dismiss">Close</string>
 
-    <string name="go_to_home">Natrag na početnu</string>
-    <string name="view_orders">Pogledaj narudžbe</string>
-    <string name="try_again">Pokušaj ponovno</string>
-
-    <string name="users_title">Korisnici i uloge</string>
-    <string name="users_search_placeholder">Pretraži korisnike...</string>
-    <string name="users_empty">Nema korisnika.</string>
-    <string name="users_snackbar_dismiss">Zatvori</string>
-
-    <string name="users_deactivate_title">Deaktivacija korisnika</string>
-    <string name="users_deactivate_message">Jeste li sigurni da želite deaktivirati korisnika?</string>
-    <string name="users_deactivate_confirm">Deaktiviraj</string>
+    <string name="users_deactivate_title">Deactivate user</string>
+    <string name="users_deactivate_message">Are you sure you want to deactivate this user?</string>
+    <string name="users_deactivate_confirm">Deactivate</string>
 
     <string name="role_admin">Administrator</string>
-    <string name="role_seller">Zaposlenik</string>
-    <string name="role_buyer">Kupac</string>
-    <string name="role_not_set">Uloga nije postavljena</string>
+    <string name="role_seller">Employee</string>
+    <string name="role_buyer">Buyer</string>
+    <string name="role_not_set">Role not set</string>
 
-    <string name="toast_product_deleted">Proizvod obrisan!</string>
-    <string name="toast_added_to_cart">Uspješno dodano u košaricu</string>
-    <string name="no_description">Nema opisa</string>
-    <string name="cart_login_required">Za pregled košarice potrebno je prijaviti se.</string>
+    <string name="toast_product_deleted">Product deleted!</string>
+    <string name="toast_added_to_cart">Added to cart successfully</string>
+    <string name="no_description">No description</string>
+    <string name="cart_login_required">Login required to view cart.</string>
 
-    <string name="users_error_roles">Greška pri dohvaćanju uloga</string>
-    <string name="users_error_fetch">Neuspješno dohvaćanje korisnika</string>
-    <string name="users_error_change_role">Greška pri promjeni uloge</string>
-    <string name="users_error_deactivate">Greška pri deaktivaciji korisnika</string>
+    <string name="users_error_roles">Error fetching roles</string>
+    <string name="users_error_fetch">Failed to fetch users</string>
+    <string name="users_error_change_role">Error changing role</string>
+    <string name="users_error_deactivate">Error deactivating user</string>
 
-    <string name="support_title">Pomoć</string>
+    <string name="support_title">Help</string>
+    <string name="faq">Frequently Asked Questions</string>
+    <string name="contact_help_center">Contact support</string>
+    <string name="working_time">Working hours</string>
+    <string name="mon_fri">Monday - Friday</string>
 
-    <string name="transaction_auth_code">Autorizacijski kod</string>
-    <string name="transaction_response_code">Kod odgovora</string>
+    <string-array name="faq_questions">
+        <item>How do I order a laptop?</item>
+        <item>What payment methods are available?</item>
+        <item>How long does delivery take?</item>
+        <item>How can I contact support?</item>
+    </string-array>
+    <string-array name="faq_answers">
+        <item>1. Choose your desired laptop\n2. Add it to the cart\n3. Click the checkout button\n4. Enter your details\n5. Confirm the order</item>
+        <item>Payment can be made using:\nCredit or debit card\n\nThe payment method is secure and protected.</item>
+        <item>Delivery takes 2-5 business days, depending on the location.</item>
+        <item>You can contact our customer support:\nEmail: support@nuvio.com\nPhone: +385 1 123-4567\nWorking hours: Mon-Fri, 9:00-17:00\n\nOur team will gladly assist you.</item>
+    </string-array>
 
+    <string name="settings_title">Settings</string>
+    <string name="general">General</string>
+    <string name="appearance">Appearance</string>
+    <string name="language">Language</string>
+    <string name="currency">Currency</string>
+    <string name="display">Display</string>
+    <string name="light">Light</string>
+    <string name="dark">Dark</string>
+
+    <string name="transaction_auth_code">Authorization code</string>
+    <string name="transaction_response_code">Reponse code</string>
 </resources>

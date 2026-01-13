@@ -124,7 +124,7 @@ fun LoginForm(
     ) {
         Text(
             text = stringResource(id = AuthR.string.login_title),
-            color = White,
+            color = MaterialTheme.colorScheme.onBackground,
             style = MaterialTheme.typography.displayLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier
@@ -174,7 +174,7 @@ fun LoginForm(
 
         Text(
             text = stringResource(id = AuthR.string.text_register_prompt),
-            color = Black,
+            color = MaterialTheme.colorScheme.onBackground,
             fontSize = 14.sp,
             style = MaterialTheme.typography.labelSmall,
             textAlign = TextAlign.Center,

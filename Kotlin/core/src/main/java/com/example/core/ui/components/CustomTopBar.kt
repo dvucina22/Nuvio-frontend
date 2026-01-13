@@ -42,7 +42,7 @@ fun CustomTopBar(
             Icon(
                 imageVector = Icons.Default.ArrowBack,
                 contentDescription = "Back",
-                tint = Black,
+                tint = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
                     .size(28.dp)
                     .align(Alignment.CenterStart)
@@ -52,7 +52,7 @@ fun CustomTopBar(
 
         Text(
             text = title,
-            color = Black,
+            color = MaterialTheme.colorScheme.onBackground,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.align(Alignment.CenterEnd)

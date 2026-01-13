@@ -53,4 +53,5 @@ dependencies {
     kapt("com.google.dagger:hilt-compiler:2.52")
 
     implementation(project(":core"))
+    implementation("at.favre.lib:bcrypt:0.9.0")
 }

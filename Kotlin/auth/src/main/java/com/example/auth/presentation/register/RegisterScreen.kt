@@ -19,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.res.stringResource
 import com.example.core.ui.components.CustomButton
 import com.example.core.ui.components.CustomGenderField
 import com.example.core.ui.components.CustomTextField
@@ -34,7 +35,7 @@ fun RegisterScreen(
 ) {
     val registerState by viewModel.registerState.collectAsState()
     val context = LocalContext.current
-    val registerSuccessful = stringResource(id = AuthR.string.register_successful)
+    val registerSuccessful = stringResource(AuthR.string.register_successful)
 
     LaunchedEffect(registerState) {
         when (registerState) {
@@ -83,7 +84,7 @@ fun RegisterScreen(
                 )
 
                 Text(
-                    text = stringResource(id = AuthR.string.registration_title),
+                    text = stringResource(AuthR.string.registration_title),
                     color = White,
                     style = MaterialTheme.typography.displayLarge,
                     modifier = Modifier.offset(y = (-50).dp)
@@ -127,8 +128,8 @@ fun RegisterForm(viewModel: RegisterViewModel) {
             onValueChange = {
                 viewModel.firstName.value = it
             },
-            label = stringResource(id = AuthR.string.label_first_name),
-            placeholder = stringResource(id = AuthR.string.label_first_name)
+            label = stringResource( AuthR.string.label_first_name),
+            placeholder = stringResource(AuthR.string.label_first_name)
         )
 
         CustomTextField(
@@ -136,8 +137,8 @@ fun RegisterForm(viewModel: RegisterViewModel) {
             onValueChange = {
                 viewModel.lastName.value = it
             },
-            label = stringResource(id = AuthR.string.label_last_name),
-            placeholder = stringResource(id = AuthR.string.label_last_name)
+            label = stringResource(AuthR.string.label_last_name),
+            placeholder = stringResource(AuthR.string.label_last_name)
         )
 
         CustomTextField(
@@ -146,8 +147,8 @@ fun RegisterForm(viewModel: RegisterViewModel) {
                 viewModel.email.value = it
                 viewModel.clearEmailError()
             },
-            label = stringResource(id = AuthR.string.label_email),
-            placeholder = stringResource(id = AuthR.string.label_email),
+            label = stringResource(AuthR.string.label_email),
+            placeholder = stringResource(AuthR.string.label_email),
             isError = emailError != null,
             errorMessage = emailError,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
@@ -159,8 +160,8 @@ fun RegisterForm(viewModel: RegisterViewModel) {
                 viewModel.phoneNumber.value = it
                 viewModel.clearPhoneNumberError()
             },
-            label = stringResource(id = AuthR.string.label_phone_number),
-            placeholder = stringResource(id = AuthR.string.label_phone_number),
+            label = stringResource( AuthR.string.label_phone_number),
+            placeholder = stringResource(AuthR.string.label_phone_number),
             isError = phoneNumberError != null,
             errorMessage = phoneNumberError
         )
@@ -171,8 +172,8 @@ fun RegisterForm(viewModel: RegisterViewModel) {
                 viewModel.password.value = it
                 viewModel.clearPasswordError()
             },
-            label = stringResource(id = AuthR.string.label_password),
-            placeholder = stringResource(id = AuthR.string.label_password),
+            label = stringResource(AuthR.string.label_password),
+            placeholder = stringResource(AuthR.string.label_password),
             isPassword = true,
             passwordVisible = passwordVisible,
             onPasswordVisibilityChange = { passwordVisible = !passwordVisible },
@@ -186,8 +187,8 @@ fun RegisterForm(viewModel: RegisterViewModel) {
                 viewModel.confirmPassword.value = it
                 viewModel.clearConfirmPasswordError()
             },
-            label = stringResource(id = AuthR.string.label_confirm_password),
-            placeholder = stringResource(id = AuthR.string.label_confirm_password),
+            label = stringResource(AuthR.string.label_confirm_password),
+            placeholder = stringResource(AuthR.string.label_confirm_password),
             isPassword = true,
             passwordVisible = confirmPasswordVisible,
             onPasswordVisibilityChange = { confirmPasswordVisible = !confirmPasswordVisible },
@@ -196,7 +197,7 @@ fun RegisterForm(viewModel: RegisterViewModel) {
         )
 
         CustomGenderField(
-            label = stringResource(id = AuthR.string.label_gender),
+            label = stringResource( AuthR.string.label_gender),
             gender = gender,
             onGenderSelected = {
                 Log.d("Register", "Gender clicked: $it")
@@ -206,7 +207,7 @@ fun RegisterForm(viewModel: RegisterViewModel) {
 
 
         CustomButton(
-            text = stringResource(id = AuthR.string.registration_title),
+            text = stringResource(AuthR.string.registration_title),
             onClick = { viewModel.register() }
         )
     }

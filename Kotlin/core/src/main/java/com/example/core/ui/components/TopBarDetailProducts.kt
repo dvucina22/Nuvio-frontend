@@ -6,10 +6,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,6 +21,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.core.ui.theme.Error
 import com.example.core.ui.theme.IconDark
+import com.example.core.ui.theme.White
+import com.example.core.ui.theme.WhiteSoft
 
 @Composable
 fun TopBarDetailProducts(
@@ -43,7 +48,7 @@ fun TopBarDetailProducts(
         Icon(
             imageVector = Icons.Default.ArrowBack,
             contentDescription = "Back",
-            tint = Color.Black,
+            tint = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier
                 .size(28.dp)
                 .clickable { onBack() }
@@ -56,7 +61,7 @@ fun TopBarDetailProducts(
                 IconActionBox(onClick = onEditClick) {
                     Icon(
                         imageVector = Icons.Outlined.Edit,
-                        tint = IconDark,
+                        tint = MaterialTheme.colorScheme.onBackground,
                         contentDescription = "Edit"
                     )
                 }
@@ -76,9 +81,9 @@ fun TopBarDetailProducts(
             if (showFavorite) {
                 IconActionBox(onClick = onFavoriteClick) {
                     Icon(
-                        imageVector = Icons.Filled.Favorite,
-                        tint = if (isFavorite) Error else IconDark,
-                        contentDescription = "Favorite"
+                        imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                        contentDescription = "Favorite",
+                        tint = if (isFavorite) Error else MaterialTheme.colorScheme.onBackground
                     )
                 }
                 Spacer(modifier = Modifier.width(10.dp))
@@ -88,7 +93,7 @@ fun TopBarDetailProducts(
                 IconActionBox(onClick = onCartClick) {
                     Icon(
                         imageVector = Icons.Default.ShoppingCart,
-                        tint = IconDark,
+                        tint = MaterialTheme.colorScheme.onBackground,
                         contentDescription = "Cart"
                     )
                 }

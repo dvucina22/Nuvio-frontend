@@ -77,7 +77,7 @@ fun BannerComponent(
                     contentColor = Color.White
                 ),
                 shape = RoundedCornerShape(topStart = 20.dp, topEnd = 0.dp, bottomEnd = 0.dp, bottomStart = 0.dp),
-                border = BorderStroke(2.dp, Color.White),
+                border = BorderStroke(1.dp, Color.White),
                 modifier = Modifier.align(Alignment.BottomEnd)
             ) {
                 Text(

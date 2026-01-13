@@ -52,7 +52,7 @@ import com.example.core.ui.theme.ColorInput
 fun CustomTextFieldAligned(
     value: String,
     onValueChange: (String) -> Unit,
-    labelColor: Color = Black,
+    labelColor: Color = MaterialTheme.colorScheme.onBackground,
     placeholder: String,
     label: String? = null,
     modifier: Modifier = Modifier,
@@ -75,7 +75,7 @@ fun CustomTextFieldAligned(
         label?.let {
             Text(
                 text = it,
-                color = Black,
+                color = MaterialTheme.colorScheme.onBackground,
                 style = textStyle,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -89,7 +89,7 @@ fun CustomTextFieldAligned(
             onValueChange = onValueChange,
             singleLine = true,
             cursorBrush = SolidColor(Black),
-            textStyle = textStyle.copy(color = Black),
+            textStyle = textStyle.copy(color = MaterialTheme.colorScheme.onBackground),
             visualTransformation = visualTransformation,
             keyboardOptions = keyboardOptions,
             decorationBox = { innerTextField ->
@@ -98,7 +98,7 @@ fun CustomTextFieldAligned(
                         .fillMaxWidth()
                         .height(40.dp)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(BackgroundColorInput.copy(alpha = 0.3f))
+                        .background(MaterialTheme.colorScheme.surfaceContainerLowest.copy(alpha = 0.7f))
                         .border(
                             width = if (isError) 1.dp else 0.dp,
                             color = if (isError) Error else Color.Transparent,
@@ -110,7 +110,7 @@ fun CustomTextFieldAligned(
                     if (value.isEmpty()) {
                         Text(
                             text = placeholder,
-                            style = textStyle.copy(color = Black.copy(alpha = 0.7f))
+                            style = textStyle.copy(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f))
                         )
                     }
                     innerTextField()
@@ -147,7 +147,7 @@ fun CustomTextFieldAligned(
                 modifier = Modifier
                     .wrapContentWidth()
                     .wrapContentHeight()
-                    .background(Color(0xFF1A1F16))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
                     .shadow(elevation = 8.dp, clip = true),
                 offset = DpOffset(x = 0.dp, y = (-60).dp)
             ) {

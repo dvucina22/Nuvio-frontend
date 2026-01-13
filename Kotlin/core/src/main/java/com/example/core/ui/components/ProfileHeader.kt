@@ -54,14 +54,14 @@ fun ProfileHeader(
 
         Text(
             text = displayName,
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onBackground,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
 
         Text(
             text = displayEmail,
-            color = IconDark,
+            color = MaterialTheme.colorScheme.onBackground,
             style = MaterialTheme.typography.labelSmall
         )
 

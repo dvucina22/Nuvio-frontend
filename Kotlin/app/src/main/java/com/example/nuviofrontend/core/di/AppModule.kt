@@ -1,6 +1,9 @@
 package com.example.nuviofrontend.di
 
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -147,5 +150,12 @@ object AppModule {
     @Singleton
     fun provideSaleRepository(saleService: ISaleService): SaleRepository {
         return SaleRepository(saleService)
+    }
+
+    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
+    @Provides
+    @Singleton
+    fun providePreferencesDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
+        return context.dataStore
     }
 }

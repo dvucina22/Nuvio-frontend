@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.core.R
 import com.example.core.auth.dto.Role
+import com.example.core.ui.theme.Error
 import com.example.core.ui.theme.White
 
 @Composable
@@ -55,10 +56,10 @@ fun UserRoleCard(
             .fillMaxWidth()
             .alpha(if (isActive) 1f else 0.5f)
             .clip(RoundedCornerShape(8.dp))
-            .background(Color(0xFF232323).copy(alpha = 0.8f))
+            .background(MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.8f))
             .border(
                 width = 1.dp,
-                color = Color(0xFFD5DFE5).copy(alpha = 0.3f),
+                color = MaterialTheme.colorScheme.surfaceDim,
                 shape = RoundedCornerShape(8.dp)
             )
     ) {
@@ -104,13 +105,13 @@ fun UserRoleCard(
                 ) {
                     Text(
                         text = name,
-                        color = White,
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontSize = 19.sp,
                         fontWeight = FontWeight.Medium
                     )
                     Text(
                         text = email,
-                        color = Color(0xFFD5DFE5),
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontSize = 14.sp
                     )
                 }
@@ -123,7 +124,7 @@ fun UserRoleCard(
                         Icon(
                             imageVector = Icons.Default.Delete,
                             contentDescription = stringResource(R.string.delete),
-                            tint = Color(0xFFB3261E)
+                            tint = Error
                         )
                     }
                 }
