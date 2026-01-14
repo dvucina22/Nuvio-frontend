@@ -25,6 +25,8 @@ import com.example.nuviofrontend.feature.profile.presentation.ProfileViewModel
 import com.example.nuviofrontend.feature.profile.presentation.UsersScreen
 import com.example.nuviofrontend.feature.settings.presentation.SettingsScreen
 import com.example.nuviofrontend.feature.support.presentation.SupportScreen
+import com.example.nuviofrontend.feature.transactions.presentation.TransactionDetailScreen
+import com.example.nuviofrontend.feature.transactions.presentation.TransactionsScreen
 
 sealed class ProfileRoute(val route: String) {
     object Main : ProfileRoute("profile_main")
@@ -34,6 +36,10 @@ sealed class ProfileRoute(val route: String) {
     object Users : ProfileRoute("users")
     object Support: ProfileRoute("support")
     object Settings: ProfileRoute("settings")
+    object Transactions : ProfileRoute("profile_transactions")
+    object TransactionDetail : ProfileRoute("profile_transaction_detail/{transactionId}") {
+        fun createRoute(id: Long) = "profile_transaction_detail/$id"
+    }
 }
 
 @Composable
@@ -71,7 +77,8 @@ fun ProfileNavHost(
                 onNavigateToSavedCards = { navController.navigate(ProfileRoute.SavedCards.route) },
                 onNavigateToUsers = { navController.navigate(ProfileRoute.Users.route) },
                 onNavigateToSupport = { navController.navigate(ProfileRoute.Support.route) },
-                onNavigateToSettings = { navController.navigate(ProfileRoute.Settings.route) }
+                onNavigateToSettings = { navController.navigate(ProfileRoute.Settings.route) },
+                onNavigateToTransactions = { navController.navigate(ProfileRoute.Transactions.route) }
             )
         }
 
@@ -182,6 +189,25 @@ fun ProfileNavHost(
         }
         composable(ProfileRoute.Settings.route){
             SettingsScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(ProfileRoute.Transactions.route) {
+            TransactionsScreen(
+                onTransactionClick = { id ->
+                    navController.navigate(ProfileRoute.TransactionDetail.createRoute(id))
+                }
+            )
+        }
+
+        composable(ProfileRoute.TransactionDetail.route) { backStackEntry ->
+            val transactionId = backStackEntry.arguments
+                ?.getString("transactionId")
+                ?.toLongOrNull() ?: 0L
+
+            TransactionDetailScreen(
+                transactionId = transactionId,
                 onBack = { navController.popBackStack() }
             )
         }

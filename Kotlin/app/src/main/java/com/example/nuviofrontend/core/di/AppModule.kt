@@ -4,10 +4,6 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.example.core.R
 import com.example.core.cards.ICardRepository
 import com.example.core.cart.ICartRepository
 import com.example.core.catalog.IProductRepository
@@ -16,6 +12,7 @@ import com.example.core.network.api.ApiService
 import com.example.core.network.interceptor.AuthInterceptor
 import com.example.core.network.token.IUserPrefs
 import com.example.core.sale.ISaleService
+import com.example.core.transactions.ITransactionRepository
 import com.example.nuviofrontend.feature.cart.data.CartRepository
 import com.example.nuviofrontend.feature.cart.data.CartService
 import com.example.nuviofrontend.feature.catalog.data.CatalogRepository
@@ -31,6 +28,8 @@ import com.example.nuviofrontend.feature.profile.data.UserRepository
 import com.example.nuviofrontend.feature.profile.data.UserService
 import com.example.nuviofrontend.feature.sale.data.SaleRepository
 import com.example.nuviofrontend.feature.sale.data.SaleService
+import com.example.nuviofrontend.feature.transactions.data.TransactionRepository
+import com.example.nuviofrontend.feature.transactions.data.TransactionService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -134,6 +133,7 @@ object AppModule {
     fun provideProductRepository(productService: ProductService) : IProductRepository {
         return ProductRepository(productService)
     }
+
     @Provides
     @Singleton
     fun provideProductImageRepository(apiService: ApiService, cloudinaryService: CloudinaryService) : ProductImageRepository{
@@ -152,7 +152,26 @@ object AppModule {
         return SaleRepository(saleService)
     }
 
+    @Provides
+    @Singleton
+    fun provideTransactionService(apiService: ApiService): TransactionService {
+        return TransactionService(apiService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTransactionRepository(transactionService: TransactionService): TransactionRepository {
+        return TransactionRepository(transactionService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTransactionRepositoryInterface(transactionService: TransactionService): ITransactionRepository {
+        return TransactionRepository(transactionService)
+    }
+
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
+
     @Provides
     @Singleton
     fun providePreferencesDataStore(@ApplicationContext context: Context): DataStore<Preferences> {

@@ -58,8 +58,9 @@ fun ProfileScreen(
     onNavigateToSavedCards: () -> Unit = {},
     onNavigateToUsers: () -> Unit = {},
     onNavigateToSupport: () -> Unit = {},
-    onNavigateToSettings: () -> Unit = {}
-) {
+    onNavigateToSettings: () -> Unit = {},
+    onNavigateToTransactions: () -> Unit = {},
+    ) {
     val profileState by viewModel.profileState.collectAsState()
     val isLoggedIn = profileState.isLoaded && profileState.email.isNotBlank()
 
@@ -135,7 +136,9 @@ fun ProfileScreen(
                     ) {
                         onNavigateToSavedCards()
                     }
-                    ProfileMenuItem(Icons.Default.List, stringResource(R.string.order_history))
+                    ProfileMenuItem(Icons.Default.List, stringResource(R.string.order_history)) {
+                        onNavigateToTransactions()
+                    }
                     ProfileMenuItem(Icons.Default.Lock, stringResource(R.string.change_password)) {
                         onChangePassword()
                     }

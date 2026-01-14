@@ -49,7 +49,7 @@
     <string name="products">Proizvodi</string>
     <string name="favorites">Favoriti</string>
     <string name="cart">Košarica</string>
-    <string name="order_history">Povijest narudžbi</string>
+    <string name="order_history">Povijest transakcija</string>
     <string name="my_profile">Moj profil</string>
     <string name="sign_out">Odjava</string>
 
@@ -364,4 +364,34 @@
 
     <string name="transaction_auth_code">Autorizacijski kod</string>
     <string name="transaction_response_code">Kod odgovora</string>
+
+    <string name="transactions_title">Transakcije</string>
+    <string name="search_transactions">Pretraži transakcije</string>
+    <string name="filter_transactions">Filtriraj transakcije</string>
+
+    <string name="transaction_type">Tip</string>
+    <string name="amount_range">Raspon iznosa</string>
+    <string name="product_count_range">Raspon broja proizvoda</string>
+
+    <string name="status_pending">Na čekanju</string>
+    <string name="status_approved">Odobreno</string>
+    <string name="status_declined">Odbijeno</string>
+    <string name="status_voided">Poništeno</string>
+    <string name="status_reversed">Stornirano</string>
+    <string name="status_refunded">Refundirano</string>
+    <string name="status_unknown">Nepoznato</string>
+
+    <string name="type_sale">Prodaja</string>
+    <string name="type_void">Poništenje</string>
+    <string name="type_refund">Povrat</string>
+    <string name="type_reversal">Storno</string>
+
+    <string name="no_data">Nema podataka</string>
+    <string name="transaction_pan">PAN</string>
+    <string name="transaction_expiration">Datum isteka</string>
+    <string name="product_ids">ID proizvoda</string>
+    <string name="no_products">Nema proizvoda</string>
+    <string name="quantity">Količina</string>
+    <string name="transaction_time">Vrijeme transakcije</string>
+
 </resources>

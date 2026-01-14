@@ -33,7 +33,7 @@ fun CustomRangeSlider(
 
     Column(modifier = modifier) {
         Text(
-            text = "€${value.start.roundToInt()} - €${value.endInclusive.roundToInt()}",
+            text = "${value.start.roundToInt()} - ${value.endInclusive.roundToInt()}",
             color = MaterialTheme.colorScheme.onBackground,
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium

@@ -48,7 +48,7 @@
     <string name="products">Products</string>
     <string name="favorites">Favorites</string>
     <string name="cart">Cart</string>
-    <string name="order_history">Order history</string>
+    <string name="order_history">Transaction history</string>
     <string name="my_profile">My profile</string>
     <string name="sign_out">Sign out</string>
 
@@ -361,4 +361,33 @@
 
     <string name="transaction_auth_code">Authorization code</string>
     <string name="transaction_response_code">Reponse code</string>
+
+    <string name="transactions_title">Transactions</string>
+    <string name="search_transactions">Search transactions</string>
+    <string name="filter_transactions">Filter transactions</string>
+
+    <string name="transaction_type">Type</string>
+    <string name="amount_range">Amount range</string>
+    <string name="product_count_range">Product count range</string>
+
+    <string name="status_pending">Pending</string>
+    <string name="status_approved">Approved</string>
+    <string name="status_declined">Declined</string>
+    <string name="status_voided">Voided</string>
+    <string name="status_reversed">Reversed</string>
+    <string name="status_refunded">Refunded</string>
+    <string name="status_unknown">Unknown</string>
+
+    <string name="type_sale">Sale</string>
+    <string name="type_void">Void</string>
+    <string name="type_refund">Refund</string>
+    <string name="type_reversal">Reversal</string>
+
+    <string name="no_data">No data</string>
+    <string name="transaction_pan">PAN</string>
+    <string name="transaction_expiration">Expiration date</string>
+    <string name="product_ids">Product IDs</string>
+    <string name="no_products">No products</string>
+    <string name="quantity">Quantity</string>
+    <string name="transaction_time">Transaction time</string>
 </resources>
