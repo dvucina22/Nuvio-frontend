@@ -662,7 +662,7 @@ fun <T> CustomDropdownAddProduct(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .height(1.dp)
-                                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                                        .background(BackgroundNavDark.copy(alpha = 0.5f))
                                 )
                             }
                         }

@@ -1,6 +1,5 @@
 package com.example.nuviofrontend
 
-import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -8,7 +7,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,7 +23,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -39,14 +36,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import com.example.core.R
 import com.example.core.settings.LanguagePreference
 import com.example.core.settings.LocaleManager
-import androidx.compose.ui.res.stringResource
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.preferencesDataStore
-import com.example.core.settings.ThemePreference
 import com.example.core.ui.components.CustomButton
-import com.example.core.ui.theme.Black
 import java.util.Locale
-import androidx.datastore.preferences.core.Preferences
 import com.example.nuviofrontend.feature.settings.presentation.SettingsViewModel
 
 @AndroidEntryPoint
@@ -85,6 +76,7 @@ fun MainScreen(
     themeIndex: Int
 ) {
     val backgroundRes = if (themeIndex == 1) R.drawable.background_dark else R.drawable.background_light
+    val logoRes = if (themeIndex == 1) R.drawable.logo_dark_full else R.drawable.logo_light_full
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -104,7 +96,7 @@ fun MainScreen(
                 .padding(horizontal = 32.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.logo_dark_full),
+                painter = painterResource(id = logoRes),
                 contentDescription = "logo_dark_full",
                 modifier = Modifier.size(230.dp),
             )

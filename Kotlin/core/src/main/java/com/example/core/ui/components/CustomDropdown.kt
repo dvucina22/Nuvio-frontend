@@ -33,6 +33,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
@@ -67,6 +69,9 @@ fun <T> CustomDropdown(
         label = "arrow_rotation"
     )
 
+    var triggeredWidth by remember { mutableStateOf(0.dp) }
+    val density = LocalDensity.current
+
     Column(
         modifier = modifier
             .padding(bottom = 12.dp)
@@ -90,11 +95,16 @@ fun <T> CustomDropdown(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .onGloballyPositioned { coordinates ->
+                    triggeredWidth = with(density) {
+                        coordinates.size.width.toDp()
+                        }
+                    }
                     .height(40.dp)
                     .clip(RoundedCornerShape(8.dp))
                     .background(
-                        if (enabled) MaterialTheme.colorScheme.surfaceContainerLowest.copy(alpha = 0.3f)
-                        else MaterialTheme.colorScheme.surfaceContainerLowest.copy(alpha = 0.15f)
+                        if (enabled) MaterialTheme.colorScheme.surfaceContainerLowest.copy(alpha = 0.7f)
+                        else MaterialTheme.colorScheme.surfaceContainerLowest.copy(alpha = 0.3f)
                     )
                     .border(
                         width = if (isError) 1.dp else 0.dp,
@@ -147,9 +157,9 @@ fun <T> CustomDropdown(
                 expanded = expanded && enabled,
                 onDismissRequest = { expanded = false },
                 modifier = Modifier
-                    .width(304.dp)
+                    .width(triggeredWidth)
                     .clip(RoundedCornerShape(8.dp))
-                    .background( MaterialTheme.colorScheme.surface.copy(alpha = 0.85f))
+                    .background( MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f))
             ) {
                 items.forEachIndexed { index, item ->
                     val color = getItemColor?.invoke(item)
@@ -181,7 +191,6 @@ fun <T> CustomDropdown(
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(Color.White.copy(alpha = 0.08f))
                             .padding(horizontal = 4.dp),
                         colors = MenuDefaults.itemColors(
                             textColor =  MaterialTheme.colorScheme.onBackground
@@ -193,7 +202,7 @@ fun <T> CustomDropdown(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(1.dp)
-                                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.1f))
+                                .background(BackgroundNavDark.copy(alpha = 0.5f))
                         )
                     }
                 }

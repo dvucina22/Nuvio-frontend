@@ -14,6 +14,7 @@
     <string name="error_email_empty">Email ne smije biti prazan</string>
     <string name="error_email_invalid">Neispravan format email adrese</string>
     <string name="error_password_empty">Lozinka ne smije biti prazna</string>
+    <string name="text_login_prompt">Imate račun? Prijavite se.</string>
 
     <string name="error_login_invalid_credentials">Pogrešni podaci za prijavu.</string>
     <string name="error_login_forbidden">Nemate dopuštenje za pristup.</string>

@@ -24,8 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.core.ui.components.CustomButton
 import com.example.core.ui.components.CustomTextField
-import com.example.core.ui.theme.Black
-import com.example.core.ui.theme.White
 import com.example.auth.R as AuthR
 import com.example.core.R as CoreR
 
@@ -34,7 +32,8 @@ fun LoginScreen(
     onNavigateToRegister: () -> Unit,
     onNavigateToHome: () -> Unit,
     viewModel: LoginViewModel,
-    extraContent: @Composable (() -> Unit)? = null
+    extraContent: @Composable (() -> Unit)? = null,
+    themeIndex: Int
 ) {
     val scrollState = rememberScrollState()
     val loginState by viewModel.loginState.collectAsState()
@@ -61,13 +60,15 @@ fun LoginScreen(
             else -> Unit
         }
     }
+    val backgroundRes = if (themeIndex == 1) CoreR.drawable.background_dark else CoreR.drawable.background_light
+    val logoRes = if (themeIndex == 1) CoreR.drawable.logo_dark_full else CoreR.drawable.logo_light_full
 
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = painterResource(id = CoreR.drawable.background_light),
+            painter = painterResource(id = backgroundRes),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
@@ -82,7 +83,7 @@ fun LoginScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Image(
-                painter = painterResource(id = CoreR.drawable.logo_dark_full),
+                painter = painterResource(id = logoRes),
                 contentDescription = "logo_dark_full",
                 modifier = Modifier.size(200.dp)
             )

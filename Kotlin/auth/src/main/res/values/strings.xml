@@ -13,6 +13,7 @@
     <string name="error_email_empty">Email cannot be empty</string>
     <string name="error_email_invalid">Invalid email format</string>
     <string name="error_password_empty">Password cannot be empty</string>
+    <string name="text_login_prompt">Have an account? Login.</string>
 
     <string name="error_login_invalid_credentials">Invalid login credentials.</string>
     <string name="error_login_forbidden">You are not allowed to access.</string>
