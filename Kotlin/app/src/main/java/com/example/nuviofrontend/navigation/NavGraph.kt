@@ -1,17 +1,11 @@
 package com.example.nuviofrontend.navigation
 
 import android.widget.Toast
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -29,7 +23,6 @@ import com.example.nuviofrontend.feature.profile.presentation.ProfileEditState
 import com.example.nuviofrontend.feature.profile.presentation.ProfileEditViewModel
 import com.example.nuviofrontend.feature.sale.presentation.CheckoutScreen
 import com.example.nuviofrontend.feature.sale.presentation.TransactionResultScreen
-import com.example.nuviofrontend.feature.profile.presentation.UsersScreen
 import com.example.nuviofrontend.feature.settings.presentation.SettingsViewModel
 
 @Composable
@@ -67,6 +60,8 @@ fun AppNavGraph(navController: NavHostController) {
 
         composable(Screen.Login.route) {
             val loginViewModel: LoginViewModel = hiltViewModel()
+            val settingsViewModel: SettingsViewModel = hiltViewModel()
+            val themeIndex by settingsViewModel.themeFlow.collectAsState(initial = 0)
 
             val navigateHome = {
                 navController.navigate(Screen.MainAppScreen.route) {
@@ -83,18 +78,23 @@ fun AppNavGraph(navController: NavHostController) {
                     GoogleLoginAction(
                         onSuccess = navigateHome
                     )
-                }
+                },
+                themeIndex = themeIndex
             )
         }
 
         composable(Screen.Register.route) {
+            val settingsViewModel: SettingsViewModel = hiltViewModel()
+            val themeIndex by settingsViewModel.themeFlow.collectAsState(initial = 0)
             RegisterScreen(
+                onNavigateToLogin = { navController.navigate(Screen.Login.route) },
                 onRegisterSuccess = {
                     navController.navigate(Screen.Login.route) {
                         popUpTo(Screen.Register.route) { inclusive = true }
                         launchSingleTop = true
                     }
-                }
+                },
+                themeIndex = themeIndex
             )
         }
 

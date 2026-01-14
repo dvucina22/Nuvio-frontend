@@ -131,7 +131,7 @@ fun CustomPopupWarning(
                     SmallCustomButton(
                         text = confirmText,
                         onClick = onConfirm,
-                        containerColor = Error
+                        containerColor = ButtonColorDark
                     )
                 }
             }
