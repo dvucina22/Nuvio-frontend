@@ -402,4 +402,5 @@
     <string name="unsuccessful">Neuspješno</string>
     <string name="cancelled">Stornirano</string>
     <string name="pending">Na čekanju</string>
+    <string name="shopping_cart_without_products">Vaša košarica je prazna.</string>
 </resources>

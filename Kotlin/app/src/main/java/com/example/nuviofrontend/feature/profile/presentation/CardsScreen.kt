@@ -82,9 +82,19 @@ fun CardScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            if (loading && uiCards.isEmpty()) {
-                Box(Modifier.fillMaxSize(), Alignment.Center) {
-                    CircularProgressIndicator()
+            if (uiCards.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Trenutno nemate ni jednu karticu.\nDodajte pa će vam se prikazati ovdje.",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontSize = 16.sp,
+                        lineHeight = 20.sp,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    )
                 }
             } else {
                 LazyColumn(

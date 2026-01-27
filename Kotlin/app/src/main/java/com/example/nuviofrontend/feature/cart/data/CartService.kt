@@ -28,4 +28,9 @@ class CartService(private val apiService: ApiService){
             throw kotlin.Exception(body ?: "Failed to remove item")
         }
     }
+
+    suspend fun clearCart() {
+        val response = apiService.clearCart()
+        if (!response.isSuccessful) throw Exception(response.errorBody()?.string() ?: "Failed to clear cart")
+    }
 }

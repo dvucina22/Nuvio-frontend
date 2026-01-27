@@ -399,4 +399,5 @@
     <string name="unsuccessful">Unsuccessful</string>
     <string name="cancelled">Cancelled</string>
     <string name="pending">Pending</string>
+    <string name="shopping_cart_without_products">Your shopping cart is empty.</string>
 </resources>

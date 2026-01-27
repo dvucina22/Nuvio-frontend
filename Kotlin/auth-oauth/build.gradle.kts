@@ -10,7 +10,7 @@ plugins {
 
 android {
     namespace = "com.example.auth_oauth"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 24

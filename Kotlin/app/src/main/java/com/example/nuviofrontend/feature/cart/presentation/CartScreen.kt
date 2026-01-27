@@ -98,7 +98,7 @@ fun CartScreen(
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = if (isLoggedIn && cartItems.isNotEmpty()) "${cartItems.size} items" else "Your shopping cart",
+                        text = if (isLoggedIn && cartItems.isNotEmpty()) "${cartItems.size} items" else stringResource(R.string.shopping_cart_without_products),
                         color = MaterialTheme.colorScheme.onBackground,
                         fontSize = 14.sp
                     )

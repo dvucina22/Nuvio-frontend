@@ -90,10 +90,12 @@ fun AddCardDialog(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    val firstDigit  = cardNumber.firstOrNull()?.digitToIntOrNull()
+
                     val cardLogo = when {
-                        cardNumber.startsWith("4") -> R.drawable.visa_logo
-                        cardNumber.startsWith("5") -> R.drawable.mastercard_logo
-                        else -> R.drawable.add_new_card
+                        firstDigit == null -> R.drawable.add_new_card
+                        firstDigit % 2 == 0 -> R.drawable.visa_logo
+                        else -> R.drawable.mastercard_logo
                     }
                     Image(
                         painter = painterResource(id = cardLogo),
