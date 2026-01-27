@@ -176,7 +176,7 @@ fun Container(
                 spotColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.03f)
             )
             .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colorScheme.surfaceContainer)
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f))
             .border(
                 width = 1.dp,
                 color = MaterialTheme.colorScheme.surfaceDim,

@@ -46,7 +46,7 @@
     <string name="products">Products</string>
     <string name="favorites">Favorites</string>
     <string name="cart">Cart</string>
-    <string name="order_history">Order history</string>
+    <string name="order_history">Transaction history</string>
     <string name="my_profile">My profile</string>
     <string name="sign_out">Sign out</string>
 

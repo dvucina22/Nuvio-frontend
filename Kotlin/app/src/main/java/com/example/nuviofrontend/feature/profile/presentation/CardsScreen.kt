@@ -35,7 +35,6 @@ import com.example.core.ui.theme.BackgroundNavDark
 import com.example.core.R
 import com.example.core.ui.components.CustomPopupWarning
 import com.example.core.ui.theme.AccentColor
-import com.example.core.ui.theme.WarningPopUpBackground
 import com.example.core.ui.theme.WhiteSoft
 import kotlin.collections.map
 
@@ -183,7 +182,11 @@ fun CardItem(
     val primaryScale by animateFloatAsState(targetValue = if (card.isPrimary) 1.2f else 1f)
 
     @Composable
-    fun MenuItem(icon: ImageVector, label: String, onClick: () -> Unit) {
+    fun MenuItem(
+        icon: ImageVector,
+        label: String,
+        onClick: () -> Unit
+    ){
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -265,13 +268,12 @@ fun CardItem(
                                     .background(Color(0xFF232323), RoundedCornerShape(6.dp))
                                     .border(
                                         width = 1.dp,
-                                        color = WarningPopUpBackground,
+                                        color = MaterialTheme.colorScheme.surfaceContainer,
                                         shape = RoundedCornerShape(6.dp)
                                     )
                                     .width(IntrinsicSize.Max)
                             ) {
                                 MenuItem(Icons.Default.Delete, stringResource(R.string.delete)) { onDelete(card.id) }
-                                MenuItem(Icons.Default.History,  stringResource(R.string.transactions)) { onViewTransactions(card.id) }
                                 MenuItem(Icons.Default.Star, stringResource(R.string.set_as_primary)) { onSetPrimary(card.id) }
                             }
                         }

@@ -40,10 +40,6 @@ import com.example.core.R
 import com.example.core.ui.components.CustomTextField
 import com.example.core.ui.components.SmallCustomButton
 import com.example.core.ui.theme.BackgroundNavDark
-import com.example.core.ui.theme.Black
-import com.example.core.ui.theme.ButtonColorDark
-import com.example.core.ui.theme.CardItemBackgroundLight
-import com.example.core.ui.theme.White
 
 @Composable
 fun AddCardDialog(
