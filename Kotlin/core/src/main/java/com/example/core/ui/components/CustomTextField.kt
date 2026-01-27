@@ -44,6 +44,7 @@ import com.example.core.ui.theme.Error
 import com.example.core.ui.theme.White
 import com.example.core.R
 import com.example.core.ui.theme.BackgroundColorInput
+import com.example.core.ui.theme.BackgroundNavDark
 import com.example.core.ui.theme.Black
 import com.example.core.ui.theme.ButtonColorSelected
 import com.example.core.ui.theme.ColorInput
@@ -52,7 +53,7 @@ import com.example.core.ui.theme.ColorInput
 fun CustomTextField(
     value: String,
     onValueChange: (String) -> Unit,
-    labelColor: Color = Black,
+    labelColor: Color = MaterialTheme.colorScheme.onBackground,
     placeholder: String,
     label: String? = null,
     modifier: Modifier = Modifier,
@@ -100,7 +101,7 @@ fun CustomTextField(
                         .height(40.dp)
                         .clip(RoundedCornerShape(8.dp))
                         .background(
-                            BackgroundColorInput.copy(alpha = 0.3f),
+                            BackgroundNavDark.copy(alpha = 0.3f),
                             RoundedCornerShape(8.dp)
                         )
                         .border(
@@ -113,7 +114,7 @@ fun CustomTextField(
                     onValueChange = onValueChange,
                     singleLine = true,
                     cursorBrush = SolidColor(White),
-                    textStyle = textStyle.copy(color = White, textAlign = TextAlign.Start),
+                    textStyle = textStyle.copy(color = MaterialTheme.colorScheme.onBackground, textAlign = TextAlign.Start),
                     visualTransformation = visualTransformation,
                     decorationBox = { innerTextField ->
                         Row(
@@ -130,7 +131,7 @@ fun CustomTextField(
                                 if (value.isEmpty()) Text(
                                     placeholder,
                                     style = textStyle.copy(
-                                        color = ColorInput.copy(alpha = 0.7f)
+                                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                                     )
                                 )
                                 innerTextField()
@@ -151,7 +152,7 @@ fun CustomTextField(
                                     Icon(
                                         painter = icon,
                                         contentDescription = if (passwordVisible) "Hide password" else "Show password",
-                                        tint = White
+                                        tint = MaterialTheme.colorScheme.onBackground
                                     )
                                 }
                             }
@@ -186,7 +187,7 @@ fun CustomTextField(
                             .shadow(elevation = 8.dp, clip = true),
                         offset = DpOffset(x = (-50).dp, y = (-60).dp)
                     ) {
-                        Column(modifier = Modifier.padding(12.dp)) {
+                        Column(modifier = Modifier.padding(4.dp)) {
                             Text(
                                 text = errorMessage,
                                 color = White.copy(alpha = 0.9f),

@@ -1,47 +1,48 @@
 <resources>
-    <string name="login_title">Prijava</string>
+    <string name="login_title">Login</string>
     <string name="label_email">Email</string>
-    <string name="text_guest">Nastavi kao gost</string>
-    <string name="label_password">Lozinka</string>
-    <string name="placeholder_email">Unesite email</string>
-    <string name="placeholder_password">Unesite lozinku</string>
-    <string name="button_login">Prijava</string>
-    <string name="text_register_prompt">Nemate račun? Registrirajte se.</string>
-    <string name="toast_invalid_credentials">Unesite ispravne podatke!</string>
-    <string name="logo_content_description">Logo aplikacije</string>
+    <string name="text_guest">Continue as guest</string>
+    <string name="label_password">Password</string>
+    <string name="placeholder_email">Enter email</string>
+    <string name="placeholder_password">Enter password</string>
+    <string name="button_login">Login</string>
+    <string name="text_register_prompt">Don\'t have an account? Register.</string>
+    <string name="toast_invalid_credentials">Please enter valid credentials!</string>
+    <string name="logo_content_description">App logo</string>
 
-    <string name="error_email_empty">Email ne smije biti prazan</string>
-    <string name="error_email_invalid">Neispravan format email adrese</string>
-    <string name="error_password_empty">Lozinka ne smije biti prazna</string>
+    <string name="error_email_empty">Email cannot be empty</string>
+    <string name="error_email_invalid">Invalid email format</string>
+    <string name="error_password_empty">Password cannot be empty</string>
+    <string name="text_login_prompt">Have an account? Login.</string>
 
-    <string name="error_login_invalid_credentials">Pogrešni podaci za prijavu.</string>
-    <string name="error_login_forbidden">Nemate dopuštenje za pristup.</string>
-    <string name="error_server_generic">Pogreška na poslužitelju (%1$d).</string>
-    <string name="error_network">Provjerite internetsku vezu.</string>
-    <string name="error_unknown">Nepoznata pogreška.</string>
-    <string name="welcome_message">Dobro došli!</string>
+    <string name="error_login_invalid_credentials">Invalid login credentials.</string>
+    <string name="error_login_forbidden">You are not allowed to access.</string>
+    <string name="error_server_generic">Server error (%1$d).</string>
+    <string name="error_network">Check your internet connection.</string>
+    <string name="error_unknown">Unknown error.</string>
+    <string name="welcome_message">Welcome!</string>
 
     <string name="server_client_id">34592663945-alnaa3u2tbns05c68mjv41u7hrqkrbtq.apps.googleusercontent.com</string>
-    <string name="button_login_google">Nastavi s Google računom</string>
-    <string name="error_google_signin_cancelled">Google prijava je otkazana.</string>
-    <string name="error_google_no_idtoken">Nije moguće dohvatiti Google ID token.</string>
+    <string name="button_login_google">Continue with Google</string>
+    <string name="error_google_signin_cancelled">Google sign-in cancelled.</string>
+    <string name="error_google_no_idtoken">Cannot retrieve Google ID token.</string>
 
-    <string name="register_successful">Registracija uspješna!</string>
-    <string name="registration_title">Registracija</string>
-    <string name="label_first_name">Ime</string>
-    <string name="label_last_name">Prezime</string>
-    <string name="label_phone_number">Broj telefona</string>
-    <string name="label_confirm_password">Potvrdite lozinku</string>
+    <string name="register_successful">Registration successful!</string>
+    <string name="registration_title">Register</string>
+    <string name="label_first_name">First Name</string>
+    <string name="label_last_name">Last Name</string>
+    <string name="label_phone_number">Phone number</string>
+    <string name="label_confirm_password">Confirm password</string>
 
-    <string name="error_email_required">Email je obavezan</string>
-    <string name="error_password_required">Lozinka je obavezna</string>
-    <string name="error_password_complexity">Lozinka mora imati najmanje 8 znakova, jedno veliko slovo i jedan broj</string>
-    <string name="error_phone_exists">Broj telefona već postoji</string>
-    <string name="error_phone_invalid">Molimo unesite odgovarajući broj telefona</string>
-    <string name="error_confirm_password_empty">Potvrda lozinke je obavezna</string>
-    <string name="error_passwords_mismatch">Lozinke se ne podudaraju</string>
-    <string name="error_gender_required">Odabir spola je obavezan</string>
-    <string name="error_email_exists">Email je zauzet</string>
-    <string name="error_generic">Greška</string>
-    <string name="label_gender">Spol</string>
+    <string name="error_email_required">Email is required</string>
+    <string name="error_password_required">Password is required</string>
+    <string name="error_password_complexity">Password must have at least 8 characters, one uppercase letter, and one number</string>
+    <string name="error_phone_exists">Phone number already exists</string>
+    <string name="error_phone_invalid">Please enter a valid phone number</string>
+    <string name="error_confirm_password_empty">Password confirmation is required</string>
+    <string name="error_passwords_mismatch">Passwords do not match</string>
+    <string name="error_gender_required">Gender selection is required</string>
+    <string name="error_email_exists">Email is already taken</string>
+    <string name="error_generic">Error</string>
+    <string name="label_gender">Gender</string>
 </resources>

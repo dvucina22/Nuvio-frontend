@@ -1,8 +1,6 @@
 package com.example.auth.presentation.login
 
 import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,7 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -27,13 +24,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.core.ui.components.CustomButton
 import com.example.core.ui.components.CustomTextField
-import com.example.core.ui.theme.Black
 import com.example.auth.R as AuthR
 import com.example.core.R as CoreR
-import com.example.core.ui.theme.White
 
 @Composable
-fun LoginScreen(onNavigateToRegister: () -> Unit, onNavigateToHome: () -> Unit, viewModel: LoginViewModel) {
+fun LoginScreen(
+    onNavigateToRegister: () -> Unit,
+    onNavigateToHome: () -> Unit,
+    viewModel: LoginViewModel,
+    extraContent: @Composable (() -> Unit)? = null,
+    themeIndex: Int
+) {
     val scrollState = rememberScrollState()
     val loginState by viewModel.loginState.collectAsState()
     val emailError by viewModel.emailError.collectAsState()
@@ -59,17 +60,15 @@ fun LoginScreen(onNavigateToRegister: () -> Unit, onNavigateToHome: () -> Unit, 
             else -> Unit
         }
     }
-
-    val googleLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result -> viewModel.handleGoogleResult(result) }
+    val backgroundRes = if (themeIndex == 1) CoreR.drawable.background_dark else CoreR.drawable.background_light
+    val logoRes = if (themeIndex == 1) CoreR.drawable.logo_dark_full else CoreR.drawable.logo_light_full
 
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = painterResource(id = CoreR.drawable.background_light),
+            painter = painterResource(id = backgroundRes),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
@@ -84,7 +83,7 @@ fun LoginScreen(onNavigateToRegister: () -> Unit, onNavigateToHome: () -> Unit, 
             verticalArrangement = Arrangement.Center
         ) {
             Image(
-                painter = painterResource(id = CoreR.drawable.logo_dark_full),
+                painter = painterResource(id = logoRes),
                 contentDescription = "logo_dark_full",
                 modifier = Modifier.size(200.dp)
             )
@@ -99,7 +98,7 @@ fun LoginScreen(onNavigateToRegister: () -> Unit, onNavigateToHome: () -> Unit, 
                 onPasswordChange = { password = it },
                 onLogin = { viewModel.login(email, password) },
                 onNavigateToRegister = onNavigateToRegister,
-                onGoogleLoginClick = { googleLauncher.launch(viewModel.googleSignInIntent()) }
+                extraContent = extraContent
             )
         }
     }
@@ -116,7 +115,7 @@ fun LoginForm(
     onPasswordChange: (String) -> Unit,
     onLogin: () -> Unit,
     onNavigateToRegister: () -> Unit,
-    onGoogleLoginClick: () -> Unit
+    extraContent: @Composable (() -> Unit)? = null
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
 
@@ -126,7 +125,7 @@ fun LoginForm(
     ) {
         Text(
             text = stringResource(id = AuthR.string.login_title),
-            color = White,
+            color = MaterialTheme.colorScheme.onBackground,
             style = MaterialTheme.typography.displayLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier
@@ -167,20 +166,16 @@ fun LoginForm(
             onClick = onLogin
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        CustomButton(
-            text = stringResource(id = AuthR.string.button_login_google),
-            onClick = onGoogleLoginClick,
-            iconRes = CoreR.drawable.google_icon,
-            iconSize = 40
-        )
+        if (extraContent != null) {
+            Spacer(modifier = Modifier.height(8.dp))
+            extraContent()
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
             text = stringResource(id = AuthR.string.text_register_prompt),
-            color = Black,
+            color = MaterialTheme.colorScheme.onBackground,
             fontSize = 14.sp,
             style = MaterialTheme.typography.labelSmall,
             textAlign = TextAlign.Center,

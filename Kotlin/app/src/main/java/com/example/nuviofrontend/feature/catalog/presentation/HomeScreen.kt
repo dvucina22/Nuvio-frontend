@@ -13,10 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircleOutline
-import androidx.compose.material.icons.filled.Business
-import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -51,7 +48,6 @@ import com.example.core.catalog.dto.Product
 import com.example.core.ui.components.CustomPopupWarning
 import com.example.core.ui.components.ProductCard
 import com.example.core.ui.components.banner.BannerData
-import com.example.core.ui.theme.BackgroundBehindButton
 import com.example.core.ui.theme.Black
 import com.example.core.ui.theme.White
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -59,19 +55,22 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.yield
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerScope
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.rememberAsyncImagePainter
+import com.example.core.ui.components.IconActionBox
 import com.example.core.ui.components.banner.BannerComponent
 import com.example.core.ui.components.categories.CategoryButton
 import com.example.core.ui.components.categories.CategoryButtonData
+import com.example.core.ui.theme.AccentColor
+import com.example.core.ui.theme.IconDark
+import com.example.nuviofrontend.feature.settings.presentation.SettingsViewModel
 
 data class Category(
     val id: Long,
@@ -96,11 +95,13 @@ fun HomeScreen(
     productManagementViewModel: ProductManagementViewModel = hiltViewModel(),
     onProductClick: (Long) -> Unit,
     onAddProductClick: () -> Unit,
-    onEditProductClick: (Long) -> Unit
+    onEditProductClick: (Long) -> Unit,
+    settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
     LaunchedEffect(Unit) {
         viewModel.loadHomeData()
     }
+    val selectedCurrency by settingsViewModel.currencyFlow.collectAsState(initial = 1)
 
     val scrollState = rememberScrollState()
     val state by viewModel.state.collectAsState()
@@ -186,13 +187,13 @@ fun HomeScreen(
                 Column {
                     Text(
                         text = greeting,
-                        color = Black,
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
                         text = stringResource(R.string.what_are_you_looking_for),
-                        color = Color(0xFF344351),
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontSize = 14.sp
                     )
                 }
@@ -204,25 +205,17 @@ fun HomeScreen(
                         Icon(
                             imageVector = Icons.Default.Notifications,
                             contentDescription = "Notifications",
-                            tint = Black
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
                     if (isLoggedIn && (isAdmin || isSeller)) {
-                        Box(
-                            modifier = Modifier
-                                .size(35.dp)
-                                .background(
-                                    color = BackgroundBehindButton,
-                                    shape = RoundedCornerShape(5.dp)
-                                )
-                                .clickable { onAddProductClick() },
-                            contentAlignment = Alignment.Center
+                        IconActionBox(
+                            onClick = onAddProductClick
                         ) {
                             Icon(
                                 imageVector = Icons.Default.AddCircleOutline,
                                 contentDescription = "Add",
-                                tint = Black,
-                                modifier = Modifier.size(23.dp)
+                                tint = MaterialTheme.colorScheme.onBackground
                             )
                         }
                     }
@@ -276,7 +269,8 @@ fun HomeScreen(
                         onEditProductClick(productId)
                     },
                     isAdmin = isAdmin,
-                    isSeller = isSeller
+                    isSeller = isSeller,
+                    selectedCurrency = selectedCurrency
                 )
             } else {
                 EmptyStateRow("No products available")
@@ -310,7 +304,8 @@ fun HomeScreen(
                         onEditProductClick(productId)
                     },
                     isAdmin = isAdmin,
-                    isSeller = isSeller
+                    isSeller = isSeller,
+                    selectedCurrency = selectedCurrency
                 )
             } else {
                 EmptyStateRow("No products available")
@@ -346,11 +341,12 @@ fun HomeScreen(
                         onEditProductClick(productId)
                     },
                     isAdmin = isAdmin,
-                    isSeller = isSeller
+                    isSeller = isSeller,
+                    selectedCurrency = selectedCurrency
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(46.dp))
         }
 
         state.error?.let { error ->
@@ -379,10 +375,10 @@ fun HomeScreen(
 
         if (showDeletePopup && productIdToDelete != null) {
             CustomPopupWarning(
-                title = "Upozorenje",
-                message = "Jeste li sigurni da želite obrisati proizvod?",
-                confirmText = "Nastavi",
-                dismissText = "Odustani",
+                title = stringResource(R.string.warning),
+                message = stringResource(R.string.delete_item_confirm),
+                confirmText = stringResource(R.string.next),
+                dismissText = stringResource(R.string.cancel),
                 onDismiss = {
                     showDeletePopup = false
                     productIdToDelete = null
@@ -461,8 +457,8 @@ fun PromotionalBannerCarousel(
                         )
                         .clip(CircleShape)
                         .background(
-                            if (isSelected) Color(0xFF004CBB)
-                            else Color.Black
+                            if (isSelected) AccentColor
+                            else MaterialTheme.colorScheme.onBackground
                         )
                 )
             }
@@ -495,8 +491,6 @@ fun CategoriesButtonRow(
         }
     }
 }
-
-///
 
 @Composable
 fun LoadingRow() {
@@ -614,14 +608,14 @@ fun BannerCard(banner: Banner) {
         ) {
             Text(
                 text = banner.title,
-                color = Black,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = banner.subtitle,
-                color = Black.copy(alpha = 0.9f),
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
                 fontSize = 16.sp
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -654,7 +648,7 @@ fun SectionHeader(
     ) {
         Text(
             text = title,
-            color = Black,
+            color = MaterialTheme.colorScheme.onBackground,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold
         )
@@ -705,13 +699,13 @@ fun CategoryCard(
         Icon(
             imageVector = category.icon,
             contentDescription = category.name,
-            tint = White,
+            tint =  MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.size(40.dp)
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = category.name,
-            color = White,
+            color = MaterialTheme.colorScheme.onBackground,
             fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold
         )
@@ -727,7 +721,8 @@ fun FlashDealsRow(
     onDeleteProduct: (Long) -> Unit,
     onEditProduct: (Long) -> Unit,
     isAdmin: Boolean,
-    isSeller: Boolean
+    isSeller: Boolean,
+    selectedCurrency: Int
 ) {
     LazyRow(
         contentPadding = PaddingValues(end = 16.dp),
@@ -737,6 +732,7 @@ fun FlashDealsRow(
             val isFavorite = favoriteIds.contains(product.id)
             ProductCard(
                 product = product,
+                selectedCurrency = selectedCurrency,
                 isFavorite = isFavorite,
                 onFavoriteChange = { newValue ->
                     onToggleFavorite(product.id, newValue)
@@ -766,7 +762,8 @@ fun LatestProductsRow(
     onDeleteProduct: (Long) -> Unit,
     onEditProduct: (Long) -> Unit,
     isAdmin: Boolean,
-    isSeller: Boolean
+    isSeller: Boolean,
+    selectedCurrency: Int
 ) {
     LazyRow(
         contentPadding = PaddingValues(end = 16.dp),
@@ -776,6 +773,7 @@ fun LatestProductsRow(
             val isFavorite = favoriteIds.contains(product.id)
             ProductCard(
                 product = product,
+                selectedCurrency = selectedCurrency,
                 isFavorite = isFavorite,
                 onFavoriteChange = { newValue ->
                     onToggleFavorite(product.id, newValue)
@@ -858,7 +856,8 @@ fun RecommendedProductsGrid(
     onDeleteProduct: (Long) -> Unit,
     onEditProduct: (Long) -> Unit,
     isAdmin: Boolean,
-    isSeller: Boolean
+    isSeller: Boolean,
+    selectedCurrency: Int
 ) {
     Column(
         modifier = Modifier.padding(horizontal = 2.dp),
@@ -868,6 +867,7 @@ fun RecommendedProductsGrid(
             val isFavorite = favoriteIds.contains(product.id)
             ProductCard(
                 product = product,
+                selectedCurrency = selectedCurrency,
                 isFavorite = isFavorite,
                 onFavoriteChange = { newValue ->
                     onToggleFavorite(product.id, newValue)

@@ -12,4 +12,8 @@ sealed class Screen(val route: String) {
     object TransactionSuccess : Screen("transaction_success")
     object TransactionFailure : Screen("transaction_failure")
     object Users : Screen("users")
+    object Transactions : Screen("transactions")
+    object TransactionDetail : Screen("transaction_detail/{transactionId}") {
+        fun createRoute(transactionId: Long) = "transaction_detail/$transactionId"
+    }
 }

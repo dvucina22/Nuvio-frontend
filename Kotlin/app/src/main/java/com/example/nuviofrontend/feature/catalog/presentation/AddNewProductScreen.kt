@@ -1,7 +1,7 @@
 package com.example.nuviofrontend.feature.catalog.presentation
 
+import android.content.Context
 import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -59,6 +59,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
@@ -68,32 +69,30 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.core.R
 import com.example.core.catalog.dto.AttributeFilter
+import com.example.core.settings.CurrencyConverter
 import com.example.core.ui.components.CustomButton
 import com.example.core.ui.components.CustomDescriptionField
-import com.example.core.ui.components.CustomTextField
+import com.example.core.ui.components.CustomTextFieldAligned
 import com.example.core.ui.components.CustomTopBar
+import com.example.core.ui.components.IconActionBox
 import com.example.core.ui.components.SelectedImagesRow
 import com.example.core.ui.theme.BackgroundBehindButton
 import com.example.core.ui.theme.BackgroundColorInput
 import com.example.core.ui.theme.BackgroundNavDark
-import com.example.core.ui.theme.Black
-import com.example.core.ui.theme.ButtonColorSelected
-import com.example.core.ui.theme.CardItemBackground
-import com.example.core.ui.theme.ColorInput
 import com.example.core.ui.theme.Error
 import com.example.core.ui.theme.White
-import kotlinx.coroutines.delay
+import com.example.nuviofrontend.feature.settings.presentation.SettingsViewModel
 
 @Composable
 fun AddNewProductScreen(
     navController: NavHostController,
     onBackClick: () -> Unit = {},
     viewModel: ProductManagementViewModel = hiltViewModel(),
-    homeViewModel: HomeViewModel = hiltViewModel()
+    homeViewModel: HomeViewModel = hiltViewModel(),
+    settingsViewModel: SettingsViewModel = hiltViewModel()
 ){
     var productName by remember { mutableStateOf("") }
     var price by remember { mutableStateOf("") }
@@ -117,10 +116,12 @@ fun AddNewProductScreen(
     val context = LocalContext.current
 
     val productAdded by viewModel.productUpdated.collectAsState(initial = false)
+    val selectedCurrency by settingsViewModel.currencyFlow.collectAsState(initial = 1)
 
     LaunchedEffect(viewModel.productAddedFlow) {
         viewModel.productAddedFlow.collect {
-            Toast.makeText(context, "Uspješno dodan novi proizvod", Toast.LENGTH_SHORT).show()
+            val message = context.getString(R.string.product_added)
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             homeViewModel.loadHomeData()
             navController.popBackStack()
         }
@@ -144,84 +145,77 @@ fun AddNewProductScreen(
         attributeValuesMap.remove(attribute.name)
     }
 
-    Column(
+    Box(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 20.dp),
-    ){
-        CustomTopBar(
-            title = stringResource(R.string.add_new_product_title),
-            showBack = true,
-            onBack = onBackClick
-        )
-
-        LazyColumn(
+        .fillMaxSize()
+    ) {
+        Column(
             modifier = Modifier
                 .fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 120.dp, start = 10.dp, end = 10.dp)
         ) {
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(150.dp)
-                        .background((BackgroundBehindButton), RoundedCornerShape(12.dp))
-                        .clickable {
-                            imagePickerLauncher.launch("image/*")
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.CameraAlt,
-                        contentDescription = "",
-                        tint = Color.Gray,
-                        modifier = Modifier.size(48.dp)
-                    )
-                    Text(
-                        text = stringResource(R.string.add_image_text),
-                        color = Color.Gray,
-                        fontSize = 14.sp,
-                        modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 12.dp)
-                    )
-                }
-                if (viewModel.productImages.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(10.dp))
-                    SelectedImagesRow(
-                        images = viewModel.productImages,
-                        onRemoveImage = { removedUrl ->
-                            viewModel.productImages =
-                                viewModel.productImages.filter { it != removedUrl }
-                        }
-                    )
-                }
+            CustomTopBar(
+                title = stringResource(R.string.add_new_product_title),
+                showBack = true,
+                onBack = onBackClick
+            )
 
-                Spacer(modifier = Modifier.height(10.dp))
-            }
-
-            item {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    Column(
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentPadding = PaddingValues(bottom = 120.dp, start = 10.dp, end = 10.dp)
+            ) {
+                item {
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(
-                                color = CardItemBackground,
-                                shape = RoundedCornerShape(6.dp)
-                            )
+                            .height(150.dp)
+                            .background((BackgroundBehindButton), RoundedCornerShape(12.dp))
+                            .clickable {
+                                imagePickerLauncher.launch("image/*")
+                            },
+                        contentAlignment = Alignment.Center
                     ) {
+                        Icon(
+                            imageVector = Icons.Default.CameraAlt,
+                            contentDescription = "",
+                            tint = Color.Gray,
+                            modifier = Modifier.size(48.dp)
+                        )
+                        Text(
+                            text = stringResource(R.string.add_image_text),
+                            color = MaterialTheme.colorScheme.onBackground,
+                            fontSize = 14.sp,
+                            modifier = Modifier.align(Alignment.BottomCenter)
+                                .padding(bottom = 12.dp)
+                        )
+                    }
+                    if (viewModel.productImages.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(10.dp))
+                        SelectedImagesRow(
+                            images = viewModel.productImages,
+                            onRemoveImage = { removedUrl ->
+                                viewModel.productImages =
+                                    viewModel.productImages.filter { it != removedUrl }
+                            }
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+                }
+
+                item {
+                    InfoCardContainer() {
                         Text(
                             text = stringResource(R.string.basic_information_product),
-                            fontSize = 16.sp,
-                            color = Color.White,
-                            modifier = Modifier.padding(start = 32.dp, top = 10.dp)
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                         Spacer(modifier = Modifier.height(7.dp))
                         Divider(color = BackgroundNavDark)
                         Spacer(modifier = Modifier.height(7.dp))
 
-                        CustomTextField(
+                        CustomTextFieldAligned(
                             value = productName,
                             onValueChange = {
                                 productName = it
@@ -231,21 +225,27 @@ fun AddNewProductScreen(
                             label = stringResource(R.string.label_product_name),
                             isError = viewModel.fieldErrors.containsKey("productName"),
                             errorMessage = viewModel.fieldErrors["productName"],
-                            labelColor = White
+                            labelColor = MaterialTheme.colorScheme.onBackground
                         )
 
-                        CustomTextField(
+                        val priceLabel = if (selectedCurrency == 0) {
+                            stringResource(R.string.label_price_dolar)
+                        } else {
+                            stringResource(R.string.label_price_euro)
+                        }
+
+                        CustomTextFieldAligned(
                             value = price,
                             onValueChange = {
                                 price = it
                                 viewModel.fieldErrors = viewModel.fieldErrors - "price"
                             },
                             placeholder = stringResource(R.string.placeholder_price),
-                            label = stringResource(R.string.label_price),
+                            label = priceLabel,
                             isError = viewModel.fieldErrors.containsKey("price"),
                             errorMessage = viewModel.fieldErrors["price"],
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            labelColor = White
+                            labelColor = MaterialTheme.colorScheme.onBackground
                         )
 
                         CustomDropdownAddProduct(
@@ -276,7 +276,7 @@ fun AddNewProductScreen(
                             errorMessage = viewModel.fieldErrors["category"]
                         )
 
-                        CustomTextField(
+                        CustomTextFieldAligned(
                             value = quantity,
                             onValueChange = {
                                 quantity = it
@@ -287,10 +287,10 @@ fun AddNewProductScreen(
                             isError = viewModel.fieldErrors.containsKey("quantity"),
                             errorMessage = viewModel.fieldErrors["quantity"],
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            labelColor = White
+                            labelColor = MaterialTheme.colorScheme.onBackground
                         )
 
-                        CustomTextField(
+                        CustomTextFieldAligned(
                             value = modelNumber,
                             onValueChange = {
                                 modelNumber = it
@@ -300,10 +300,10 @@ fun AddNewProductScreen(
                             label = stringResource(R.string.label_model_number),
                             isError = viewModel.fieldErrors.containsKey("modelNumber"),
                             errorMessage = viewModel.fieldErrors["modelNumber"],
-                            labelColor = White
+                            labelColor = MaterialTheme.colorScheme.onBackground
                         )
 
-                        CustomTextField(
+                        CustomTextFieldAligned(
                             value = sku,
                             onValueChange = {
                                 sku = it
@@ -313,7 +313,7 @@ fun AddNewProductScreen(
                             label = stringResource(R.string.label_sku),
                             isError = viewModel.fieldErrors.containsKey("sku"),
                             errorMessage = viewModel.fieldErrors["sku"],
-                            labelColor = White
+                            labelColor = MaterialTheme.colorScheme.onBackground
                         )
 
                         CustomDescriptionField(
@@ -328,74 +328,79 @@ fun AddNewProductScreen(
                             errorMessage = viewModel.fieldErrors["description"]
                         )
                     }
+
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
-                Spacer(modifier = Modifier.height(24.dp))
-            }
 
-            item {
-                AdditionalSpecificationsCard(
-                    allAttributes = allAttributes,
-                    addedAttributes = addedAttributes,
-                    onAddAttribute = { attr ->
-                        addedAttributes = addedAttributes + attr
-                        selectedAttribute = null
-                    },
-                    selectedAttribute = selectedAttribute,
-                    onSelectedAttributeChange = { selectedAttribute = it },
-                    attributeValuesMap = attributeValuesMap,
-                    onAttributeValueChange = { attr, value -> attributeValuesMap[attr] = value },
-                    onRemoveAttribute = { attr -> removeAttribute(attr) },
-                )
-            }
+                item {
+                    InfoCardContainer {
+                        AdditionalSpecificationsCard(
+                            allAttributes = allAttributes,
+                            addedAttributes = addedAttributes,
+                            onAddAttribute = { attr ->
+                                addedAttributes = addedAttributes + attr
+                                selectedAttribute = null
+                            },
+                            selectedAttribute = selectedAttribute,
+                            onSelectedAttributeChange = { selectedAttribute = it },
+                            attributeValuesMap = attributeValuesMap,
+                            onAttributeValueChange = { attr, value ->
+                                attributeValuesMap[attr] = value
+                            },
+                            onRemoveAttribute = { attr -> removeAttribute(attr) },
+                        )
+                    }
+                }
 
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CustomButton(
-                        text = stringResource(R.string.save_button),
-                        onClick = {
-                            val brandId = brands.find { it.name == selectedBrand }?.id
-                            val categoryId = categories.find { it.name == selectedCategory }?.id
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CustomButton(
+                            text = stringResource(R.string.save_button),
+                            onClick = {
+                                val brandId = brands.find { it.name == selectedBrand }?.id
+                                val categoryId = categories.find { it.name == selectedCategory }?.id
 
-                            val isValid = viewModel.validateFields(
-                                productName = productName,
-                                price = price,
-                                brandId = brandId,
-                                categoryId = categoryId,
-                                quantity = quantity,
-                                modelNumber = modelNumber,
-                                sku = sku,
-                                description = description
-                            )
-
-                            if (isValid) {
-                                val basePrice = price.toDouble()
-                                val qty = quantity.toInt()
-                                val filteredAttributes = addedAttributes
-                                viewModel.addProduct(
-                                    name = productName,
-                                    description = description,
+                                val isValid = viewModel.validateFields(
+                                    productName = productName,
+                                    price = price,
+                                    brandId = brandId,
+                                    categoryId = categoryId,
+                                    quantity = quantity,
                                     modelNumber = modelNumber,
                                     sku = sku,
-                                    basePrice = basePrice,
-                                    brandId = brandId!!,
-                                    categoryId = categoryId!!,
-                                    quantity = qty,
-                                    selectedAttributes = filteredAttributes,
-                                    attributeValuesMap = attributeValuesMap,
-                                    imageUrls = viewModel.productImages
+                                    description = description
                                 )
-                            }
-                        },
-                        width = 304
-                    )
-                }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                                if (isValid) {
+                                    val basePrice = CurrencyConverter.toEuro(price.toDouble(), selectedCurrency)
+                                    val qty = quantity.toInt()
+                                    val filteredAttributes = addedAttributes
+                                    viewModel.addProduct(
+                                        name = productName,
+                                        description = description,
+                                        modelNumber = modelNumber,
+                                        sku = sku,
+                                        basePrice = basePrice,
+                                        brandId = brandId!!,
+                                        categoryId = categoryId!!,
+                                        quantity = qty,
+                                        selectedAttributes = filteredAttributes,
+                                        attributeValuesMap = attributeValuesMap,
+                                        imageUrls = viewModel.productImages
+                                    )
+                                }
+                            },
+                            width = 304
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
             }
         }
     }
@@ -413,6 +418,7 @@ fun AdditionalSpecificationsCard(
     onAttributeValueChange: (String, String?) -> Unit
 ) {
     val basicAttributes = listOf("category", "brand")
+    val context = LocalContext.current
 
     val remainingAttributes = allAttributes
         .filter { attr ->
@@ -421,66 +427,48 @@ fun AdditionalSpecificationsCard(
         }
 
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(CardItemBackground, RoundedCornerShape(6.dp))
+        modifier = Modifier.fillMaxWidth()
     ) {
         Text(
             text = stringResource(R.string.additional_specifications_title),
-            fontSize = 16.sp,
-            color = Color.White,
-            modifier = Modifier.padding(start = 32.dp, bottom = 10.dp, top = 10.dp)
+            fontSize = 17.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground
         )
         Divider(color = BackgroundNavDark)
         Spacer(modifier = Modifier.height(8.dp))
 
         addedAttributes.forEach { attribute ->
             val values = attribute.items.map { it.value }
-            val selectedValue = attributeValuesMap[attribute.name]
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 32.dp, end = 40.dp)
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Box(modifier = Modifier.weight(0.7f)) {
-                    CustomDropdownAddProduct(
-                        label = mapAttributeName(attribute.name ?: ""),
-                        value = attributeValuesMap[attribute.name],
-                        items = values,
-                        itemLabel = { mapAttributeValue(attribute.name ?: "", it) },
-                        placeholder = stringResource(R.string.placeholder_select_attribute),
-                        onItemSelected = { value ->
-                            attributeValuesMap[attribute.name ?: ""] = value
-                        },
-                        modifier = Modifier.width(250.dp)
+                CustomDropdownAddProduct(
+                    label = mapAttributeName(context, attribute.name ?: ""),
+                    value = attributeValuesMap[attribute.name],
+                    items = values,
+                    itemLabel = { mapAttributeValue(attribute.name ?: "", it) },
+                    placeholder = stringResource(R.string.placeholder_select_attribute),
+                    onItemSelected = { value -> attributeValuesMap[attribute.name ?: ""] = value },
+                    modifier = Modifier.weight(1f)
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                IconActionBox(
+                    modifier = Modifier.offset(y = 5.dp).size(40.dp),
+                    onClick = { onRemoveAttribute(attribute) }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.DeleteOutline,
+                        contentDescription = "Delete",
+                        tint = Error,
+                        modifier = Modifier.size(22.dp)
                     )
                 }
-
-                Spacer(modifier = Modifier.width(5.dp))
-
-                Box(
-                    modifier = Modifier.offset(y = 5.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(35.dp)
-                            .background(BackgroundBehindButton, RoundedCornerShape(5.dp))
-                            .clickable { onRemoveAttribute(attribute) },
-                        contentAlignment = Alignment.Center
-                    ) {
-
-                        Icon(
-                            imageVector = Icons.Default.DeleteOutline,
-                            contentDescription = "",
-                            tint = Black,
-                            modifier = Modifier.size(22.dp)
-                        )
-                    }
-                }
             }
-            Spacer(modifier = Modifier.height(6.dp))
         }
 
         if (remainingAttributes.isNotEmpty()) {
@@ -488,47 +476,37 @@ fun AdditionalSpecificationsCard(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 32.dp, end = 40.dp)
             ) {
-                Box(modifier = Modifier.weight(0.7f)) {
-                    CustomDropdownAddProduct(
-                        label = stringResource(R.string.placeholder_add_attribute),
-                        value = selectedAttribute?.name?.let { mapAttributeName(it) },
-                        items = remainingAttributes.map { it.name ?: "" },
-                        itemLabel = { mapAttributeName(it) },
-                        placeholder = stringResource(R.string.placeholder_add_attribute),
-                        onItemSelected = { selectedName ->
-                            val attr = allAttributes.find { it.name == selectedName }
-                            if (attr != null) onSelectedAttributeChange(attr)
-                        },
-                        modifier = Modifier.width(250.dp)
-                    )
-                }
+                CustomDropdownAddProduct(
+                    label = stringResource(R.string.placeholder_add_attribute),
+                    value = selectedAttribute?.name?.let { mapAttributeName(context,it) },
+                    items = remainingAttributes.map { it.name ?: "" },
+                    itemLabel = { mapAttributeName(context, it) },
+                    placeholder = stringResource(R.string.placeholder_add_attribute),
+                    onItemSelected = { selectedName ->
+                        val attr = allAttributes.find { it.name == selectedName }
+                        if (attr != null) onSelectedAttributeChange(attr)
+                    },
+                    modifier = Modifier.weight(1f)
+                )
 
-                Spacer(modifier = Modifier.width(5.dp))
+                Spacer(modifier = Modifier.width(8.dp))
 
-                Box(
-                    modifier = Modifier.offset(y = 5.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(34.dp)
-                            .background(BackgroundBehindButton, RoundedCornerShape(5.dp))
-                            .clickable {
-                                selectedAttribute?.let {
-                                    onAddAttribute(it)
-                                    onSelectedAttributeChange(null)
-                                }
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.AddCircleOutline,
-                            contentDescription = "",
-                            tint = Black,
-                            modifier = Modifier.size(22.dp)
-                        )
+                IconActionBox(
+                    modifier = Modifier.offset(y = 5.dp).size(40.dp),
+                    onClick = {
+                        selectedAttribute?.let {
+                            onAddAttribute(it)
+                            onSelectedAttributeChange(null)
+                        }
                     }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.AddCircleOutline,
+                        contentDescription = "Add",
+                        tint = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.size(22.dp)
+                    )
                 }
             }
         }
@@ -571,16 +549,17 @@ fun <T> CustomDropdownAddProduct(
         label?.let {
             Text(
                 text = it,
-                color = White,
+                color = MaterialTheme.colorScheme.onBackground,
                 style = textStyle,
                 modifier = Modifier
-                    .width(304.dp)
+                    .fillMaxWidth()
                     .padding(bottom = 4.dp)
             )
         }
 
         Box(
-            modifier = Modifier.width(304.dp)
+            modifier = Modifier
+                .fillMaxWidth()
                 .onGloballyPositioned { layoutCoordinates ->
                     triggeredWidth = with(density) {
                         layoutCoordinates.size.width.toDp()
@@ -590,10 +569,10 @@ fun <T> CustomDropdownAddProduct(
         ) {
             Row(
                 modifier = Modifier
-                    .width(304.dp)
+                    .fillMaxWidth()
                     .height(40.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(BackgroundColorInput.copy(alpha = 0.3f))
+                    .background(MaterialTheme.colorScheme.surfaceContainerLowest.copy(alpha = 0.7f))
                     .border(
                         width = if (isError) 1.dp else 0.dp,
                         color = if (isError) Error else Color.Transparent,
@@ -613,8 +592,8 @@ fun <T> CustomDropdownAddProduct(
                     text = value?.let { itemLabel(it) } ?: placeholder,
                     style = textStyle.copy(
                         color = if (value == null)
-                            ColorInput.copy(alpha = 0.7f)
-                        else White
+                            MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                        else MaterialTheme.colorScheme.onBackground
                     ),
                     modifier = Modifier.weight(1f)
                 )
@@ -622,7 +601,7 @@ fun <T> CustomDropdownAddProduct(
                 Icon(
                     painter = painterResource(id = R.drawable.ic_arrow_down),
                     contentDescription = null,
-                    tint = White,
+                    tint = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
                         .size(20.dp)
                         .rotate(arrowRotation)
@@ -655,7 +634,7 @@ fun <T> CustomDropdownAddProduct(
                         modifier = Modifier
                             .width(triggeredWidth)
                             .clip(RoundedCornerShape(8.dp))
-                            .background(ButtonColorSelected)
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
                     ) {
                         items.forEachIndexed { index, item ->
                             Box(
@@ -673,7 +652,7 @@ fun <T> CustomDropdownAddProduct(
                             ) {
                                 Text(
                                     text = itemLabel(item),
-                                    color = White,
+                                    color = MaterialTheme.colorScheme.onBackground,
                                     style = textStyle
                                 )
                             }
@@ -683,7 +662,7 @@ fun <T> CustomDropdownAddProduct(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .height(1.dp)
-                                        .background(Color.Black.copy(alpha = 0.1f))
+                                        .background(BackgroundNavDark.copy(alpha = 0.5f))
                                 )
                             }
                         }
@@ -723,15 +702,15 @@ private fun formatProductName(name: String): String {
         .joinToString(" ") { it.replaceFirstChar { c -> c.uppercase() } }
 }
 
-private fun mapAttributeName(name: String): String {
+private fun mapAttributeName(context: Context, name: String): String {
     return when (name.lowercase()) {
-        "display_size" -> "Veličina ekrana"
-        "display_resolution" -> "Rezolucija"
-        "color" -> "Boja"
-        "os" -> "Operativni sustav"
-        "build_material" -> "Materijal kućišta"
-        "weight_kg" -> "Težina"
-        "battery_wh" -> "Baterija"
+        "display_size" -> context.getString(R.string.display_size)
+        "display_resolution" -> context.getString(R.string.display_resolution)
+        "color" -> context.getString(R.string.color)
+        "os" -> context.getString(R.string.os)
+        "build_material" -> context.getString(R.string.build_material)
+        "weight_kg" -> context.getString(R.string.weight_kg)
+        "battery_wh" -> context.getString(R.string.battery_wh)
         else -> name.replace("_", " ").replaceFirstChar { it.uppercase() }
     }
 }

@@ -3,38 +3,43 @@ package com.example.auth.presentation.register
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.core.ui.components.CustomButton
 import com.example.core.ui.components.CustomGenderField
 import com.example.core.ui.components.CustomTextField
-import com.example.core.ui.theme.Error
-import com.example.core.ui.theme.White
 import com.example.auth.R as AuthR
 import com.example.core.R as CoreR
 
 @Composable
 fun RegisterScreen(
     onRegisterSuccess: () -> Unit,
-    viewModel: RegisterViewModel = hiltViewModel()
+    viewModel: RegisterViewModel = hiltViewModel(),
+    themeIndex: Int,
+    onNavigateToLogin: () -> Unit
 ) {
     val registerState by viewModel.registerState.collectAsState()
     val context = LocalContext.current
-    val registerSuccessful = stringResource(id = AuthR.string.register_successful)
+    val registerSuccessful = stringResource(AuthR.string.register_successful)
 
     LaunchedEffect(registerState) {
         when (registerState) {
@@ -52,6 +57,8 @@ fun RegisterScreen(
             else -> Unit
         }
     }
+    val backgroundRes = if (themeIndex == 1) CoreR.drawable.background_dark else CoreR.drawable.background_light
+    val logoRes = if (themeIndex == 1) CoreR.drawable.logo_dark_full else CoreR.drawable.logo_light_full
 
     Box(
         modifier = Modifier
@@ -60,38 +67,40 @@ fun RegisterScreen(
         contentAlignment = Alignment.TopCenter
     ) {
         Image(
-            painter = painterResource(id = CoreR.drawable.background_light),
+            painter = painterResource(id = backgroundRes),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
 
-        val lazyListState = rememberLazyListState()
-
-        LazyColumn(
-            state = lazyListState,
+        Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 32.dp, vertical = 24.dp)
+                .fillMaxSize()
+                .padding(horizontal = 32.dp)
         ) {
-            item {
-                Image(
-                    painter = painterResource(id = CoreR.drawable.logo_dark_full),
-                    contentDescription = "logo_dark_full",
-                    modifier = Modifier.size(200.dp)
-                )
+            Image(
+                painter = painterResource(id = logoRes),
+                contentDescription = null,
+                modifier = Modifier.size(200.dp)
+            )
 
-                Text(
-                    text = stringResource(id = AuthR.string.registration_title),
-                    color = White,
-                    style = MaterialTheme.typography.displayLarge,
-                    modifier = Modifier.offset(y = (-50).dp)
-                )
-            }
+            Text(
+                text = stringResource(AuthR.string.registration_title),
+                color = MaterialTheme.colorScheme.onBackground,
+                style = MaterialTheme.typography.displayLarge.copy(lineHeight = 40.sp)
+            )
 
-            item {
-                RegisterForm(viewModel)
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                item {
+                    RegisterForm(
+                        viewModel = viewModel,
+                        onNavigateToLogin = onNavigateToLogin
+                    )
+                }
             }
         }
     }
@@ -99,7 +108,10 @@ fun RegisterScreen(
 
 
 @Composable
-fun RegisterForm(viewModel: RegisterViewModel) {
+fun RegisterForm(
+    viewModel: RegisterViewModel,
+    onNavigateToLogin: () -> Unit
+) {
     val firstName by viewModel.firstName.collectAsState()
     val lastName by viewModel.lastName.collectAsState()
     val email by viewModel.email.collectAsState()
@@ -111,7 +123,6 @@ fun RegisterForm(viewModel: RegisterViewModel) {
     val emailError by viewModel.emailError.collectAsState()
     val passwordError by viewModel.passwordError.collectAsState()
     val confirmPasswordError by viewModel.confirmPasswordError.collectAsState()
-    val generalError by viewModel.generalError.collectAsState()
     val phoneNumberError by viewModel.phoneNumberError.collectAsState()
 
     var passwordVisible by remember { mutableStateOf(false) }
@@ -120,15 +131,15 @@ fun RegisterForm(viewModel: RegisterViewModel) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top,
-        modifier = Modifier.fillMaxWidth().offset(y = (-30).dp)
+        modifier = Modifier.fillMaxWidth()
     ) {
         CustomTextField(
             value = firstName,
             onValueChange = {
                 viewModel.firstName.value = it
             },
-            label = stringResource(id = AuthR.string.label_first_name),
-            placeholder = stringResource(id = AuthR.string.label_first_name)
+            label = stringResource( AuthR.string.label_first_name),
+            placeholder = stringResource(AuthR.string.label_first_name)
         )
 
         CustomTextField(
@@ -136,8 +147,8 @@ fun RegisterForm(viewModel: RegisterViewModel) {
             onValueChange = {
                 viewModel.lastName.value = it
             },
-            label = stringResource(id = AuthR.string.label_last_name),
-            placeholder = stringResource(id = AuthR.string.label_last_name)
+            label = stringResource(AuthR.string.label_last_name),
+            placeholder = stringResource(AuthR.string.label_last_name)
         )
 
         CustomTextField(
@@ -146,8 +157,8 @@ fun RegisterForm(viewModel: RegisterViewModel) {
                 viewModel.email.value = it
                 viewModel.clearEmailError()
             },
-            label = stringResource(id = AuthR.string.label_email),
-            placeholder = stringResource(id = AuthR.string.label_email),
+            label = stringResource(AuthR.string.label_email),
+            placeholder = stringResource(AuthR.string.label_email),
             isError = emailError != null,
             errorMessage = emailError,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
@@ -159,8 +170,8 @@ fun RegisterForm(viewModel: RegisterViewModel) {
                 viewModel.phoneNumber.value = it
                 viewModel.clearPhoneNumberError()
             },
-            label = stringResource(id = AuthR.string.label_phone_number),
-            placeholder = stringResource(id = AuthR.string.label_phone_number),
+            label = stringResource( AuthR.string.label_phone_number),
+            placeholder = stringResource(AuthR.string.label_phone_number),
             isError = phoneNumberError != null,
             errorMessage = phoneNumberError
         )
@@ -171,8 +182,8 @@ fun RegisterForm(viewModel: RegisterViewModel) {
                 viewModel.password.value = it
                 viewModel.clearPasswordError()
             },
-            label = stringResource(id = AuthR.string.label_password),
-            placeholder = stringResource(id = AuthR.string.label_password),
+            label = stringResource(AuthR.string.label_password),
+            placeholder = stringResource(AuthR.string.label_password),
             isPassword = true,
             passwordVisible = passwordVisible,
             onPasswordVisibilityChange = { passwordVisible = !passwordVisible },
@@ -186,8 +197,8 @@ fun RegisterForm(viewModel: RegisterViewModel) {
                 viewModel.confirmPassword.value = it
                 viewModel.clearConfirmPasswordError()
             },
-            label = stringResource(id = AuthR.string.label_confirm_password),
-            placeholder = stringResource(id = AuthR.string.label_confirm_password),
+            label = stringResource(AuthR.string.label_confirm_password),
+            placeholder = stringResource(AuthR.string.label_confirm_password),
             isPassword = true,
             passwordVisible = confirmPasswordVisible,
             onPasswordVisibilityChange = { confirmPasswordVisible = !confirmPasswordVisible },
@@ -196,7 +207,7 @@ fun RegisterForm(viewModel: RegisterViewModel) {
         )
 
         CustomGenderField(
-            label = stringResource(id = AuthR.string.label_gender),
+            label = stringResource( AuthR.string.label_gender),
             gender = gender,
             onGenderSelected = {
                 Log.d("Register", "Gender clicked: $it")
@@ -206,8 +217,24 @@ fun RegisterForm(viewModel: RegisterViewModel) {
 
 
         CustomButton(
-            text = stringResource(id = AuthR.string.registration_title),
+            text = stringResource(AuthR.string.registration_title),
             onClick = { viewModel.register() }
         )
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Text(
+            text = stringResource(id = AuthR.string.text_login_prompt),
+            color = MaterialTheme.colorScheme.onBackground,
+            fontSize = 14.sp,
+            style = MaterialTheme.typography.labelSmall,
+            textAlign = TextAlign.Center,
+            textDecoration = TextDecoration.Underline,
+            modifier = Modifier
+                .padding(top = 24.dp)
+                .clickable { onNavigateToLogin() }
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
     }
 }

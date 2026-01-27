@@ -11,6 +11,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.core.R
+import androidx.compose.ui.res.stringResource
 import com.example.core.ui.components.CustomButton
 import com.example.core.ui.components.CustomTextField
 import com.example.core.ui.components.CustomTopBar
@@ -32,8 +33,6 @@ fun ChangePasswordScreen(
     val newPassword by viewModel.newPassword.collectAsState()
     val confirmPassword by viewModel.confirmPassword.collectAsState()
 
-    val generalError by viewModel.generalError.collectAsState()
-
     val changePasswordState by viewModel.changePasswordState.collectAsState()
 
     var oldPasswordVisible by remember { mutableStateOf(false) }
@@ -54,81 +53,85 @@ fun ChangePasswordScreen(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 20.dp)
-    ) {
+    Box(modifier = Modifier.fillMaxSize())
+    {
+        Column(
+            modifier = Modifier
+                .fillMaxSize(),
+        ) {
+            CustomTopBar(
+                title = stringResource(R.string.change_password_title),
+                showBack = true,
+                onBack = onBack
+            )
 
-        CustomTopBar(
-            title = stringResource(R.string.change_password_title),
-            showBack = true,
-            onBack = onBack
-        )
+            Spacer(modifier = Modifier.height(150.dp))
 
-        Spacer(modifier = Modifier.height(150.dp))
+            Divider(color = BackgroundNavDark, modifier = Modifier.padding(vertical = 16.dp))
 
-        Divider(color = BackgroundNavDark, modifier = Modifier.padding(vertical = 16.dp))
+            CustomTextField(
+                value = oldPassword,
+                onValueChange = {
+                    viewModel.oldPassword.value = it
+                    if (viewModel.errors.value.oldPasswordError != null) {
+                        viewModel.errors.value =
+                            viewModel.errors.value.copy(oldPasswordError = null)
+                    }
+                },
+                placeholder = stringResource(R.string.old_password_placeholder),
+                label = stringResource(R.string.old_password_label),
+                isPassword = true,
+                passwordVisible = oldPasswordVisible,
+                onPasswordVisibilityChange = { oldPasswordVisible = !oldPasswordVisible },
+                isError = viewModel.errors.value.oldPasswordError != null,
+                errorMessage = viewModel.errors.value.oldPasswordError
+            )
 
-        CustomTextField(
-            value = oldPassword,
-            onValueChange = {
-                viewModel.oldPassword.value = it
-                if (viewModel.errors.value.oldPasswordError != null) {
-                    viewModel.errors.value = viewModel.errors.value.copy(oldPasswordError = null)
-                }
-            },
-            placeholder = stringResource(R.string.old_password_placeholder),
-            label = stringResource(R.string.old_password_label),
-            isPassword = true,
-            passwordVisible = oldPasswordVisible,
-            onPasswordVisibilityChange = { oldPasswordVisible = !oldPasswordVisible },
-            isError = viewModel.errors.value.oldPasswordError != null,
-            errorMessage = viewModel.errors.value.oldPasswordError
-        )
+            CustomTextField(
+                value = newPassword,
+                onValueChange = {
+                    viewModel.newPassword.value = it
+                    if (viewModel.errors.value.newPasswordError != null) {
+                        viewModel.errors.value =
+                            viewModel.errors.value.copy(newPasswordError = null)
+                    }
+                },
+                placeholder = stringResource(R.string.new_password_placeholder),
+                label = stringResource(R.string.new_password_label),
+                isPassword = true,
+                passwordVisible = newPasswordVisible,
+                onPasswordVisibilityChange = { newPasswordVisible = !newPasswordVisible },
+                isError = errors.newPasswordError != null,
+                errorMessage = errors.newPasswordError
+            )
 
-        CustomTextField(
-            value = newPassword,
-            onValueChange = {
-                viewModel.newPassword.value = it
-                if (viewModel.errors.value.newPasswordError != null) {
-                    viewModel.errors.value = viewModel.errors.value.copy(newPasswordError = null)
-                }
-            },
-            placeholder = stringResource(R.string.new_password_placeholder),
-            label = stringResource(R.string.new_password_label),
-            isPassword = true,
-            passwordVisible = newPasswordVisible,
-            onPasswordVisibilityChange = { newPasswordVisible = !newPasswordVisible },
-            isError = errors.newPasswordError != null,
-            errorMessage = errors.newPasswordError
-        )
+            CustomTextField(
+                value = confirmPassword,
+                onValueChange = {
+                    viewModel.confirmPassword.value = it
+                    if (viewModel.errors.value.confirmPasswordError != null) {
+                        viewModel.errors.value =
+                            viewModel.errors.value.copy(confirmPasswordError = null)
+                    }
+                },
+                placeholder = stringResource(R.string.confirm_password_placeholder),
+                label = stringResource(R.string.confirm_password_label),
+                isPassword = true,
+                passwordVisible = confirmPasswordVisible,
+                onPasswordVisibilityChange = { confirmPasswordVisible = !confirmPasswordVisible },
+                isError = errors.confirmPasswordError != null,
+                errorMessage = errors.confirmPasswordError
+            )
 
-        CustomTextField(
-            value = confirmPassword,
-            onValueChange = {
-                viewModel.confirmPassword.value = it
-                if (viewModel.errors.value.confirmPasswordError != null) {
-                    viewModel.errors.value = viewModel.errors.value.copy(confirmPasswordError = null)
-                }
-            },
-            placeholder = stringResource(R.string.confirm_password_placeholder),
-            label = stringResource(R.string.confirm_password_label),
-            isPassword = true,
-            passwordVisible = confirmPasswordVisible,
-            onPasswordVisibilityChange = { confirmPasswordVisible = !confirmPasswordVisible },
-            isError = errors.confirmPasswordError != null,
-            errorMessage = errors.confirmPasswordError
-        )
+            Divider(color = BackgroundNavDark, modifier = Modifier.padding(vertical = 16.dp))
 
-        Divider(color = BackgroundNavDark, modifier = Modifier.padding(vertical = 16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-        Spacer(modifier = Modifier.height(24.dp))
-
-        CustomButton(
-            text = stringResource(R.string.button_save),
-            onClick = { viewModel.changePassword() },
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
+            CustomButton(
+                text = stringResource(R.string.button_save),
+                onClick = { viewModel.changePassword() },
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+        }
     }
 }

@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,9 +19,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -32,19 +34,31 @@ import com.example.core.ui.theme.NuvioFrontendTheme
 import com.example.nuviofrontend.navigation.NavigationHost
 import dagger.hilt.android.AndroidEntryPoint
 import com.example.core.R
+import com.example.core.settings.LanguagePreference
+import com.example.core.settings.LocaleManager
 import com.example.core.ui.components.CustomButton
-import com.example.core.ui.theme.Black
+import java.util.Locale
+import com.example.nuviofrontend.feature.settings.presentation.SettingsViewModel
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    private val settingsViewModel: SettingsViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        val savedLanguageCode = LanguagePreference.getSavedLanguage(this)
+        LocaleManager.setLocale(this, Locale(savedLanguageCode))
+
         setContent {
-            NuvioFrontendTheme {
+            val themeIndex by settingsViewModel.themeFlow.collectAsState(initial = 0)
+
+            NuvioFrontendTheme(darkTheme = themeIndex == 1) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.background
                 ) {
                     NavigationHost()
                 }
@@ -55,13 +69,20 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
-fun MainScreen(onNavigateToRegister: () -> Unit, onNavigateToLogin: () -> Unit, onContinueAsGuest: () -> Unit) {
+fun MainScreen(
+    onNavigateToRegister: () -> Unit,
+    onNavigateToLogin: () -> Unit,
+    onContinueAsGuest: () -> Unit,
+    themeIndex: Int
+) {
+    val backgroundRes = if (themeIndex == 1) R.drawable.background_dark else R.drawable.background_light
+    val logoRes = if (themeIndex == 1) R.drawable.logo_dark_full else R.drawable.logo_light_full
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = painterResource(id = R.drawable.background_light),
+            painter = painterResource(id = backgroundRes),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
@@ -75,7 +96,7 @@ fun MainScreen(onNavigateToRegister: () -> Unit, onNavigateToLogin: () -> Unit, 
                 .padding(horizontal = 32.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.logo_dark_full),
+                painter = painterResource(id = logoRes),
                 contentDescription = "logo_dark_full",
                 modifier = Modifier.size(230.dp),
             )
@@ -92,7 +113,7 @@ fun MainScreen(onNavigateToRegister: () -> Unit, onNavigateToLogin: () -> Unit, 
                 )
                 Text(
                     text = stringResource(R.string.text_guest),
-                    color = Black,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontSize = 14.sp,
                     style = MaterialTheme.typography.labelSmall,
                     textAlign = TextAlign.Center,

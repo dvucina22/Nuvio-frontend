@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCard
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.MoreVert
@@ -33,7 +34,9 @@ import com.example.core.ui.components.CustomTopBar
 import com.example.core.ui.theme.BackgroundNavDark
 import com.example.core.R
 import com.example.core.ui.components.CustomPopupWarning
+import com.example.core.ui.theme.AccentColor
 import com.example.core.ui.theme.WarningPopUpBackground
+import com.example.core.ui.theme.WhiteSoft
 import kotlin.collections.map
 
 data class SavedCardUi(
@@ -110,13 +113,24 @@ fun CardScreen(
             },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(bottom = 150.dp, end = 24.dp),
-            containerColor = Color(0xFFA2A9AD).copy(alpha = 0.30f),
+                .padding(bottom = 150.dp, end = 24.dp)
+                .size(44.dp)
+                .border(
+                    width = 1.dp,
+                    color = AccentColor.copy(alpha = 0.8f),
+                    shape = RoundedCornerShape(8.dp)
+                ),
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
             shape = RoundedCornerShape(8.dp),
-            contentColor = Color.White,
+            contentColor = MaterialTheme.colorScheme.onBackground,
             elevation = FloatingActionButtonDefaults.elevation( defaultElevation = 0.dp, pressedElevation = 0.dp, focusedElevation = 0.dp, hoveredElevation = 0.dp )
         ) {
-            Icon(painter = painterResource(R.drawable.add_new_card), contentDescription = "Add Card")
+            Icon(
+                imageVector = Icons.Default.AddCard,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.size(22.dp)
+            )
         }
 
         if (showAddCardDialog) {
@@ -183,13 +197,13 @@ fun CardItem(
             Icon(
                 imageVector = icon,
                 contentDescription = label,
-                tint = Color.White,
+                tint = WhiteSoft,
                 modifier = Modifier.size(13.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = label,
-                color = Color.White,
+                color = WhiteSoft,
                 fontSize = 12.sp
             )
         }
@@ -198,7 +212,7 @@ fun CardItem(
     Surface(
         modifier = Modifier.fillMaxWidth().height(92.dp),
         shape = RoundedCornerShape(8.dp),
-        color = Color(0xCC232323)
+        color = MaterialTheme.colorScheme.surfaceContainer
     ) {
         Column(modifier = Modifier.padding(10.dp)) {
             Row(
@@ -214,8 +228,8 @@ fun CardItem(
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = card.title,
-                    color = Color.White,
-                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    style = MaterialTheme.typography.bodySmall,
                 )
                 if (card.isPrimary) {
                     Spacer(modifier = Modifier.width(6.dp))
@@ -236,7 +250,7 @@ fun CardItem(
                         Icon(
                             Icons.Default.MoreVert,
                             contentDescription = "Menu",
-                            tint = Color.LightGray,
+                            tint = MaterialTheme.colorScheme.onBackground,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -280,24 +294,24 @@ fun CardItem(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = stringResource(R.string.card_number_label),
-                        color = Color.LightGray,
-                        style = MaterialTheme.typography.bodySmall
+                        color = MaterialTheme.colorScheme.onBackground,
+                        style = MaterialTheme.typography.displaySmall
                     )
                     Text(
                         text = card.maskedNumber,
-                        color = Color.LightGray,
+                        color = MaterialTheme.colorScheme.onBackground,
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
                         text = stringResource(R.string.due_date),
-                        color = Color.LightGray,
-                        style = MaterialTheme.typography.bodySmall
+                        color = MaterialTheme.colorScheme.onBackground,
+                        style = MaterialTheme.typography.displaySmall
                     )
                     Text(
                         text = card.expiry ?: "--/--",
-                        color = Color.LightGray,
+                        color = MaterialTheme.colorScheme.onBackground,
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }

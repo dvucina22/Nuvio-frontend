@@ -1,6 +1,7 @@
 package com.example.core.auth
 
 interface IAuthRepository {
+
     suspend fun register(
         firstName: String?,
         lastName: String?,
@@ -11,10 +12,6 @@ interface IAuthRepository {
     ): Boolean
 
     suspend fun login(email: String, password: String): Boolean
-
-    suspend fun loginWithGoogle(idToken: String): Boolean
-
-    suspend fun loginWithProvider(provider: String, idToken: String): Boolean
 
     suspend fun logout()
 }

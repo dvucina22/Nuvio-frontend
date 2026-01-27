@@ -1,26 +1,23 @@
 package com.example.nuviofrontend.navigation
 
 import android.widget.Toast
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.example.auth.presentation.AuthViewModel
 import com.example.auth.presentation.login.LoginScreen
 import com.example.auth.presentation.login.LoginViewModel
 import com.example.auth.presentation.register.RegisterScreen
+import com.example.auth_oauth.presentation.ui.GoogleLoginAction
 import com.example.core.R
 import com.example.nuviofrontend.MainScreen
 import com.example.nuviofrontend.feature.profile.presentation.ProfileEditScreen
@@ -28,7 +25,9 @@ import com.example.nuviofrontend.feature.profile.presentation.ProfileEditState
 import com.example.nuviofrontend.feature.profile.presentation.ProfileEditViewModel
 import com.example.nuviofrontend.feature.sale.presentation.CheckoutScreen
 import com.example.nuviofrontend.feature.sale.presentation.TransactionResultScreen
-import com.example.nuviofrontend.feature.profile.presentation.UsersScreen
+import com.example.nuviofrontend.feature.settings.presentation.SettingsViewModel
+import com.example.nuviofrontend.feature.transactions.presentation.TransactionDetailScreen
+import com.example.nuviofrontend.feature.transactions.presentation.TransactionsScreen
 
 @Composable
 fun AppNavGraph(navController: NavHostController) {
@@ -48,6 +47,8 @@ fun AppNavGraph(navController: NavHostController) {
         }
 
         composable(Screen.MainScreen.route) {
+            val settingsViewModel: SettingsViewModel = hiltViewModel()
+            val themeIndex by settingsViewModel.themeFlow.collectAsState(initial = 0)
             MainScreen(
                 onNavigateToRegister = { navController.navigate(Screen.Register.route) },
                 onNavigateToLogin = { navController.navigate(Screen.Login.route) },
@@ -56,38 +57,56 @@ fun AppNavGraph(navController: NavHostController) {
                         popUpTo(0)
                         launchSingleTop = true
                     }
-                }
+                },
+                themeIndex = themeIndex
             )
         }
 
         composable(Screen.Login.route) {
             val loginViewModel: LoginViewModel = hiltViewModel()
+            val settingsViewModel: SettingsViewModel = hiltViewModel()
+            val themeIndex by settingsViewModel.themeFlow.collectAsState(initial = 0)
+
+            val navigateHome = {
+                navController.navigate(Screen.MainAppScreen.route) {
+                    popUpTo(0)
+                    launchSingleTop = true
+                }
+            }
+
             LoginScreen(
                 onNavigateToRegister = { navController.navigate(Screen.Register.route) },
-                onNavigateToHome = {
-                    navController.navigate(Screen.MainAppScreen.route) {
-                        popUpTo(0)
-                        launchSingleTop = true
-                    }
+                onNavigateToHome = navigateHome,
+                viewModel = loginViewModel,
+                extraContent = {
+                    GoogleLoginAction(
+                        onSuccess = navigateHome
+                    )
                 },
-                viewModel = loginViewModel
+                themeIndex = themeIndex
             )
         }
 
         composable(Screen.Register.route) {
+            val settingsViewModel: SettingsViewModel = hiltViewModel()
+            val themeIndex by settingsViewModel.themeFlow.collectAsState(initial = 0)
             RegisterScreen(
+                onNavigateToLogin = { navController.navigate(Screen.Login.route) },
                 onRegisterSuccess = {
                     navController.navigate(Screen.Login.route) {
                         popUpTo(Screen.Register.route) { inclusive = true }
                         launchSingleTop = true
                     }
-                }
+                },
+                themeIndex = themeIndex
             )
         }
 
         composable(Screen.MainAppScreen.route) {
             val authVm: AuthViewModel = hiltViewModel()
             val ui by authVm.uiState.collectAsState()
+            val settingsViewModel: SettingsViewModel = hiltViewModel()
+            val themeIndex by settingsViewModel.themeFlow.collectAsState(initial = 0)
 
             MainAppScreen(
                 isLoggedIn = ui.isLoggedIn,
@@ -108,7 +127,8 @@ fun AppNavGraph(navController: NavHostController) {
                 },
                 onNavigateToUsers = {
                     navController.navigate(Screen.Users.route)
-                }
+                },
+                themeIndex = themeIndex
             )
         }
 
@@ -212,6 +232,33 @@ fun AppNavGraph(navController: NavHostController) {
                     navController.popBackStack()
                 },
                 onViewOrders = {}
+            )
+        }
+
+        composable(Screen.Transactions.route) {
+            TransactionsScreen(
+                onTransactionClick = { id ->
+                }
+            )
+        }
+
+        composable(Screen.Transactions.route) {
+            TransactionsScreen(
+                onTransactionClick = { id ->
+                    navController.navigate(Screen.TransactionDetail.createRoute(id))
+                }
+            )
+        }
+
+        composable(
+            route = Screen.TransactionDetail.route,
+            arguments = listOf(navArgument("transactionId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val transactionId = backStackEntry.arguments?.getLong("transactionId") ?: 0L
+
+            TransactionDetailScreen(
+                transactionId = transactionId,
+                onBack = { navController.popBackStack() }
             )
         }
     }

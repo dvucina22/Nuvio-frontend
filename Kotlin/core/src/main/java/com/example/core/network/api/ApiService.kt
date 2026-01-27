@@ -25,8 +25,12 @@ import com.example.core.catalog.dto.ProductFilterRequest
 import com.example.core.catalog.dto.SuccessfulDeleteResponse
 import com.example.core.catalog.dto.UpdateProductRequest
 import com.example.core.catalog.dto.UpdateProductResponse
+import com.example.core.network.dto.ApiResponse
 import com.example.core.sale.dto.SaleRequest
 import com.example.core.sale.dto.SaleResponse
+import com.example.core.transactions.dto.TransactionDetail
+import com.example.core.transactions.dto.TransactionFilterRequest
+import com.example.core.transactions.dto.TransactionListResponse
 import com.example.core.user.dto.ChangePasswordRequest
 import com.example.core.user.dto.ChangePasswordResponse
 import com.example.core.user.dto.UpdateProfilePictureRequest
@@ -132,4 +136,10 @@ interface ApiService {
 
     @DELETE("accounts/roles/{role_id}/user/{user_id}")
     suspend fun removeUserRole(@Path("role_id") roleId: Int, @Path("user_id") userId: String): Response<Unit>
+
+    @POST("transactions/history")
+    suspend fun getTransactionHistory(@Body request: TransactionFilterRequest): Response<com.example.core.network.dto.ApiResponse<com.example.core.transactions.dto.TransactionListResponse>>
+
+    @GET("transactions/history/{id}")
+    suspend fun getTransactionDetail(@Path("id") id: Long): ApiResponse<TransactionDetail>
 }

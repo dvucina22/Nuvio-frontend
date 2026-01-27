@@ -50,6 +50,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
+import com.example.core.ui.components.CustomTopBar
+import com.example.core.ui.theme.AccentColor
 
 @Composable
 fun CheckoutScreen(
@@ -68,132 +70,135 @@ fun CheckoutScreen(
             null -> {}
         }
     }
-
     Box(modifier = Modifier.fillMaxSize()) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = 10.dp, top = 20.dp),
-            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
-        ) {
-            item {
-                Column {
-                    Text(
-                        text = stringResource(R.string.checkout_title),
-                        color = Color(0xFF1C1C1C),
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = stringResource(R.string.checkout_subtitle),
-                        color = Color(0xFF344351),
-                        fontSize = 14.sp
-                    )
-                }
-            }
+        Column(modifier = Modifier.fillMaxSize()) {
+            CustomTopBar(
+                title = stringResource(R.string.checkout_title),
+                showBack = true,
+                onBack = onBackClick
+            )
 
-            if (state.isLoading) {
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(32.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(color = Color(0xFF004CBB))
-                    }
-                }
-                return@LazyColumn
-            }
-
-            item {
-                CartPreviewSection(cartItems = state.cartItems)
-            }
-
-            item {
-                UserInfoSection(user = state.user)
-            }
-
-            item {
-                PaymentMethodSection(
-                    cards = state.cards,
-                    selectedCard = state.selectedCard,
-                    manualCardNumber = state.manualCardNumber,
-                    manualExpiryMonth = state.manualExpiryMonth,
-                    manualExpiryYear = state.manualExpiryYear,
-                    manualFullName = state.manualFullName,
-                    onCardSelected = { viewModel.selectCard(it) },
-                    onManualCardNumberChanged = { viewModel.updateManualCardNumber(it) },
-                    onManualExpiryMonthChanged = { viewModel.updateManualExpiryMonth(it) },
-                    onManualExpiryYearChanged = { viewModel.updateManualExpiryYear(it) },
-                    onManualFullNameChanged = { viewModel.updateManualFullName(it) }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = 30.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.checkout_subtitle),
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontSize = 14.sp,
+                    modifier = Modifier.align(Alignment.CenterEnd)
                 )
             }
 
-            item {
-                val total = state.cartItems.sumOf { it.basePrice * it.quantity }
-
-                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.total),
-                            color = Color(0xFF1C1C1C),
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "€${String.format("%.2f", total)}",
-                            color = Color(0xFF004CBB),
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold
-                        )
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 30.dp),
+                contentPadding = PaddingValues(vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                if (state.isLoading) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(32.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(color = Color(0xFF004CBB))
+                        }
                     }
+                    return@LazyColumn
+                }
 
-                    Button(
-                        onClick = { viewModel.processSale() },
-                        enabled = !state.isProcessing && state.cartItems.isNotEmpty(),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF004CBB),
-                            contentColor = Color.White,
-                            disabledContainerColor = Color(0xFFCACACA),
-                            disabledContentColor = Color(0xFF6B7280)
-                        ),
-                        elevation = ButtonDefaults.buttonElevation(
-                            defaultElevation = 2.dp,
-                            pressedElevation = 0.dp
-                        )
-                    ) {
-                        if (state.isProcessing) {
-                            CircularProgressIndicator(
-                                color = Color.White,
-                                modifier = Modifier.size(24.dp),
-                                strokeWidth = 2.dp
-                            )
-                        } else {
+                item {
+                    CartPreviewSection(cartItems = state.cartItems)
+                }
+
+                item {
+                    UserInfoSection(user = state.user)
+                }
+
+                item {
+                    PaymentMethodSection(
+                        cards = state.cards,
+                        selectedCard = state.selectedCard,
+                        manualCardNumber = state.manualCardNumber,
+                        manualExpiryMonth = state.manualExpiryMonth,
+                        manualExpiryYear = state.manualExpiryYear,
+                        manualFullName = state.manualFullName,
+                        onCardSelected = { viewModel.selectCard(it) },
+                        onManualCardNumberChanged = { viewModel.updateManualCardNumber(it) },
+                        onManualExpiryMonthChanged = { viewModel.updateManualExpiryMonth(it) },
+                        onManualExpiryYearChanged = { viewModel.updateManualExpiryYear(it) },
+                        onManualFullNameChanged = { viewModel.updateManualFullName(it) }
+                    )
+                }
+
+                item {
+                    val total = state.cartItems.sumOf { it.basePrice * it.quantity }
+
+                    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             Text(
-                                text = stringResource(id = R.string.pay_button),
+                                text = stringResource(id = R.string.total),
+                                color = MaterialTheme.colorScheme.onBackground,
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold
                             )
+                            Text(
+                                text = "€${String.format("%.2f", total)}",
+                                color = AccentColor,
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+
+                        Button(
+                            onClick = { viewModel.processSale() },
+                            enabled = !state.isProcessing && state.cartItems.isNotEmpty(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = AccentColor,
+                                contentColor = Color.White,
+                                disabledContainerColor = Color(0xFFCACACA),
+                                disabledContentColor = Color(0xFF6B7280)
+                            ),
+                            elevation = ButtonDefaults.buttonElevation(
+                                defaultElevation = 2.dp,
+                                pressedElevation = 0.dp
+                            )
+                        ) {
+                            if (state.isProcessing) {
+                                CircularProgressIndicator(
+                                    color = Color.White,
+                                    modifier = Modifier.size(24.dp),
+                                    strokeWidth = 2.dp
+                                )
+                            } else {
+                                Text(
+                                    text = stringResource(id = R.string.pay_button),
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
                         }
                     }
                 }
-            }
 
-            item {
-                Spacer(modifier = Modifier.height(20.dp))
+                item {
+                    Spacer(modifier = Modifier.height(30.dp))
+                }
             }
         }
-
         state.error?.let { error ->
             Snackbar(
                 modifier = Modifier
@@ -211,20 +216,20 @@ fun CheckoutScreen(
     }
 }
 
+
 @Composable
 fun CartPreviewSection(cartItems: List<com.example.core.cart.dto.CartItemDto>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .shadow(2.dp, RoundedCornerShape(12.dp))
             .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFFD8D9D9))
-            .border(1.dp, Color(0xFFCACACA), RoundedCornerShape(12.dp))
+            .background(color = MaterialTheme.colorScheme.surfaceContainer)
+            .border(1.dp, color = MaterialTheme.colorScheme.surfaceDim, RoundedCornerShape(12.dp))
             .padding(16.dp)
     ) {
         Text(
             text = stringResource(R.string.order_summary, cartItems.size),
-            color = Color(0xFF1C1C1C),
+            color = MaterialTheme.colorScheme.onBackground,
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold
         )
@@ -260,7 +265,7 @@ fun CartPreviewSection(cartItems: List<com.example.core.cart.dto.CartItemDto>) {
                         ) {
                             Text(
                                 text = "${item.quantity}",
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onBackground,
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold
                             )
@@ -277,15 +282,14 @@ fun UserInfoSection(user: UserProfile?) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .shadow(2.dp, RoundedCornerShape(12.dp))
             .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFFD8D9D9))
-            .border(1.dp, Color(0xFFCACACA), RoundedCornerShape(12.dp))
+            .background(color = MaterialTheme.colorScheme.surfaceContainer)
+            .border(1.dp, color = MaterialTheme.colorScheme.surfaceDim, RoundedCornerShape(12.dp))
             .padding(16.dp)
     ) {
         Text(
             text = stringResource(R.string.billing_information),
-            color = Color(0xFF1C1C1C),
+            color = MaterialTheme.colorScheme.onBackground,
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold
         )
@@ -318,12 +322,12 @@ private fun InfoRow(label: String, value: String) {
     ) {
         Text(
             text = label,
-            color = Color(0xFF6B7280),
+            color = MaterialTheme.colorScheme.onBackground,
             fontSize = 14.sp
         )
         Text(
             text = value,
-            color = Color(0xFF1C1C1C),
+            color = MaterialTheme.colorScheme.onBackground,
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium
         )
@@ -349,10 +353,9 @@ fun PaymentMethodSection(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .shadow(2.dp, RoundedCornerShape(12.dp))
             .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFFD8D9D9))
-            .border(1.dp, Color(0xFFCACACA), RoundedCornerShape(12.dp))
+            .background(color = MaterialTheme.colorScheme.surfaceContainer)
+            .border(1.dp, color = MaterialTheme.colorScheme.surfaceDim, RoundedCornerShape(12.dp))
             .padding(16.dp)
     ) {
         Row(
@@ -362,7 +365,7 @@ fun PaymentMethodSection(
         ) {
             Text(
                 text = stringResource(R.string.payment_method),
-                color = Color(0xFF1C1C1C),
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold
             )
@@ -371,7 +374,7 @@ fun PaymentMethodSection(
                 TextButton(
                     onClick = { useNewCard = !useNewCard },
                     colors = ButtonDefaults.textButtonColors(
-                        contentColor = Color(0xFF004CBB)
+                        contentColor = AccentColor
                     )
                 ) {
                     Icon(
@@ -383,7 +386,7 @@ fun PaymentMethodSection(
                     Text(
                         text = if (useNewCard) stringResource(R.string.payment_use_saved_card) else stringResource(R.string.payment_new_card),
                         fontSize = 13.sp,
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.Medium,
                     )
                 }
             }
@@ -394,7 +397,7 @@ fun PaymentMethodSection(
         if (!useNewCard && cards.isNotEmpty()) {
             Text(
                 text = stringResource(R.string.payment_select_saved_card),
-                color = Color(0xFF6B7280),
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 12.sp,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
@@ -411,7 +414,7 @@ fun PaymentMethodSection(
         } else {
             Text(
                 text = stringResource(R.string.payment_enter_card_details),
-                color = Color(0xFF6B7280),
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 12.sp,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
@@ -423,12 +426,12 @@ fun PaymentMethodSection(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth(),
                 visualTransformation = CardNumberVisualTransformation(),
-                textStyle = LocalTextStyle.current.copy(color = Color.Black),
+                textStyle = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.onBackground),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Color(0xFF004CBB),
-                    unfocusedBorderColor = Color(0xFFCACACA),
+                    unfocusedBorderColor = MaterialTheme.colorScheme.surfaceDim,
                     focusedLabelColor = Color(0xFF004CBB),
-                    unfocusedLabelColor = Color(0xFF6B7280)
+                    unfocusedLabelColor = MaterialTheme.colorScheme.surfaceVariant
                 )
             )
 
@@ -440,7 +443,7 @@ fun PaymentMethodSection(
                     onValueChange = onManualExpiryMonthChanged,
                     label = { Text(stringResource(R.string.expiry_mm)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    textStyle = LocalTextStyle.current.copy(color = Color.Black),
+                    textStyle = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.onBackground),
                     modifier = Modifier.weight(1f),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Color(0xFF004CBB),
@@ -455,7 +458,7 @@ fun PaymentMethodSection(
                     onValueChange = onManualExpiryYearChanged,
                     label = { Text(stringResource(R.string.expiry_yy)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    textStyle = LocalTextStyle.current.copy(color = Color.Black),
+                    textStyle = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.onBackground),
                     modifier = Modifier.weight(1f),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Color(0xFF004CBB),
@@ -472,7 +475,7 @@ fun PaymentMethodSection(
                 value = manualFullName,
                 onValueChange = onManualFullNameChanged,
                 label = { Text(stringResource(R.string.full_name_on_card)) },
-                textStyle = LocalTextStyle.current.copy(color = Color.Black),
+                textStyle = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.onBackground),
                 modifier = Modifier.fillMaxWidth(),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Color(0xFF004CBB),
@@ -495,10 +498,10 @@ fun SavedCardItem(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
-            .background(if (isSelected) Color(0xFFE3F2FD) else Color.White)
+            .background(if (isSelected) MaterialTheme.colorScheme.surfaceContainerLowest else MaterialTheme.colorScheme.surfaceVariant)
             .border(
                 width = if (isSelected) 2.dp else 1.dp,
-                color = if (isSelected) Color(0xFF004CBB) else Color(0xFFCACACA),
+                color = if (isSelected) AccentColor else MaterialTheme.colorScheme.surfaceDim,
                 shape = RoundedCornerShape(8.dp)
             )
             .clickable(onClick = onClick)
@@ -525,13 +528,13 @@ fun SavedCardItem(
             Column {
                 Text(
                     text = card.cardName,
-                    color = Color(0xFF1C1C1C),
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
                     text = "**** **** **** ${card.lastFourDigits}",
-                    color = Color(0xFF6B7280),
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontSize = 13.sp
                 )
                 Text(
@@ -540,7 +543,7 @@ fun SavedCardItem(
                         card.expirationMonth,
                         card.expirationYear
                     ),
-                    color = Color(0xFF6B7280),
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontSize = 11.sp
                 )
             }
@@ -550,7 +553,7 @@ fun SavedCardItem(
             Icon(
                 imageVector = Icons.Default.CheckCircle,
                 contentDescription = "Selected",
-                tint = Color(0xFF004CBB),
+                tint = AccentColor,
                 modifier = Modifier.size(24.dp)
             )
         }

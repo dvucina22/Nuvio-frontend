@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import com.example.core.ui.theme.AccentColor
 import com.example.core.ui.theme.White
 import com.example.core.ui.theme.ButtonColorDark
 import com.example.core.ui.theme.ButtonColorSelected
@@ -37,7 +38,7 @@ fun CustomGenderField(
     ) {
         Text(
             text = label,
-            color = White,
+            color = MaterialTheme.colorScheme.onBackground,
             style = MaterialTheme.typography.labelSmall,
             modifier = Modifier
                 .padding(start = 32.dp, bottom = 4.dp, top = 4.dp)
@@ -61,7 +62,7 @@ fun CustomGenderField(
                         .size(18.dp)
                         .clip(RoundedCornerShape(50))
                         .background(
-                            if (isSelected) ButtonColorSelected else ButtonColorDark
+                            if (isSelected) AccentColor else ButtonColorDark
                         )
                 )
 
@@ -69,7 +70,7 @@ fun CustomGenderField(
 
                 Text(
                     text = option,
-                    color = White,
+                    color = MaterialTheme.colorScheme.onBackground,
                     style = MaterialTheme.typography.labelSmall
                 )
             }

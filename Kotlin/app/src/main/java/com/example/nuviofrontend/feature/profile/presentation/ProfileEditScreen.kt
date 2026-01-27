@@ -26,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.core.R
+import androidx.compose.ui.res.stringResource
 import com.example.core.ui.components.CustomButton
 import com.example.core.ui.components.CustomDropdown
 import com.example.core.ui.components.CustomTextField
@@ -84,7 +85,6 @@ fun ProfileEditScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
-                .padding(horizontal = 20.dp)
         ) {
             CustomTopBar(
                 title = stringResource(R.string.edit_profile_title),
@@ -191,6 +191,7 @@ fun ProfileEditScreen(
                 )
 
                 CustomDropdown(
+                    modifier = Modifier.width(304.dp),
                     label = stringResource(R.string.label_gender),
                     value = genderState,
                     items = listOf("male", "female", "other"),
