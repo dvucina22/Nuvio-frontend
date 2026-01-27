@@ -202,15 +202,18 @@ class SaleViewModel @Inject constructor(
 
                 result.onSuccess { response ->
                     if (!response.success) {
-                        // Handle API error response
                         val errorMsg = response.error?.message ?: "Unknown error"
                         handlePaymentFailure(errorMsg)
                     } else if (response.data?.status == "APPROVED") {
-                        // Payment approved
+                        try {
+                            cartRepository.clearCart()
+                        } catch (e: Exception) {
+                            _state.value = _state.value.copy(error = "Payment successful but failed to clear cart")
+                        }
                         _checkoutResult.value = CheckoutResult.Success(response)
                         _state.value = _state.value.copy(isProcessing = false, retryCount = 0)
+
                     } else {
-                        // Payment declined
                         val status = response.data?.status?.lowercase() ?: "declined"
                         val responseCode = response.data?.responseCode ?: ""
                         handlePaymentFailure("Payment $status (Code: $responseCode)")

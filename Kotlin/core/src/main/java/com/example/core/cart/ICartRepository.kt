@@ -6,4 +6,5 @@ interface ICartRepository {
     suspend fun getCartItems(): List<CartItemDto>
     suspend fun addCartItem(productId: Int)
     suspend fun decreaseCartItem(productId: Int)
+    suspend fun clearCart()
 }

@@ -13,4 +13,8 @@ class CartRepository @Inject constructor (
 
     override suspend fun addCartItem(productId: Int) = cartService.addCartItem(productId)
     override suspend fun decreaseCartItem(productId: Int) = cartService.decreaseCartItem(productId)
+
+    override suspend fun clearCart() {
+        cartService.clearCart()
+    }
 }

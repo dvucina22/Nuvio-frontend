@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.example.nuviofrontend"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.nuviofrontend"
@@ -63,6 +63,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.firebase.appdistribution.gradle)
+    implementation(libs.androidx.compose.runtime)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

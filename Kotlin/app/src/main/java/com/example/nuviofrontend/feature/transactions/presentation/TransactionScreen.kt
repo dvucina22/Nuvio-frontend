@@ -55,6 +55,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.core.R
 import com.example.core.transactions.dto.TransactionListItem
 import com.example.core.ui.components.CustomRangeSlider
+import com.example.core.ui.components.CustomTopBar
 import com.example.core.ui.components.IconActionBox
 import com.example.core.ui.components.SearchField
 import com.example.core.ui.components.TransactionCard
@@ -69,7 +70,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun TransactionsScreen(
     viewModel: TransactionsViewModel = hiltViewModel(),
-    onTransactionClick: (Long) -> Unit
+    onTransactionClick: (Long) -> Unit,
+    onBack: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -87,29 +89,12 @@ fun TransactionsScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 80.dp, top = 20.dp)
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        start = 20.dp,
-                        end = 20.dp,
-                        top = 26.dp,
-                        bottom = 13.dp
-                    ),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Text(
-                        text = stringResource(R.string.transactions_title),
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
+            CustomTopBar(
+                title = stringResource(R.string.transactions_title),
+                showBack = true,
+                onBack = onBack
+            )
 
             Column(modifier = Modifier.fillMaxSize()) {
                 Row(

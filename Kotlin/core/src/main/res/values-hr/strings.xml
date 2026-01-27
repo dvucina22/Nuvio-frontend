@@ -68,6 +68,7 @@
     <string name="change_password">Promijenite lozinku</string>
     <string name="users">Korisnici</string>
     <string name="help">Pomoć</string>
+    <string name="statistics">Statistika</string>
 
     <string name="edit_profile_title">Uredi profil</string>
     <string name="back_button">Natrag</string>
@@ -394,4 +395,12 @@
     <string name="quantity">Količina</string>
     <string name="transaction_time">Vrijeme transakcije</string>
 
+    <string name="total_revenue">Ukupni prihod</string>
+    <string name="total_transactions">Ukupno transakcija</string>
+    <string name="average_transaction">Prosječna vrijednost transakcije</string>
+    <string name="successful">Uspješno</string>
+    <string name="unsuccessful">Neuspješno</string>
+    <string name="cancelled">Stornirano</string>
+    <string name="pending">Na čekanju</string>
+    <string name="shopping_cart_without_products">Vaša košarica je prazna.</string>
 </resources>

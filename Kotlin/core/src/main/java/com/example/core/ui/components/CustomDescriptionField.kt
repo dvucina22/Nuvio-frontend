@@ -23,17 +23,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.example.core.R
-import com.example.core.ui.theme.BackgroundColorInput
 import com.example.core.ui.theme.Black
 import com.example.core.ui.theme.Error
 import com.example.core.ui.theme.White
-import com.example.core.ui.theme.ColorInput
 
 @Composable
 fun CustomDescriptionField(

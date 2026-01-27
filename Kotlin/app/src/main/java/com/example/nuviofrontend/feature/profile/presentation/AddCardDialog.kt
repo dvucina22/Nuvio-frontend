@@ -40,10 +40,6 @@ import com.example.core.R
 import com.example.core.ui.components.CustomTextField
 import com.example.core.ui.components.SmallCustomButton
 import com.example.core.ui.theme.BackgroundNavDark
-import com.example.core.ui.theme.Black
-import com.example.core.ui.theme.ButtonColorDark
-import com.example.core.ui.theme.CardItemBackgroundLight
-import com.example.core.ui.theme.White
 
 @Composable
 fun AddCardDialog(
@@ -94,10 +90,12 @@ fun AddCardDialog(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    val firstDigit  = cardNumber.firstOrNull()?.digitToIntOrNull()
+
                     val cardLogo = when {
-                        cardNumber.startsWith("4") -> R.drawable.visa_logo
-                        cardNumber.startsWith("5") -> R.drawable.mastercard_logo
-                        else -> R.drawable.add_new_card
+                        firstDigit == null -> R.drawable.add_new_card
+                        firstDigit % 2 == 0 -> R.drawable.visa_logo
+                        else -> R.drawable.mastercard_logo
                     }
                     Image(
                         painter = painterResource(id = cardLogo),

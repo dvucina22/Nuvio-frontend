@@ -84,14 +84,9 @@ fun CartProductCard(
                 Box(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .padding(8.dp)
-                        .shadow(
-                            elevation = 2.dp,
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(MaterialTheme.colorScheme.surfaceContainerLowest.copy(alpha = 0.2f))
-                        .padding(horizontal = 10.dp, vertical = 6.dp)
+                        .padding(horizontal = 4.dp, vertical = 4.dp)
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(MaterialTheme.colorScheme.surfaceContainerLowest.copy(alpha = 0.5f))
                 ) {
                     Text(
                         text = item.category,

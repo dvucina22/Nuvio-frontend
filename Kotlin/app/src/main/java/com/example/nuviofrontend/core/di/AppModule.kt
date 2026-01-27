@@ -28,6 +28,8 @@ import com.example.nuviofrontend.feature.profile.data.UserRepository
 import com.example.nuviofrontend.feature.profile.data.UserService
 import com.example.nuviofrontend.feature.sale.data.SaleRepository
 import com.example.nuviofrontend.feature.sale.data.SaleService
+import com.example.nuviofrontend.feature.statistics.data.StatisticsRepository
+import com.example.nuviofrontend.feature.statistics.data.StatisticsService
 import com.example.nuviofrontend.feature.transactions.data.TransactionRepository
 import com.example.nuviofrontend.feature.transactions.data.TransactionService
 import dagger.Module
@@ -176,5 +178,17 @@ object AppModule {
     @Singleton
     fun providePreferencesDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
         return context.dataStore
+    }
+
+    @Provides
+    @Singleton
+    fun provideStatisticsService(apiService: ApiService): StatisticsService{
+        return StatisticsService(apiService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideStatisticsRepository(statisticsService: StatisticsService): StatisticsRepository{
+        return StatisticsRepository(statisticsService)
     }
 }

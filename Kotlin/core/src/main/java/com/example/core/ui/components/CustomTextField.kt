@@ -43,11 +43,7 @@ import androidx.compose.ui.unit.dp
 import com.example.core.ui.theme.Error
 import com.example.core.ui.theme.White
 import com.example.core.R
-import com.example.core.ui.theme.BackgroundColorInput
 import com.example.core.ui.theme.BackgroundNavDark
-import com.example.core.ui.theme.Black
-import com.example.core.ui.theme.ButtonColorSelected
-import com.example.core.ui.theme.ColorInput
 
 @Composable
 fun CustomTextField(

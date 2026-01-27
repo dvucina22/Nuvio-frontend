@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.core.R
 import androidx.compose.ui.res.stringResource
+import com.example.core.ui.components.CustomPopupWarning
 import com.example.core.ui.components.CustomTopBar
 import com.example.core.ui.components.SearchField
 import com.example.core.ui.components.UserRoleCard
@@ -159,29 +160,17 @@ fun UsersScreen(
                 }
 
                 if (confirmDeactivateId != null) {
-                    AlertDialog(
-                        onDismissRequest = { confirmDeactivateId = null },
-                        confirmButton = {
-                            Button(
-                                onClick = {
-                                    confirmDeactivateId?.let { viewModel.deactivateUser(it) }
-                                    confirmDeactivateId = null
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFFB3261E),
-                                    contentColor = White
-                                )
-                            ) {
-                                Text(text = stringResource(R.string.users_deactivate_confirm))
-                            }
-                        },
-                        dismissButton = {
-                            TextButton(onClick = { confirmDeactivateId = null }) {
-                                Text(text = stringResource(R.string.cancel))
-                            }
-                        },
-                        title = { Text(text = stringResource(R.string.users_deactivate_title)) },
-                        text = { Text(text = stringResource(R.string.users_deactivate_message)) }
+                    val user = state.visibleUsers.find { it.id == confirmDeactivateId }
+                    CustomPopupWarning(
+                        title = stringResource(R.string.users_deactivate_title),
+                        message = stringResource(R.string.users_deactivate_message),
+                        confirmText = stringResource(R.string.users_deactivate_confirm),
+                        dismissText = stringResource(R.string.cancel),
+                        onDismiss = { confirmDeactivateId = null },
+                        onConfirm = {
+                            user?.let { viewModel.deactivateUser(it.id) }
+                            confirmDeactivateId = null
+                        }
                     )
                 }
             }

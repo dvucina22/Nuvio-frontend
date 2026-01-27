@@ -1,6 +1,5 @@
 package com.example.core.ui.components
 
-import android.R.attr.fontWeight
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -25,13 +24,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.core.R
 import com.example.core.ui.theme.AccentColor
-import com.example.core.ui.theme.BackgroundColorInput
-import com.example.core.ui.theme.Black
-import com.example.core.ui.theme.ColorInput
-import com.example.core.ui.theme.IconDark
-import com.example.core.ui.theme.LightOverlay
-import com.example.core.ui.theme.White
-
 @Composable
 fun SearchField(
     value: String,

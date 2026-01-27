@@ -33,7 +33,6 @@ import com.example.nuviofrontend.feature.cart.presentation.CartScreen
 import com.example.nuviofrontend.feature.search.presentation.SearchScreen
 import com.example.core.R
 import com.example.core.ui.theme.AccentColor
-import com.example.core.ui.theme.CardItemBackgroundDark
 import com.example.core.ui.theme.LightOverlay
 import com.example.core.ui.theme.IconUnselectedTintDark
 import com.example.nuviofrontend.feature.catalog.presentation.AddNewProductScreen

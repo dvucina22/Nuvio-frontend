@@ -35,9 +35,6 @@ import androidx.compose.ui.window.Dialog
 import com.example.core.ui.theme.BackgroundNavDark
 import com.example.core.ui.theme.ButtonColorDark
 import com.example.core.R
-import com.example.core.ui.theme.AccentColor
-import com.example.core.ui.theme.Error
-import com.example.core.ui.theme.WarningPopUpBackground
 
 @Composable
 fun CustomPopupWarning(
