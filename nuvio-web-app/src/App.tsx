@@ -1,0 +1,42 @@
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import { useAuth } from './hooks/useAuth';
+import LoginPage from './pages/auth/LoginPage';
+import DashboardPage from './pages/dashboard/DashboardPage';
+import ProtectedRoute from './components/shared/ProtectedRoute';
+
+const RootRedirect: React.FC = () => {
+  const { isAuthenticated } = useAuth();
+  return <Navigate to={isAuthenticated ? '/dashboard' : '/login'} replace />;
+};
+
+const App: React.FC = () => {
+  return (
+    <div 
+      className="min-h-screen bg-cover bg-center bg-fixed"
+      style={{ backgroundImage: 'url(/bg_light.jpg)' }}
+    >
+      <div className="absolute inset-0 bg-black/20 -z-10"></div>
+      
+      <BrowserRouter>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<RootRedirect />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <DashboardPage />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </AuthProvider>
+      </BrowserRouter>
+    </div>
+  );
+};
+
+export default App;
