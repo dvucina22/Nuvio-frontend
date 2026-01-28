@@ -60,6 +60,7 @@ fun LoginScreen(
             else -> Unit
         }
     }
+
     val backgroundRes = if (themeIndex == 1) CoreR.drawable.background_dark else CoreR.drawable.background_light
     val logoRes = if (themeIndex == 1) CoreR.drawable.logo_dark_full else CoreR.drawable.logo_light_full
 
@@ -98,6 +99,7 @@ fun LoginScreen(
                 onPasswordChange = { password = it },
                 onLogin = { viewModel.login(email, password) },
                 onNavigateToRegister = onNavigateToRegister,
+                onOAuthSuccess = onNavigateToHome,
                 extraContent = extraContent
             )
         }
@@ -115,6 +117,7 @@ fun LoginForm(
     onPasswordChange: (String) -> Unit,
     onLogin: () -> Unit,
     onNavigateToRegister: () -> Unit,
+    onOAuthSuccess: () -> Unit,
     extraContent: @Composable (() -> Unit)? = null
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
@@ -164,6 +167,12 @@ fun LoginForm(
         CustomButton(
             text = stringResource(id = AuthR.string.button_login),
             onClick = onLogin
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OAuthButtons(
+            onSuccess = onOAuthSuccess
         )
 
         if (extraContent != null) {
