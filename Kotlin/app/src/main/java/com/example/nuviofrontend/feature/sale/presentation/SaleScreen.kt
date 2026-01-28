@@ -1,6 +1,5 @@
 package com.example.nuviofrontend.feature.sale.presentation
 
-import android.R.attr.fontWeight
 import androidx.compose.foundation.Image
 import kotlin.collections.isNotEmpty
 import androidx.compose.foundation.background
@@ -28,13 +27,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -44,12 +41,8 @@ import com.example.core.cards.dto.CardDto
 import com.example.core.model.UserProfile
 import com.example.core.sale.dto.SaleResponse
 import com.example.nuviofrontend.feature.profile.presentation.CardNumberVisualTransformation
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
+import com.example.core.ui.components.CustomTextField
 import com.example.core.ui.components.CustomTopBar
 import com.example.core.ui.theme.AccentColor
 
@@ -419,71 +412,51 @@ fun PaymentMethodSection(
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            OutlinedTextField(
+            CustomTextField(
                 value = manualCardNumber,
                 onValueChange = onManualCardNumberChanged,
-                label = { Text(stringResource(R.string.card_number)) },
+                placeholder = stringResource(R.string.card_number),
+                label = stringResource(R.string.card_number),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.fillMaxWidth(),
                 visualTransformation = CardNumberVisualTransformation(),
-                textStyle = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.onBackground),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF004CBB),
-                    unfocusedBorderColor = MaterialTheme.colorScheme.surfaceDim,
-                    focusedLabelColor = Color(0xFF004CBB),
-                    unfocusedLabelColor = MaterialTheme.colorScheme.surfaceVariant
-                )
+                modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OutlinedTextField(
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp)
+            ) {
+                CustomTextField(
                     value = manualExpiryMonth,
                     onValueChange = onManualExpiryMonthChanged,
-                    label = { Text(stringResource(R.string.expiry_mm)) },
+                    placeholder = stringResource(R.string.expiry_mm),
+                    label = stringResource(R.string.expiry_mm),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    textStyle = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.onBackground),
-                    modifier = Modifier.weight(1f),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF004CBB),
-                        unfocusedBorderColor = Color(0xFFCACACA),
-                        focusedLabelColor = Color(0xFF004CBB),
-                        unfocusedLabelColor = Color(0xFF6B7280)
-                    )
+                    modifier = Modifier.weight(1f)
                 )
 
-                OutlinedTextField(
+                CustomTextField(
                     value = manualExpiryYear,
                     onValueChange = onManualExpiryYearChanged,
-                    label = { Text(stringResource(R.string.expiry_yy)) },
+                    placeholder = stringResource(R.string.expiry_yy),
+                    label = stringResource(R.string.expiry_yy),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    textStyle = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.onBackground),
-                    modifier = Modifier.weight(1f),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF004CBB),
-                        unfocusedBorderColor = Color(0xFFCACACA),
-                        focusedLabelColor = Color(0xFF004CBB),
-                        unfocusedLabelColor = Color(0xFF6B7280)
-                    )
+                    modifier = Modifier.weight(1f)
                 )
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            OutlinedTextField(
+            CustomTextField(
                 value = manualFullName,
                 onValueChange = onManualFullNameChanged,
-                label = { Text(stringResource(R.string.full_name_on_card)) },
-                textStyle = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.onBackground),
-                modifier = Modifier.fillMaxWidth(),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF004CBB),
-                    unfocusedBorderColor = Color(0xFFCACACA),
-                    focusedLabelColor = Color(0xFF004CBB),
-                    unfocusedLabelColor = Color(0xFF6B7280)
-                )
+                placeholder = stringResource(R.string.full_name_on_card),
+                label = stringResource(R.string.full_name_on_card),
+                modifier = Modifier.fillMaxWidth()
             )
+
         }
     }
 }

@@ -158,48 +158,73 @@ fun SearchScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                when {
-                    state.isLoading -> {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 32.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(color = IconSelectedTintDark)
+
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    contentPadding = PaddingValues(horizontal = 0.dp, vertical = 8.dp)
+                ) {
+                    if (state.isLoading) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 32.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator(color = IconSelectedTintDark)
+                            }
                         }
                     }
 
-                    state.results.isEmpty() &&
-                            state.query.isNotBlank() &&
-                            state.error == null -> {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 32.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = stringResource(R.string.no_results),
-                                color = MaterialTheme.colorScheme.surfaceContainerLowest
-                            )
+                    if (state.results.isEmpty() && state.query.isNotBlank() && state.error == null) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 32.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.no_results),
+                                    color = MaterialTheme.colorScheme.surfaceContainerLowest
+                                )
+                            }
                         }
                     }
 
-                    state.results.isNotEmpty() -> {
-                        SearchResultsGrid(
-                            products = state.results,
-                            isLoadingMore = state.isLoadingMore,
-                            favoriteProductIds = state.favoriteProductIds,
-                            onLoadMore = { viewModel.loadMore() },
-                            onToggleFavorite = { productId, shouldBeFavorite ->
-                                viewModel.setFavorite(productId, shouldBeFavorite)
+                    itemsIndexed(state.results) { index, product ->
+                        if (index == state.results.lastIndex) {
+                            LaunchedEffect(key1 = index) { viewModel.loadMore() }
+                        }
+
+                        ProductCard(
+                            product = product,
+                            selectedCurrency = selectedCurrency,
+                            isFavorite = state.favoriteProductIds.contains(product.id),
+                            onFavoriteChange = { shouldBeFavorite ->
+                                viewModel.setFavorite(product.id, shouldBeFavorite)
                             },
-                            onProductClick = { productId ->
-                                onProductClick(productId)
-                            },
-                            selectedCurrency = selectedCurrency
+                            onClick = { onProductClick(product.id) },
+                            showMenu = false,
+                            modifier = Modifier.fillMaxWidth()
                         )
+                    }
+
+                    if (state.isLoadingMore) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 16.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator(color = IconSelectedTintDark)
+                            }
+                        }
+                    }
+                    item {
+                        Spacer(modifier = Modifier.height(30.dp))
                     }
                 }
             }

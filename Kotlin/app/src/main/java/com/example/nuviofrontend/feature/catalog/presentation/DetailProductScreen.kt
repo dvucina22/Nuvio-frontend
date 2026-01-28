@@ -35,7 +35,6 @@ import com.example.core.ui.components.TopBarDetailProducts
 import com.example.core.ui.theme.AccentColor
 import com.example.core.ui.theme.AppTypography
 import com.example.core.ui.theme.BackgroundNavDark
-import com.example.core.ui.theme.CardItemBackgroundLight
 import com.example.nuviofrontend.feature.cart.presentation.CartViewModel
 import com.example.nuviofrontend.feature.settings.presentation.SettingsViewModel
 import kotlinx.coroutines.flow.collectLatest

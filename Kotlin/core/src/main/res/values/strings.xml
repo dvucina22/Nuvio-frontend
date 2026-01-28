@@ -400,4 +400,7 @@
     <string name="cancelled">Cancelled</string>
     <string name="pending">Pending</string>
     <string name="shopping_cart_without_products">Your shopping cart is empty.</string>
+
+    <string name="no_cards">You currently don\'t have any cards. Add one and it will be displayed here.</string>
+    <string name="return_to_cart">Return to cart</string>
 </resources>

@@ -80,7 +80,6 @@ import com.example.core.ui.components.CustomTopBar
 import com.example.core.ui.components.IconActionBox
 import com.example.core.ui.components.SelectedImagesRow
 import com.example.core.ui.theme.BackgroundBehindButton
-import com.example.core.ui.theme.BackgroundColorInput
 import com.example.core.ui.theme.BackgroundNavDark
 import com.example.core.ui.theme.Error
 import com.example.core.ui.theme.White

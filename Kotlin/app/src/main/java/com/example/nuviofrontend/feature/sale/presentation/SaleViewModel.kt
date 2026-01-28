@@ -206,13 +206,14 @@ class SaleViewModel @Inject constructor(
                         handlePaymentFailure(errorMsg)
                     } else if (response.data?.status == "APPROVED") {
                         try {
-                            cartRepository.clearCart()
+                            cartRepository.clearCart(_state.value.cartItems)
+                            _state.value = _state.value.copy(cartItems = emptyList())
                         } catch (e: Exception) {
                             _state.value = _state.value.copy(error = "Payment successful but failed to clear cart")
                         }
+
                         _checkoutResult.value = CheckoutResult.Success(response)
                         _state.value = _state.value.copy(isProcessing = false, retryCount = 0)
-
                     } else {
                         val status = response.data?.status?.lowercase() ?: "declined"
                         val responseCode = response.data?.responseCode ?: ""

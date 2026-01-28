@@ -40,10 +40,10 @@ val BackgroundNavDarkDark = Color(0xFF505253)
 
 //dark background
 val WhiteSoft = Color(0xFFECF4F6)
-val CardItemBackgroundDark = Color(0xD8535555)
-val DarkOverLay = Color(0xFF414343)
-val DarkBorder = Color(0xFF737575)
-val BackgroundBehindButtonDark = Color(0xFF605F5F)
-val BackgroundColorInput = Color(0xFF7A7A7A)
-val BackgroundNavDarkLight = Color(0xFFA2A9AD)
+val CardItemBackgroundDark = Color(0xFF6E6E6E)
+val DarkOverLay = Color(0xFF5A5C5E)
+val DarkBorder = Color(0xFF9E9E9E)
+val BackgroundBehindButtonDark = Color(0xFF7F8284)
+val BackgroundColorInput = Color(0xFF9A9A9A)
+val BackgroundNavDarkLight = Color(0xFF707374)
 

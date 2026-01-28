@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -26,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import com.example.core.R
 import androidx.compose.ui.unit.sp
 import com.example.core.sale.dto.SaleResponse
-import androidx.compose.ui.res.stringResource
 import com.example.core.ui.theme.AccentColor
 import com.example.core.ui.theme.Success
 import com.example.core.ui.theme.WhiteSoft
@@ -40,7 +38,8 @@ fun TransactionResultScreen(
     maxRetriesReached: Boolean = false,
     onContinueShopping: () -> Unit,
     onViewOrders: () -> Unit = {},
-    onGoToHome: () -> Unit = {}
+    onGoToHome: () -> Unit = {},
+    onReturnToCart: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -172,22 +171,6 @@ fun TransactionResultScreen(
                         )
                     }
 
-                    OutlinedButton(
-                        onClick = onViewOrders,
-                        modifier = Modifier.fillMaxWidth().height(52.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        border = BorderStroke(1.dp, AccentColor),
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = AccentColor
-                        )
-                    ) {
-                        Text(
-                            text = stringResource(R.string.view_orders),
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-
                 } else {
 
                     if (maxRetriesReached) {
@@ -229,6 +212,22 @@ fun TransactionResultScreen(
                                 text = stringResource(R.string.try_again),
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold
+                            )
+                        }
+
+                        Button(
+                            onClick = onReturnToCart,
+                            modifier = Modifier.fillMaxWidth().height(52.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                contentColor = MaterialTheme.colorScheme.onBackground
+                            )
+                        ) {
+                            Text(
+                                text = stringResource(R.string.return_to_cart),
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Medium
                             )
                         }
 

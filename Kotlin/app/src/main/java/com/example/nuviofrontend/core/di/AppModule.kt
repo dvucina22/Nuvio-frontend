@@ -12,6 +12,8 @@ import com.example.core.network.api.ApiService
 import com.example.core.network.interceptor.AuthInterceptor
 import com.example.core.network.token.IUserPrefs
 import com.example.core.sale.ISaleService
+import com.example.core.statistics.IStatisticsRepository
+import com.example.core.statistics.IStatisticsService
 import com.example.core.transactions.ITransactionRepository
 import com.example.nuviofrontend.feature.cart.data.CartRepository
 import com.example.nuviofrontend.feature.cart.data.CartService
@@ -182,13 +184,13 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideStatisticsService(apiService: ApiService): StatisticsService{
+    fun provideStatisticsService(apiService: ApiService): IStatisticsService{
         return StatisticsService(apiService)
     }
 
     @Provides
     @Singleton
-    fun provideStatisticsRepository(statisticsService: StatisticsService): StatisticsRepository{
+    fun provideStatisticsRepository(statisticsService: StatisticsService): IStatisticsRepository{
         return StatisticsRepository(statisticsService)
     }
 }

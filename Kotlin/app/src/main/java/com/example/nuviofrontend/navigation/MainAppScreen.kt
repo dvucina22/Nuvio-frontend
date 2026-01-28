@@ -212,6 +212,11 @@ fun MainAppScreen(
                             }
                             launchSingleTop = true
                         }
+                    },
+                    onReturnToCart = {
+                        navController.navigate("cart_screen") {
+                            popUpTo("checkout") { inclusive = true }
+                        }
                     }
                 )
             }
@@ -244,6 +249,12 @@ fun MainAppScreen(
                             popUpTo(HomeTab.HOME.name) {
                                 inclusive = true
                             }
+                            launchSingleTop = true
+                        }
+                    },
+                    onReturnToCart = {
+                        navController.navigate(HomeTab.CART.name) {
+                            popUpTo("checkout") { inclusive = true }
                             launchSingleTop = true
                         }
                     }
