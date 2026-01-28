@@ -1,17 +1,18 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
 import LoginForm from '../../components/auth/LoginForm';
-import { ApiResponse } from '../../types';
+import { LoginResponse } from '../../types/LoginResponse';
+import { useLogin } from '@/api/hooks/auth/useLogin';
 
 const LoginPage: React.FC = () => {
-  const { login, loading } = useAuth();
+  const { loginUser, loading } = useLogin();
   const navigate = useNavigate();
 
-  const handleLogin = async (email: string, password: string): Promise<ApiResponse> => {
-    const result = await login(email, password);
+  const handleLogin = async (email: string, password: string): Promise<LoginResponse> => {
+    const result = await loginUser(email, password);
     
-    if (result.success) {
+    if (result.token) {
+      localStorage.setItem('token', result.token);
       navigate('/dashboard');
     }
     

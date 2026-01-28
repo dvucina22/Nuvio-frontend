@@ -3,6 +3,7 @@ import api from '../services/api';
 import storage from '../utils/storage';
 import { PasswordHasher } from '../utils/passwordHasher';
 import { User, AuthContextType, ApiResponse } from '../types';
+import { LoginResponse } from '@/types/LoginResponse';
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -34,7 +35,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const login = async (email: string, password: string): Promise<ApiResponse> => {
+  const login = async (email: string, password: string): Promise<LoginResponse> => {
     try {
       setError(null);
       setLoading(true);
@@ -43,15 +44,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       const result = await api.login({ email, password: hashedPassword });
 
-      if (!result.success || !result.data) {
-        setError(result.error || 'Login failed');
-        return result;
+      if (!result.data?.token
+      ) {
+        setError('Login failed');
+        return result.data || { token: '' };
       }
 
-      storage.setAuthToken(result.data.token);
-      storage.setUserData(result.data.user);
+      storage.setAuthToken(result.token);
       
-      setUser(result.data.user);
       return { success: true };
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Login failed';
@@ -62,47 +62,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const logout = async (): Promise<void> => {
-    try {
-      setLoading(true);
-      storage.clearAuth();
-      setUser(null);
-      setError(null);
-    } catch (err) {
-      console.error('Error logging out:', err);
-      storage.clearAuth();
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const updateUser = async (userData: Partial<User>): Promise<ApiResponse> => {
-    try {
-      const result = await api.updateUserProfile(userData);
-      
-      if (result.success && result.data) {
-        storage.setUserData(result.data.user);
-        setUser(result.data.user);
-        return { success: true };
-      }
-      
-      return result;
-    } catch (err) {
-      return { 
-        success: false, 
-        error: err instanceof Error ? err.message : 'Update failed' 
-      };
-    }
-  };
 
   const value: AuthContextType = {
     user,
     loading,
     error,
     login,
-    logout,
-    updateUser,
     isAuthenticated: !!user,
   };
 

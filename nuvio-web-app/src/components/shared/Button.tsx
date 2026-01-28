@@ -1,4 +1,15 @@
-import { ButtonProps } from '../../types';
+export interface ButtonProps {
+  children: React.ReactNode;
+  onClick?: () => void;
+  type?: 'button' | 'submit' | 'reset';
+  variant?: 'primary' | 'secondary' | 'outline' | 'danger';
+  size?: 'small' | 'medium' | 'large';
+  disabled?: boolean;
+  loading?: boolean;
+  fullWidth?: boolean;
+  className?: string;
+}
+
 
 const Button: React.FC<ButtonProps> = ({
   children,
