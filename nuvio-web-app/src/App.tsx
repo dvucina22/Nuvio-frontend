@@ -4,6 +4,7 @@ import LoginPage from './pages/auth/LoginPage';
 import DashboardPage from './pages/dashboard/DashboardPage';
 import ProtectedRoute from './components/shared/ProtectedRoute';
 import { useAuth } from './hooks/useAuth';
+import Navbar from './components/navbar/Navbar';
 
 const RootRedirect: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -13,7 +14,7 @@ const RootRedirect: React.FC = () => {
 const App: React.FC = () => {
   return (
     <div 
-      className="min-h-screen bg-cover bg-center bg-fixed"
+      className="min-h-screen bg-cover bg-center bg-fixed flex justify-center w-full"
       style={{ backgroundImage: 'url(/bg_light.jpg)' }}
     >
       <div className="absolute inset-0 bg-black/20 -z-10"></div>
@@ -26,6 +27,7 @@ const App: React.FC = () => {
               path="/dashboard"
               element={
                 <ProtectedRoute>
+                  <Navbar />
                   <DashboardPage />
                 </ProtectedRoute>
               }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import LoginForm from '../../components/auth/LoginForm';
-import { LoginResponse } from '../../types/LoginResponse';
+import { LoginResponse } from '../../types/login/LoginResponse';
 import { useLogin } from '@/api/hooks/auth/useLogin';
 
 const LoginPage: React.FC = () => {
@@ -24,7 +24,7 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen w-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full bg-white items-center flex flex-col rounded-xl shadow-lg p-8 sm:p-10">
         <div className="min-h-[100px] min-w-[245px] bg-no-repeat bg-contain" style={{
           backgroundImage: "url(/logo.png)"

@@ -1,5 +1,5 @@
 import { login } from "@/api/services/account-service/authService";
-import { LoginResponse } from "@/types/LoginResponse";
+import { LoginResponse } from "@/types/login/LoginResponse";
 import { PasswordHasher } from "@/utils/passwordHasher";
 import { useState } from "react";
 
