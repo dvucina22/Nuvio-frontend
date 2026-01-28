@@ -121,8 +121,9 @@ interface ApiService {
     @DELETE("catalog/products/cart/{id}")
     suspend fun deleteCartItem(@Path("id") productId: Int): Response<Unit>
 
-    @DELETE("catalog/products/cart/empty")
+    @GET("catalog/products/cart/empty")
     suspend fun clearCart(): Response<Unit>
+
     @POST("transactions/sale")
     suspend fun makeSale(@Body request: SaleRequest): Response<SaleResponse>
     @GET("accounts/users")

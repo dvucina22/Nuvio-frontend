@@ -47,12 +47,12 @@ import com.example.core.ui.theme.BackgroundNavDark
 
 @Composable
 fun CustomTextField(
+    modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit,
     labelColor: Color = MaterialTheme.colorScheme.onBackground,
     placeholder: String,
     label: String? = null,
-    modifier: Modifier = Modifier,
     isPassword: Boolean = false,
     passwordVisible: Boolean = false,
     onPasswordVisibilityChange: (() -> Unit)? = null,
@@ -163,7 +163,7 @@ fun CustomTextField(
                                 ) {
                                     Icon(
                                         painter = painterResource(id = R.drawable.ic_error_hint),
-                                        contentDescription = "Prikaži grešku",
+                                        contentDescription = "Show error",
                                         tint = Error
                                     )
                                 }

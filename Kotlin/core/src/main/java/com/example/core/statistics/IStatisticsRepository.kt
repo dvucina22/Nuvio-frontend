@@ -2,6 +2,6 @@ package com.example.core.statistics
 
 import com.example.core.statistics.dto.TransactionStatisticsResponse
 
-interface IStatisticsService {
-    suspend fun getStatistics(): TransactionStatisticsResponse
+interface IStatisticsRepository {
+    suspend fun fetchStatistics(): TransactionStatisticsResponse
 }

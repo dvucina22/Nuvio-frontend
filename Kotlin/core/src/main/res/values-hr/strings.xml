@@ -403,4 +403,7 @@
     <string name="cancelled">Stornirano</string>
     <string name="pending">Na čekanju</string>
     <string name="shopping_cart_without_products">Vaša košarica je prazna.</string>
+
+    <string name="no_cards">Trenutno nemate ni jednu karticu. Dodajte pa će vam se prikazati ovdje.</string>
+    <string name="return_to_cart">Povratak u košaricu</string>
 </resources>

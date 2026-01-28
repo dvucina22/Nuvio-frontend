@@ -119,19 +119,4 @@ class CartViewModel @Inject constructor(
         }
     }
 
-    fun clearCartOnServer() {
-        viewModelScope.launch {
-            _isLoading.value = true
-            try {
-                cartRepository.clearCart()
-                fetchCart()
-            } catch (e: Exception) {
-                _error.value = e.message
-            } finally {
-                _isLoading.value = false
-            }
-        }
-    }
-
-
 }

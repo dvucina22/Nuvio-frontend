@@ -176,7 +176,6 @@ fun ProfileNavHost(
 
             CardScreen(
                 viewModel = viewModel,
-                onViewTransactions = { _ -> },
                 onBack = { navController.popBackStack() }
             )
         }

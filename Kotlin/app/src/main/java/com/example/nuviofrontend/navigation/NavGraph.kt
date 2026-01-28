@@ -221,6 +221,11 @@ fun AppNavGraph(navController: NavHostController) {
                         popUpTo(0)
                         launchSingleTop = true
                     }
+                },
+                onReturnToCart = {
+                    navController.navigate("cart_screen") {
+                        popUpTo("checkout_screen") { inclusive = true }
+                    }
                 }
             )
         }
@@ -231,7 +236,12 @@ fun AppNavGraph(navController: NavHostController) {
                 onContinueShopping = {
                     navController.popBackStack()
                 },
-                onViewOrders = {}
+                onViewOrders = {},
+                onReturnToCart = {
+                    navController.navigate("cart_screen") {
+                        popUpTo("checkout_screen") { inclusive = true }
+                    }
+                }
             )
         }
 

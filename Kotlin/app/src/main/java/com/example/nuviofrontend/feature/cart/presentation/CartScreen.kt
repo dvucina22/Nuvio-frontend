@@ -14,7 +14,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -25,7 +24,6 @@ import com.example.core.R
 import com.example.auth.presentation.AuthViewModel
 import com.example.core.cart.dto.CartItemDto
 import com.example.core.settings.CurrencyConverter
-import androidx.compose.ui.res.stringResource
 import com.example.core.ui.components.CartProductCard
 import com.example.core.ui.components.CustomPopupWarning
 import com.example.core.ui.theme.AccentColor
@@ -195,7 +193,7 @@ fun CartScreen(
                     }
 
                     item {
-                        Spacer(modifier = Modifier.height(20.dp))
+                        Spacer(modifier = Modifier.height(30.dp))
                     }
                 }
             }

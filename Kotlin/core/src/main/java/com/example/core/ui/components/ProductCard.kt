@@ -87,7 +87,7 @@ fun ProductCard(
                     .fillMaxHeight()
             ) {
                 AsyncImage(
-                    model = product.imageUrl.ifEmpty { R.drawable.logo_light_icon },
+                    model = product.imageUrl.ifEmpty { R.drawable.random_laptop },
                     contentDescription = product.name,
                     modifier = Modifier
                         .fillMaxSize()

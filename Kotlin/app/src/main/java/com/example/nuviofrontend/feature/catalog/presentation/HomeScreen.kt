@@ -141,29 +141,30 @@ fun HomeScreen(
             id = 1,
             imageUrl = "https://res.cloudinary.com/dx6vzaymg/image/upload/v1765468054/Gemini_Generated_Image_xj3bq9xj3bq9xj3b_jlud1h.png",
             title = "",
-            subtitle = "",
-            buttonText = stringResource(R.string.banner_btn_shop_now),
-            onButtonClick = {  }
+            subtitle = ""
         ),
         BannerData(
             id = 2,
             imageUrl = "https://res.cloudinary.com/dx6vzaymg/image/upload/v1765468055/Group_108_zwyhez.png",
             title = "",
-            subtitle = "",
-            buttonText = stringResource(R.string.banner_btn_explore),
-            onButtonClick = {  }
+            subtitle = ""
         ),
         BannerData(
             id = 3,
             imageUrl = "https://res.cloudinary.com/dx6vzaymg/image/upload/v1765468054/Gemini_Generated_Image_a5us7ma5us7ma5us_crsjza.png",
             title = "",
-            subtitle = "",
-            buttonText = stringResource(R.string.banner_btn_view_deals),
-            onButtonClick = {  }
+            subtitle = ""
         )
     )
 
+    val selectedCategoryName = when (selectedCategoryId) {
+        1L -> "Gaming"
+        2L -> "Multimedia"
+        3L -> "Business"
+        else -> "All"
+    }
 
+    val filteredFlashDeals = state.flashDeals.filterByCategory(selectedCategoryName)
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -201,13 +202,6 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.spacedBy(7.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(onClick = { }) {
-                        Icon(
-                            imageVector = Icons.Default.Notifications,
-                            contentDescription = "Notifications",
-                            tint = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
                     if (isLoggedIn && (isAdmin || isSeller)) {
                         IconActionBox(
                             onClick = onAddProductClick
@@ -250,15 +244,13 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            if (state.isLoading && state.flashDeals.isEmpty()) {
+            if (state.isLoading && filteredFlashDeals.isEmpty()) {
                 LoadingRow()
-            } else if (state.flashDeals.isNotEmpty()) {
+            } else if (filteredFlashDeals.isNotEmpty()) {
                 FlashDealsRow(
-                    products = state.flashDeals.take(6),
+                    products = filteredFlashDeals.take(6),
                     favoriteIds = state.favoriteProductIds,
-                    onToggleFavorite = { id, newValue ->
-                        viewModel.setFavorite(id, newValue)
-                    },
+                    onToggleFavorite = { id, newValue -> viewModel.setFavorite(id, newValue) },
                     onProductClick = { productId -> onProductClick(productId) },
                     onDeleteProduct = { productId ->
                         productIdToDelete = productId
@@ -279,9 +271,7 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             SectionHeader(
-                title = stringResource(R.string.latest_arrivals),
-                actionText = stringResource(R.string.see_all),
-                onActionClick = {  }
+                title = stringResource(R.string.latest_arrivals)
             )
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -635,9 +625,7 @@ fun BannerCard(banner: Banner) {
 
 @Composable
 fun SectionHeader(
-    title: String,
-    actionText: String? = null,
-    onActionClick: () -> Unit = {}
+    title: String
 ) {
     Row(
         modifier = Modifier
@@ -652,15 +640,6 @@ fun SectionHeader(
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold
         )
-        if (actionText != null) {
-            TextButton(onClick = onActionClick) {
-                Text(
-                    text = actionText,
-                    color = Color(0xFF004CBB),
-                    fontSize = 14.sp
-                )
-            }
-        }
     }
 }
 
@@ -884,5 +863,13 @@ fun RecommendedProductsGrid(
                 isSeller = isSeller
             )
         }
+    }
+}
+
+fun List<Product>.filterByCategory(selectedCategoryName: String?): List<Product> {
+    return if (selectedCategoryName == null || selectedCategoryName.lowercase() == "all") {
+        this
+    } else {
+        this.filter { it.category.equals(selectedCategoryName, ignoreCase = true) }
     }
 }

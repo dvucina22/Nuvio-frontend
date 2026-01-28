@@ -117,14 +117,14 @@ fun UserRoleCard(
                 }
 
                 if (isActive) {
-                    IconButton(
-                        onClick = onDeactivate,
-                        modifier = Modifier.size(32.dp)
+                    IconActionBox(
+                        onClick = onDeactivate
                     ) {
                         Icon(
                             imageVector = Icons.Default.Delete,
                             contentDescription = stringResource(R.string.delete),
-                            tint = Error
+                            tint = Error,
+                            modifier = Modifier.size(20.dp)
                         )
                     }
                 }

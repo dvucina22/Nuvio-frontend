@@ -31,6 +31,9 @@ class CartService(private val apiService: ApiService){
 
     suspend fun clearCart() {
         val response = apiService.clearCart()
-        if (!response.isSuccessful) throw Exception(response.errorBody()?.string() ?: "Failed to clear cart")
+        if (!response.isSuccessful) {
+            throw Exception(response.errorBody()?.string() ?: "Failed to clear cart")
+        }
     }
+
 }
