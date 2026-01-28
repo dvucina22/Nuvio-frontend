@@ -1,8 +1,8 @@
-import { statusBreakdown } from "./StatusBreakdown";
+import { StatusBreakdown } from "./StatusBreakdown";
 
 export interface StatisticData {
     totalRevenue: number;
     totalTransactions: number;
-    statusBreakdown: statusBreakdown[];
+    statusBreakdown: StatusBreakdown[];
     averageTransactionValue: number;
 }
