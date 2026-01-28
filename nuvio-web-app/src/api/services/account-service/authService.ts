@@ -1,6 +1,6 @@
 import { LoginCredentials } from "@/types/login/LoginCredentials";
 import { apiRequest, isApiSuccessResponse } from "./apiClient";
-import { LoginResponse } from "@/types/LoginResponse";
+import { LoginResponse } from "@/types/login/LoginResponse";
 
 export async function login(credentials: LoginCredentials): Promise<LoginResponse> {
   const response = await apiRequest<LoginResponse>({
