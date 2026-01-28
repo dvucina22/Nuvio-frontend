@@ -1,10 +1,9 @@
-// src/components/auth/LoginForm.tsx
 import React, { useState } from 'react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { validateEmail, validatePassword } from '../../utils/validation';
-import { LoginFormProps } from '../../types';
+import { LoginFormProps } from '@/types/login/LoginFormProps';
 
 interface FormErrors {
   email?: string;
@@ -43,8 +42,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, loading }) => {
 
     const result = await onSubmit(email, password);
     
-    if (!result.success) {
-      setErrors({ form: result.error || 'Please check your credentials' });
+    if (!result.token) {
+      setErrors({ form: 'Please check your credentials' });
     }
   };
 
