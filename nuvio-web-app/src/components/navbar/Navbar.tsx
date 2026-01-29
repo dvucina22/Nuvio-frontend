@@ -29,7 +29,20 @@ const Navbar = () => {
                             backgroundImage: "url(logo192.png)"
                         }}  className='bg-no-repeat bg-contain min-h-[77px] w-[77px] mr-[12px] rounded-[18px] shadow-[0_4px_6px_rgba(0,0,0,0.1)]'/>
                     </a>
-                <div className={`bg-[#EDF2F4] border-[#A2A9AD66] border w-full flex items-center justify-center font-mono rounded-[12px] text-[23px] shadow-[0_4px_6px_rgba(0,0,0,0.1)]`}>Dashboard</div>
+                <div className={`bg-[#EDF2F4] border-[#A2A9AD66] border w-full flex items-center justify-center font-mono rounded-[12px] text-[16px] shadow-[0_4px_6px_rgba(0,0,0,0.1)]`}>
+                    <div className='flex gap-[12px] items-center'>
+                        <div
+                        onClick={() => window.location.href = "/dashboard"}
+                        className='rounded-[6px]  px-3 py-1 hover:bg-[#5C6B7323] duration-200 ease-in-out cursor-pointer transition-all'>
+                            Dashboard
+                        </div>
+                        <div
+                        onClick={() => window.location.href = "/users"} 
+                        className='rounded-[6px]  px-3 py-1 hover:bg-[#5C6B7323] duration-200 ease-in-out cursor-pointer transition-all'>
+                            Users
+                        </div>
+                    </div>
+                </div>
                 <div className='max-lg:hidden w-[77px] flex-shrink-0 ml-[12px] flex items-center justify-center cursor-pointer hover:brightness-90 transition-all duration-200 ease-in-out'>
                     <div onClick={logout} className='rounded-[18px] h-[77px] w-[77px] bg-[#A63D3D] flex items-center justify-center shadow-[0_4px_6px_rgba(0,0,0,0.1)]'>
                         <LogOut color='white' size={32} />
