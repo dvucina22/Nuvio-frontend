@@ -78,11 +78,6 @@ fun AppNavGraph(navController: NavHostController) {
                 onNavigateToRegister = { navController.navigate(Screen.Register.route) },
                 onNavigateToHome = navigateHome,
                 viewModel = loginViewModel,
-                extraContent = {
-                    GoogleLoginAction(
-                        onSuccess = navigateHome
-                    )
-                },
                 themeIndex = themeIndex
             )
         }
