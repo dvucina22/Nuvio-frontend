@@ -262,7 +262,7 @@ fun MainAppScreen(
             }
         }
 
-        if (currentRoute !in hideBottomBarRoutes && !currentRoute.orEmpty().startsWith("product/") && !currentRoute.orEmpty().startsWith("edit_product/")) {
+        if (currentRoute !in hideBottomBarRoutes && !currentRoute.orEmpty().startsWith("edit_product/")) {
             CustomBottomNavBar(
                 selectedIndex = tabs.indexOfFirst { it.name == currentRoute },
                 onItemSelected = { index ->

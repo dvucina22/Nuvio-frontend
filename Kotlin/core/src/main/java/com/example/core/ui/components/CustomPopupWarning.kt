@@ -35,6 +35,7 @@ import androidx.compose.ui.window.Dialog
 import com.example.core.ui.theme.BackgroundNavDark
 import com.example.core.ui.theme.ButtonColorDark
 import com.example.core.R
+import com.example.core.ui.theme.AccentColor
 
 @Composable
 fun CustomPopupWarning(
@@ -48,13 +49,13 @@ fun CustomPopupWarning(
     Dialog(onDismissRequest = onDismiss) {
         Surface(
             shape = androidx.compose.foundation.shape.RoundedCornerShape(6.dp),
-            color = MaterialTheme.colorScheme.surfaceContainer,
+            color = MaterialTheme.colorScheme.surface,
             modifier = Modifier
                 .width(264.dp)
                 .heightIn(min = 150.dp)
                 .border(
-                    width = 0.5.dp,
-                    color = MaterialTheme.colorScheme.surfaceDim ,
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.surfaceDim,
                     shape = androidx.compose.foundation.shape.RoundedCornerShape(6.dp)
                 )
         ) {
@@ -128,7 +129,7 @@ fun CustomPopupWarning(
                     SmallCustomButton(
                         text = confirmText,
                         onClick = onConfirm,
-                        containerColor = ButtonColorDark
+                        containerColor = AccentColor
                     )
                 }
             }

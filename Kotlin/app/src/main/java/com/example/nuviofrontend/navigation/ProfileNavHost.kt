@@ -111,13 +111,14 @@ fun ProfileNavHost(
                 }
             }
 
-            ChangePasswordScreen(
-                isLoggedIn = isLoggedIn,
-                firstName = firstName,
-                lastName = lastName,
-                email = email,
-                onBack = { navController.popBackStack() }
-            )
+            if (email != null) {
+                ChangePasswordScreen(
+                    userEmail = email,
+                    onBack = { navController.popBackStack() }
+                )
+            } else {
+                Toast.makeText(context, "User email not available", Toast.LENGTH_SHORT).show()
+            }
         }
 
         composable(ProfileRoute.EditProfile.route) {

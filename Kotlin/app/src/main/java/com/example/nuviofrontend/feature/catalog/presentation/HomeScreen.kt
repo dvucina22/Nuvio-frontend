@@ -1,26 +1,42 @@
 package com.example.nuviofrontend.feature.catalog.presentation
 
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircleOutline
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -36,41 +52,33 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.rememberAsyncImagePainter
 import com.example.auth.presentation.AuthViewModel
 import com.example.core.R
 import com.example.core.catalog.dto.Product
 import com.example.core.ui.components.CustomPopupWarning
+import com.example.core.ui.components.IconActionBox
 import com.example.core.ui.components.ProductCard
+import com.example.core.ui.components.banner.BannerComponent
 import com.example.core.ui.components.banner.BannerData
+import com.example.core.ui.components.categories.CategoryButton
+import com.example.core.ui.components.categories.CategoryButtonData
+import com.example.core.ui.theme.AccentColor
 import com.example.core.ui.theme.Black
-import com.example.core.ui.theme.White
+import com.example.nuviofrontend.feature.settings.presentation.SettingsViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.yield
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.layout.ContentScale
-import coil.compose.rememberAsyncImagePainter
-import com.example.core.ui.components.IconActionBox
-import com.example.core.ui.components.banner.BannerComponent
-import com.example.core.ui.components.categories.CategoryButton
-import com.example.core.ui.components.categories.CategoryButtonData
-import com.example.core.ui.theme.AccentColor
-import com.example.core.ui.theme.IconDark
-import com.example.nuviofrontend.feature.settings.presentation.SettingsViewModel
 
 data class Category(
     val id: Long,
@@ -121,7 +129,6 @@ fun HomeScreen(
         productIdToDelete = productId
         showDeletePopup = true
     }
-
 
     val greeting = when (gender?.lowercase()) {
         "male" -> stringResource(R.string.welcome_male, firstName ?: "")

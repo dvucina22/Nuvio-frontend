@@ -17,9 +17,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -42,7 +45,10 @@ import androidx.compose.ui.window.Popup
 import com.example.core.R
 import com.example.core.transactions.dto.TransactionListItem
 import com.example.core.ui.theme.AccentColor
+import com.example.core.ui.theme.DarkRed
 import com.example.core.ui.theme.Error
+import com.example.core.ui.theme.Success
+import com.example.core.ui.theme.Yellow
 import java.text.NumberFormat
 import java.time.Instant
 import java.time.ZoneId
@@ -66,23 +72,23 @@ private enum class TransactionStatusUi(
     Approved(
         raw = "APPROVED",
         labelRes = R.string.status_approved,
-        pillBg = { AccentColor.copy(alpha = 0.14f) },
-        pillText = { AccentColor },
-        pillBorder = { AccentColor.copy(alpha = 0.22f) }
+        pillBg = { Success.copy(alpha = 0.14f) },
+        pillText = { Success },
+        pillBorder = { Success.copy(alpha = 0.22f) }
     ),
     Declined(
         raw = "DECLINED",
         labelRes = R.string.status_declined,
         pillBg = { Error.copy(alpha = 0.14f) },
-        pillText = { Error },
+        pillText = { DarkRed },
         pillBorder = { Error.copy(alpha = 0.22f) }
     ),
     Voided(
         raw = "VOIDED",
         labelRes = R.string.status_voided,
-        pillBg = { MaterialTheme.colorScheme.onBackground.copy(alpha = 0.10f) },
-        pillText = { MaterialTheme.colorScheme.onBackground.copy(alpha = 0.85f) },
-        pillBorder = { MaterialTheme.colorScheme.onBackground.copy(alpha = 0.14f) }
+        pillBg = { Yellow.copy(alpha = 0.10f) },
+        pillText = { Yellow },
+        pillBorder = { Yellow.copy(alpha = 0.14f) }
     ),
     Reversed(
         raw = "REVERSED",
@@ -122,7 +128,8 @@ fun TransactionCard(
     onEdit: (Long) -> Unit = {},
     onDelete: (Long) -> Unit = {},
     showMenu: Boolean = false,
-    isAdmin: Boolean = false
+    isAdmin: Boolean = false,
+    onVoidClick: (Long) -> Unit,
 ) {
     var menuOpen by remember { mutableStateOf(false) }
 
@@ -152,14 +159,8 @@ fun TransactionCard(
                 .fillMaxWidth()
                 .padding(14.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top
-            ) {
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
+            Box(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.align(Alignment.TopStart)) {
                     Text(
                         text = "TRX-${transaction.id}",
                         color = MaterialTheme.colorScheme.onBackground,
@@ -168,9 +169,7 @@ fun TransactionCard(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
-
                     Spacer(modifier = Modifier.height(3.dp))
-
                     Text(
                         text = formatCreatedAt(transaction.createdAt),
                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.70f),
@@ -181,35 +180,36 @@ fun TransactionCard(
                     )
                 }
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
+                Column(
+                    modifier = Modifier.align(Alignment.TopEnd),
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
+                    if (isAdmin && transaction.status != "VOIDED" && transaction.status != "DECLINED") {
+                        Box(
+                            modifier = Modifier
+                                .size(24.dp)
+                                .border(1.dp, AccentColor, shape = CircleShape)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.surfaceDim)
+                                .clickable { onVoidClick(transaction.id) },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Refresh,
+                                contentDescription = "Void transaction",
+                                tint = Color.Red,
+                                modifier = Modifier
+                                    .size(16.dp)
+                            )
+                        }
+                    }
                     StatusPill(
                         label = stringResource(statusUi.labelRes),
                         bg = statusUi.pillBg(),
                         textColor = statusUi.pillText(),
                         borderColor = statusUi.pillBorder()
                     )
-
-                    if (showMenu && isAdmin) {
-                        Spacer(modifier = Modifier.width(10.dp))
-
-                        Box(
-                            modifier = Modifier
-                                .size(28.dp)
-                                .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.surfaceContainer)
-                                .clickable { menuOpen = true },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.MoreVert,
-                                contentDescription = "More",
-                                tint = MaterialTheme.colorScheme.onBackground,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
-                    }
                 }
             }
 
@@ -348,6 +348,7 @@ fun TransactionCard(
                 }
             }
         }
+
     }
 }
 

@@ -406,4 +406,5 @@
 
     <string name="no_cards">Trenutno nemate ni jednu karticu. Dodajte pa će vam se prikazati ovdje.</string>
     <string name="return_to_cart">Povratak u košaricu</string>
+    <string name="confirm_void_transaction">Jeste li sigurni da želite stornirati ovu transakciju?</string>
 </resources>
