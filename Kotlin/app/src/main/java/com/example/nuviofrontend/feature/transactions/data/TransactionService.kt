@@ -39,4 +39,17 @@ class TransactionService @Inject constructor(
             throw IOException("Network error: ${e.message}")
         }
     }
+
+    suspend fun voidTransaction(transactionId: Long): Result<Unit> {
+        return try {
+            val response = apiService.voidTransaction(transactionId)
+            if (response.isSuccessful) {
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("Void failed"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

@@ -151,4 +151,9 @@ interface ApiService {
 
     @GET("transactions/statistics")
     suspend fun getTransactionStatistics(): Response<TransactionStatisticsResponse>
+
+    @POST("transactions/sale/{transaction_id}/void")
+    suspend fun voidTransaction(
+        @Path("transaction_id") transactionId: Long
+    ): Response<Unit>
 }

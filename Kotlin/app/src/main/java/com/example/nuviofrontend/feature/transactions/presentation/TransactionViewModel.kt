@@ -229,4 +229,32 @@ class TransactionsViewModel @Inject constructor(
     fun clearError() {
         _state.update { it.copy(error = null) }
     }
+
+    fun voidTransaction(transactionId: Long) {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+
+            val result = transactionRepository.voidTransaction(transactionId)
+
+            result
+                .onSuccess {
+                    loadInitial()
+                }
+                .onFailure {
+                    _state.update {
+                        it.copy(error = "Neuspješno storniranje transakcije")
+                    }
+                }
+
+            _state.update { it.copy(isLoading = false) }
+        }
+    }
+
+    private fun loadInitial() {
+        currentPage = 1
+        total = null
+
+        val query = _state.value.query.trim()
+        performSearch(query, currentFilterState)
+    }
 }

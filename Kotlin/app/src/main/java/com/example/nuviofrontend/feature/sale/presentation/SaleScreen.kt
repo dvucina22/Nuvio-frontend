@@ -121,11 +121,17 @@ fun CheckoutScreen(
                         manualExpiryMonth = state.manualExpiryMonth,
                         manualExpiryYear = state.manualExpiryYear,
                         manualFullName = state.manualFullName,
+                        cardNumberError = state.cardNumberError,
+                        expiryMonthError = state.expiryMonthError,
+                        expiryYearError = state.expiryYearError,
+                        fullNameError = state.fullNameError,
+                        useNewCard = state.useNewCard,
                         onCardSelected = { viewModel.selectCard(it) },
                         onManualCardNumberChanged = { viewModel.updateManualCardNumber(it) },
                         onManualExpiryMonthChanged = { viewModel.updateManualExpiryMonth(it) },
                         onManualExpiryYearChanged = { viewModel.updateManualExpiryYear(it) },
-                        onManualFullNameChanged = { viewModel.updateManualFullName(it) }
+                        onManualFullNameChanged = { viewModel.updateManualFullName(it) },
+                        onToggleUseNewCard = { viewModel.setUseNewCard(!state.useNewCard) }
                     )
                 }
 
@@ -335,13 +341,20 @@ fun PaymentMethodSection(
     manualExpiryMonth: String,
     manualExpiryYear: String,
     manualFullName: String,
+    cardNumberError: String?,
+    expiryMonthError: String?,
+    expiryYearError: String?,
+    fullNameError: String?,
+    useNewCard: Boolean,
+    onToggleUseNewCard: () -> Unit,
     onCardSelected: (CardDto) -> Unit,
     onManualCardNumberChanged: (String) -> Unit,
     onManualExpiryMonthChanged: (String) -> Unit,
     onManualExpiryYearChanged: (String) -> Unit,
-    onManualFullNameChanged: (String) -> Unit
+    onManualFullNameChanged: (String) -> Unit,
+    viewModel: SaleViewModel = hiltViewModel()
 ) {
-    var useNewCard by remember { mutableStateOf(cards.isEmpty()) }
+    val useNewCard = viewModel.state.collectAsState().value.useNewCard
 
     Column(
         modifier = Modifier
@@ -365,7 +378,7 @@ fun PaymentMethodSection(
 
             if (cards.isNotEmpty()) {
                 TextButton(
-                    onClick = { useNewCard = !useNewCard },
+                    onClick = { viewModel.setUseNewCard(!useNewCard) },
                     colors = ButtonDefaults.textButtonColors(
                         contentColor = AccentColor
                     )
@@ -419,7 +432,8 @@ fun PaymentMethodSection(
                 label = stringResource(R.string.card_number),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 visualTransformation = CardNumberVisualTransformation(),
-                modifier = Modifier.fillMaxWidth()
+                isError = cardNumberError != null,
+                errorMessage = cardNumberError
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -434,6 +448,8 @@ fun PaymentMethodSection(
                     placeholder = stringResource(R.string.expiry_mm),
                     label = stringResource(R.string.expiry_mm),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    isError = expiryMonthError != null,
+                    errorMessage = expiryMonthError,
                     modifier = Modifier.weight(1f)
                 )
 
@@ -443,8 +459,11 @@ fun PaymentMethodSection(
                     placeholder = stringResource(R.string.expiry_yy),
                     label = stringResource(R.string.expiry_yy),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    isError = expiryYearError != null,
+                    errorMessage = expiryYearError,
                     modifier = Modifier.weight(1f)
                 )
+
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -454,7 +473,8 @@ fun PaymentMethodSection(
                 onValueChange = onManualFullNameChanged,
                 placeholder = stringResource(R.string.full_name_on_card),
                 label = stringResource(R.string.full_name_on_card),
-                modifier = Modifier.fillMaxWidth()
+                isError = fullNameError != null,
+                errorMessage = fullNameError
             )
 
         }

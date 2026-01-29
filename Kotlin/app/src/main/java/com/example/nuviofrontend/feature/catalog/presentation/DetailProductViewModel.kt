@@ -1,5 +1,6 @@
 package com.example.nuviofrontend.feature.catalog.presentation
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -43,8 +44,11 @@ class DetailProductViewModel @Inject constructor(
 
             result.onSuccess { p ->
                 _product.value = p
+
+                Log.e("DetailProductVM", "Product ID: ${p.id} images: ${p.images?.map { it.url }}")
             }.onFailure { e ->
                 _error.value = e.message
+                Log.e("DetailProductVM", "Failed to load product: ${e.message}")
             }
 
             _isLoading.value = false

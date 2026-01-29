@@ -67,21 +67,16 @@ import com.example.core.catalog.dto.Brand
 import com.example.core.catalog.dto.Category
 import com.example.core.settings.CurrencyConverter
 import com.example.core.settings.CurrencyConverter.format
-import androidx.compose.ui.res.stringResource
 import com.example.core.ui.components.CustomButton
 import com.example.core.ui.components.CustomDescriptionField
 import com.example.core.ui.components.CustomTextFieldAligned
 import com.example.core.ui.components.CustomTopBar
 import com.example.core.ui.components.SelectedImagesRow
 import com.example.core.ui.theme.BackgroundBehindButton
-import com.example.core.ui.theme.BackgroundColorInput
 import com.example.core.ui.theme.BackgroundNavDark
-import com.example.core.ui.theme.Black
 import com.example.core.ui.theme.Error
 import com.example.core.ui.theme.White
 import com.example.nuviofrontend.feature.settings.presentation.SettingsViewModel
-import kotlin.collections.forEach
-import kotlin.collections.set
 
 @Composable
 fun EditProductScreen(
@@ -400,8 +395,6 @@ fun EditProductScreen(
                             width = 304
                         )
                     }
-
-                    Spacer(modifier = Modifier.height(10.dp))
                 }
             }
         }

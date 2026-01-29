@@ -84,6 +84,7 @@ import com.example.core.ui.theme.BackgroundNavDark
 import com.example.core.ui.theme.Error
 import com.example.core.ui.theme.White
 import com.example.nuviofrontend.feature.settings.presentation.SettingsViewModel
+import java.util.UUID
 
 @Composable
 fun AddNewProductScreen(
@@ -125,6 +126,8 @@ fun AddNewProductScreen(
             navController.popBackStack()
         }
     }
+
+    val tempId = (100_000..999_999).random().toLong()
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()

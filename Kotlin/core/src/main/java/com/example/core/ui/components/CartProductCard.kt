@@ -8,7 +8,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,7 +29,9 @@ import com.example.core.R
 import com.example.core.cart.dto.CartItemDto
 import com.example.core.settings.CurrencyConverter
 import com.example.core.ui.theme.AccentColor
+import com.example.core.ui.theme.BackgroundNavDarkDark
 import com.example.core.ui.theme.Error
+import com.example.core.ui.theme.White
 
 @Composable
 fun CartProductCard(
@@ -38,7 +39,6 @@ fun CartProductCard(
     selectedCurrency: Int,
     onIncrease: () -> Unit,
     onDecrease: () -> Unit,
-    onFavorite: () -> Unit,
     onDelete: () -> Unit,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -54,7 +54,7 @@ fun CartProductCard(
                 spotColor = Color(0xFF000000).copy(alpha = 0.03f)
             )
             .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colorScheme.surfaceContainer)
+            .background(MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.6f))
             .border(
                 width = 1.dp,
                 color = MaterialTheme.colorScheme.surfaceDim,
@@ -86,11 +86,11 @@ fun CartProductCard(
                         .align(Alignment.TopEnd)
                         .padding(horizontal = 4.dp, vertical = 4.dp)
                         .clip(RoundedCornerShape(4.dp))
-                        .background(MaterialTheme.colorScheme.surfaceContainerLowest.copy(alpha = 0.5f))
+                        .background(BackgroundNavDarkDark.copy(alpha = 0.6f))
                 ) {
                     Text(
                         text = item.category,
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = White,
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -127,9 +127,10 @@ fun CartProductCard(
 
                         Box(
                             modifier = Modifier
-                                .size(28.dp)
+                                .size(24.dp)
+                                .border(1.dp, AccentColor, shape = CircleShape)
                                 .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+                                .background(MaterialTheme.colorScheme.surfaceDim)
                                 .clickable { onDelete() },
                             contentAlignment = Alignment.Center
                         ) {

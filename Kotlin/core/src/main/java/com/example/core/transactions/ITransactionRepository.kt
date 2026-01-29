@@ -7,4 +7,5 @@ import com.example.core.transactions.dto.TransactionListResponse
 interface ITransactionRepository {
     suspend fun getTransactionHistory(request: TransactionFilterRequest): Result<TransactionListResponse>
     suspend fun getTransactionDetail(transactionId: Long): Result<TransactionDetail>
+    suspend fun voidTransaction(transactionId: Long): Result<Unit>
 }

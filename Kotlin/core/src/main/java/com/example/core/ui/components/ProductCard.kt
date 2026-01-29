@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -39,8 +40,10 @@ import com.example.core.R
 import com.example.core.catalog.dto.Product
 import com.example.core.settings.CurrencyConverter
 import com.example.core.ui.theme.AccentColor
+import com.example.core.ui.theme.BackgroundNavDarkDark
 import com.example.core.ui.theme.Error
 import com.example.core.ui.theme.White
+import com.example.core.ui.theme.WhiteSoft
 
 @Composable
 fun ProductCard(
@@ -70,7 +73,7 @@ fun ProductCard(
                 spotColor = Color(0xFF000000).copy(alpha = 0.03f)
             )
             .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colorScheme.surfaceContainer)
+            .background(MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.6f))
             .border(
                 width = 1.dp,
                 color = MaterialTheme.colorScheme.surfaceDim,
@@ -104,6 +107,7 @@ fun ProductCard(
                             elevation = 2.dp,
                             shape = CircleShape
                         )
+                        .border(1.dp, AccentColor, shape = CircleShape)
                         .clip(CircleShape)
                         .background(MaterialTheme.colorScheme.surfaceContainer)
                         .clickable { onFavoriteChange(!isFavorite) },
@@ -196,6 +200,7 @@ fun ProductCard(
                                 Box(
                                     modifier = Modifier
                                         .size(24.dp)
+                                        .border(1.dp, AccentColor, shape = CircleShape)
                                         .clip(CircleShape)
                                         .background(MaterialTheme.colorScheme.surfaceContainer)
                                         .clickable { menuOpen = true },
@@ -216,19 +221,14 @@ fun ProductCard(
                                     ) {
                                         Column(
                                             modifier = Modifier
-                                                .shadow(
-                                                    elevation = 8.dp,
-                                                    shape = RoundedCornerShape(10.dp)
-                                                )
-                                                .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(10.dp))
+                                                .background(Color(0xFF232323), RoundedCornerShape(6.dp))
                                                 .border(
                                                     width = 1.dp,
-                                                    color = MaterialTheme.colorScheme.surfaceDim,
-                                                    shape = RoundedCornerShape(10.dp)
+                                                    color = MaterialTheme.colorScheme.surfaceContainer,
+                                                    shape = RoundedCornerShape(6.dp)
                                                 )
-                                                .padding(4.dp)
                                                 .width(IntrinsicSize.Max)
-                                        ) {
+                                        )  {
                                             MenuItem(
                                                 icon = Icons.Default.Edit,
                                                 label = stringResource(R.string.edit_button)
@@ -236,15 +236,7 @@ fun ProductCard(
                                                 menuOpen = false
                                                 onEdit(product.id)
                                             }
-
-                                            Spacer(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .height(1.dp)
-                                                    .padding(horizontal = 8.dp)
-                                                    .background(Color(0xFF353D4D))
-                                            )
-
+                                            Divider(modifier = Modifier.height(1.dp), color = BackgroundNavDarkDark)
                                             MenuItem(
                                                 icon = Icons.Default.Delete,
                                                 label = stringResource(R.string.delete),
@@ -318,13 +310,13 @@ fun MenuItem(
         Icon(
             imageVector = icon,
             contentDescription = label,
-            tint = if (isDestructive) Error else MaterialTheme.colorScheme.onBackground,
+            tint = if (isDestructive) Error else WhiteSoft,
             modifier = Modifier.size(14.dp)
         )
-        Spacer(modifier = Modifier.width(10.dp))
+        Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = label,
-            color = if (isDestructive) Error else MaterialTheme.colorScheme.onBackground,
+            color = if (isDestructive) Error else WhiteSoft,
             fontSize = 12.sp,
             fontWeight = FontWeight.Medium
         )

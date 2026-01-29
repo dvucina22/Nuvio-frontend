@@ -27,4 +27,8 @@ class TransactionRepository @Inject constructor(
             Result.failure(e)
         }
     }
+
+    override suspend fun voidTransaction(transactionId: Long): Result<Unit> {
+        return transactionService.voidTransaction(transactionId)
+    }
 }

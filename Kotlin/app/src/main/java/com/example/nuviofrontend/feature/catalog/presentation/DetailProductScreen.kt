@@ -256,7 +256,7 @@ fun DetailProductScreen(
                     }
                 }
 
-                item { Spacer(modifier = Modifier.height(20.dp)) }
+                item { Spacer(modifier = Modifier.height(55.dp)) }
             }
         }
 

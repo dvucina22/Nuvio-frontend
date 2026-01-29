@@ -172,7 +172,6 @@ fun CartScreen(
                             selectedCurrency = selectedCurrency,
                             onIncrease = { viewModel.increaseQuantity(item.id) },
                             onDecrease = { viewModel.decreaseQuantity(item.id) },
-                            onFavorite = { viewModel.toggleFavorite(item.id) },
                             onDelete = { viewModel.showDeleteConfirmation(item.id) },
                             onClick = { onProductClick(item.id.toLong()) }
                         )

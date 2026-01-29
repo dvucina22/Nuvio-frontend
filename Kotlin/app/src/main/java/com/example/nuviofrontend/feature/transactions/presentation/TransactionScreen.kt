@@ -46,14 +46,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.auth.presentation.AuthViewModel
 import com.example.core.R
 import com.example.core.transactions.dto.TransactionListItem
+import com.example.core.ui.components.CustomPopupWarning
 import com.example.core.ui.components.CustomRangeSlider
 import com.example.core.ui.components.CustomTopBar
 import com.example.core.ui.components.IconActionBox
@@ -78,6 +79,12 @@ fun TransactionsScreen(
     var showFilterSheet by remember { mutableStateOf(false) }
     var filterState by remember { mutableStateOf(TransactionsFilterState()) }
     val scope = rememberCoroutineScope()
+
+    val authViewModel: AuthViewModel = hiltViewModel()
+    val authState by authViewModel.uiState.collectAsState()
+    val isAdmin = authState.isAdmin
+
+    var transactionToVoid by remember { mutableStateOf<Long?>(null) }
 
     LaunchedEffect(showFilterSheet) {
         if (showFilterSheet) {
@@ -157,7 +164,9 @@ fun TransactionsScreen(
                     state.results.isNotEmpty() -> {
                         TransactionsResultsList(
                             items = state.results,
+                            isAdmin = isAdmin,
                             isLoadingMore = state.isLoadingMore,
+                            onVoidClick = { transactionToVoid = it },
                             onLoadMore = { viewModel.loadMore() },
                             onClick = { onTransactionClick(it) }
                         )
@@ -222,6 +231,19 @@ fun TransactionsScreen(
                 )
             }
         }
+        if (transactionToVoid != null) {
+            CustomPopupWarning(
+                message = stringResource(R.string.confirm_void_transaction),
+                confirmText = stringResource(R.string.next),
+                dismissText = stringResource(R.string.cancel),
+                onDismiss = { transactionToVoid = null },
+                onConfirm = {
+                    viewModel.voidTransaction(transactionToVoid!!)
+                    transactionToVoid = null
+                }
+            )
+        }
+
     }
 }
 
@@ -230,7 +252,9 @@ private fun TransactionsResultsList(
     items: List<TransactionListItem>,
     isLoadingMore: Boolean,
     onLoadMore: () -> Unit,
-    onClick: (Long) -> Unit
+    onClick: (Long) -> Unit,
+    isAdmin: Boolean,
+    onVoidClick: (Long) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -248,9 +272,12 @@ private fun TransactionsResultsList(
                 transaction = item,
                 onClick = { onClick(item.id) },
                 showMenu = false,
-                isAdmin = false
+                isAdmin = isAdmin,
+                onVoidClick = { onVoidClick(item.id) }
             )
         }
+
+
 
         if (isLoadingMore) {
             items(6) {
@@ -261,6 +288,10 @@ private fun TransactionsResultsList(
                     onClick = null
                 )
             }
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(110.dp))
         }
     }
 }
