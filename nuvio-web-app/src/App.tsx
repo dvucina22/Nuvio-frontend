@@ -5,6 +5,7 @@ import DashboardPage from './pages/dashboard/DashboardPage';
 import ProtectedRoute from './components/shared/ProtectedRoute';
 import { useAuth } from './hooks/useAuth';
 import Navbar from './components/navbar/Navbar';
+import UsersPage from './pages/users/UsersPage';
 
 const RootRedirect: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -29,6 +30,15 @@ const App: React.FC = () => {
                 <ProtectedRoute>
                   <Navbar />
                   <DashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/users"
+              element={
+                <ProtectedRoute>
+                  <Navbar />
+                  <UsersPage />
                 </ProtectedRoute>
               }
             />

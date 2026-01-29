@@ -1,4 +1,4 @@
-import { Pie, PieChart } from "recharts"
+import { Legend, Pie, PieChart } from "recharts"
 import { StatusBreakdown } from "@/types/stats/StatusBreakdown"
 
 import {
@@ -34,11 +34,17 @@ const TransactionsPieChart: React.FC<TransactionsPieChartProps> = ({ transaction
     return config
   }, { count: { label: "Count" } } as ChartConfig)
 
+  const legendPayload = chartData.map((d) => ({
+    value: d.status,
+    type: "square" as const,
+    color: d.fill,
+  }))
+
   return (
-    <Card className="flex flex-col">
+    <Card className="flex flex-col w-full">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Transaction Status</CardTitle>
-        <CardDescription>Status Breakdown</CardDescription>
+        <CardTitle>Transaction status</CardTitle>
+        <CardDescription>Status breakdown</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
@@ -47,11 +53,22 @@ const TransactionsPieChart: React.FC<TransactionsPieChartProps> = ({ transaction
         >
           <PieChart>
             <ChartTooltip content={<ChartTooltipContent hideLabel />} />
-            <Pie 
-              data={chartData} 
-              dataKey="count" 
-              label 
-              nameKey="status" 
+
+            <Pie
+              data={chartData}
+              dataKey="count"
+              label
+              nameKey="status"
+            />
+
+            <Legend
+              payload={legendPayload}
+              verticalAlign="bottom"
+              align="center"
+              wrapperStyle={{ padding: 12 }}
+              formatter={(value) => (
+                <span className="text-[12px] text-muted-foreground">{value}</span>
+              )}
             />
           </PieChart>
         </ChartContainer>
