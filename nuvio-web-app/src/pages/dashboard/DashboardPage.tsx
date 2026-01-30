@@ -14,19 +14,19 @@ const DashboardPage: React.FC = () => {
     const containerRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
-        const fetchStats = async () => {
-            try {
-                const stats = await getStats();
-                console.log("Fetched stats:", stats);
-                setStats(stats.data);
-            }
-            catch (err) {
-                console.error("Error fetching stats:", err);
-            }
-        };
-
         fetchStats();
     }, []);
+
+    const fetchStats = async (limit?: number) => {
+        try {
+            const stats = await getStats(limit);
+            console.log("Fetched stats:", stats);
+            setStats(stats.data);
+        }
+        catch (err) {
+            console.error("Error fetching stats:", err);
+        }
+    };    
 
     useLayoutEffect(() => {
         if (!containerRef.current) return;
@@ -80,7 +80,7 @@ const DashboardPage: React.FC = () => {
             </div>
 
             <div data-anim="area" className="w-full">
-                <TransactionsAmountAreaByStatusChart transactions={stats?.recentTransactions || []} />
+                <TransactionsAmountAreaByStatusChart onChangeLimit={fetchStats} transactions={stats?.recentTransactions || []} />
             </div>
         </div>
     );

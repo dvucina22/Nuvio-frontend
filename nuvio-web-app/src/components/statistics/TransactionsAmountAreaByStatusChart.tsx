@@ -29,6 +29,7 @@ import { Transaction } from "@/types/stats/Transaction"
 
 interface TransactionsAmountAreaByStatusChartProps {
   transactions: Transaction[]
+  onChangeLimit?: (limit: number | undefined) => void
 }
 
 const chartConfig = {
@@ -39,9 +40,17 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export default function TransactionsAmountAreaByStatusChart({ 
-  transactions 
+  transactions,
+  onChangeLimit,
 }: TransactionsAmountAreaByStatusChartProps) {
-  const [timeRange, setTimeRange] = React.useState("30d")
+  const [limit, setLimit] = React.useState<string>("20")
+
+  const handleLimitChange = (value: string) => {
+    setLimit(value)
+    if (onChangeLimit) {
+      onChangeLimit(value === "all" ? undefined : parseInt(value))
+    }
+  }
 
   const processedData = React.useMemo(() => {
     if (!transactions || transactions.length === 0) return []
@@ -61,25 +70,13 @@ export default function TransactionsAmountAreaByStatusChart({
   const filteredData = React.useMemo(() => {
     if (processedData.length === 0) return []
 
-    const now = new Date()
-    let daysToSubtract = 30
-
-    if (timeRange === "7d") {
-      daysToSubtract = 7
-    } else if (timeRange === "90d") {
-      daysToSubtract = 90
-    } else if (timeRange === "all") {
+    if (limit === "all") {
       return processedData
     }
 
-    const startDate = new Date(now)
-    startDate.setDate(startDate.getDate() - daysToSubtract)
-
-    return processedData.filter((item) => {
-      const date = new Date(item.date)
-      return date >= startDate
-    })
-  }, [processedData, timeRange])
+    const limitNum = parseInt(limit)
+    return processedData.slice(-limitNum)
+  }, [processedData, limit])
 
   return (
     <Card className="w-full">
@@ -87,28 +84,28 @@ export default function TransactionsAmountAreaByStatusChart({
         <div className="grid flex-1 gap-1">
           <CardTitle>Approved transaction amounts</CardTitle>
           <CardDescription>
-            Showing approved transaction amounts over time
+            Showing the most recent approved transactions
           </CardDescription>
         </div>
-        <Select value={timeRange} onValueChange={setTimeRange}>
+        <Select value={limit} onValueChange={handleLimitChange}>
           <SelectTrigger
             className="w-[160px] rounded-lg sm:ml-auto"
-            aria-label="Select a time range"
+            aria-label="Select transaction limit"
           >
-            <SelectValue placeholder="Last 30 days" />
+            <SelectValue placeholder="Last 20" />
           </SelectTrigger>
           <SelectContent className="rounded-xl">
-            <SelectItem value="7d" className="rounded-lg">
-              Last 7 days
+            <SelectItem value="10" className="rounded-lg">
+              Last 10
             </SelectItem>
-            <SelectItem value="30d" className="rounded-lg">
-              Last 30 days
+            <SelectItem value="20" className="rounded-lg">
+              Last 20
             </SelectItem>
-            <SelectItem value="90d" className="rounded-lg">
-              Last 90 days
+            <SelectItem value="50" className="rounded-lg">
+              Last 50
             </SelectItem>
-            <SelectItem value="all" className="rounded-lg">
-              All time
+            <SelectItem value="100" className="rounded-lg">
+              Last 100
             </SelectItem>
           </SelectContent>
         </Select>
