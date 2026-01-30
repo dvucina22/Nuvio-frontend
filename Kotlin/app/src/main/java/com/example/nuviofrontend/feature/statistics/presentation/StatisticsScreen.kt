@@ -1,5 +1,8 @@
 package com.example.nuviofrontend.feature.statistics.presentation
 
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,8 +14,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.SyncAlt
@@ -20,6 +23,7 @@ import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.HourglassEmpty
 import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -33,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -67,6 +72,32 @@ fun StatisticsScreen(
         val selectedCurrencyState = settingsViewModel.currencyFlow.collectAsState(initial = 1)
         val selectedCurrency = selectedCurrencyState.value
 
+        val context = LocalContext.current
+
+        LaunchedEffect(state.pdfUri) {
+            val uri = state.pdfUri ?: return@LaunchedEffect
+
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(uri, "application/pdf")
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+
+            try {
+                context.startActivity(Intent.createChooser(intent, "Open PDF"))
+            } catch (e: Exception) {
+                Toast.makeText(context, "No PDF viewer installed.", Toast.LENGTH_LONG).show()
+            }
+
+            viewModel.clearPdfResult()
+        }
+
+        LaunchedEffect(state.pdfError) {
+            val err = state.pdfError ?: return@LaunchedEffect
+            Toast.makeText(context, err, Toast.LENGTH_LONG).show()
+            viewModel.clearPdfResult()
+        }
+
         CustomTopBar(
             title = stringResource(R.string.statistics),
             showBack = true,
@@ -87,14 +118,24 @@ fun StatisticsScreen(
             }
             state.statistics != null -> {
                 val stats = state.statistics!!
-                StatisticsContent(stats.data, currencyIndex = selectedCurrency)
+                StatisticsContent(
+                    data = stats.data,
+                    currencyIndex = selectedCurrency,
+                    isGeneratingPdf = state.isGeneratingPdf,
+                    onGeneratePdf = { viewModel.generatePdfReport(currencyIndex = selectedCurrency) }
+                )
             }
         }
     }
 }
 
 @Composable
-fun StatisticsContent(data: TransactionStatisticsData, currencyIndex: Int) {
+fun StatisticsContent(
+    data: TransactionStatisticsData,
+    currencyIndex: Int,
+    isGeneratingPdf: Boolean,
+    onGeneratePdf: () -> Unit
+) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -117,10 +158,44 @@ fun StatisticsContent(data: TransactionStatisticsData, currencyIndex: Int) {
             AverageTransactionCard(data.averageTransactionValue,  currencyIndex = currencyIndex)
         }
 
+        item {
+            PdfReportSection(
+                isGenerating = isGeneratingPdf,
+                onGenerate = onGeneratePdf
+            )
+        }
+
         item { Spacer(modifier = Modifier.height(80.dp)) }
     }
 }
 
+@Composable
+fun PdfReportSection(
+    isGenerating: Boolean,
+    onGenerate: () -> Unit
+) {
+    StatCard(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Button(
+            onClick = onGenerate,
+            enabled = !isGenerating,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            if (isGenerating) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(18.dp),
+                    strokeWidth = 2.dp
+                )
+                Spacer(modifier = Modifier.size(10.dp))
+                Text("Generating...")
+            } else {
+                Text(stringResource(R.string.generate_pdf_report))
+            }
+        }
+    }
+}
 
 @Composable
 fun SummaryRow(totalRevenue: Double, totalTransactions: Int, currencyIndex: Int) {
@@ -219,8 +294,6 @@ fun TransactionStatusSection(statusList: List<TransactionStatusBreakdown>) {
     }
 }
 
-
-
 @Composable
 fun StatusCard(
     modifier: Modifier,
@@ -263,7 +336,6 @@ fun StatusCard(
     }
 }
 
-
 @Composable
 fun AverageTransactionCard(avg: Double, currencyIndex: Int) {
     StatCard(
@@ -286,8 +358,6 @@ fun AverageTransactionCard(avg: Double, currencyIndex: Int) {
         )
     }
 }
-
-
 
 @Composable
 fun StatCard(

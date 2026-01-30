@@ -104,4 +104,7 @@ dependencies {
 
     implementation("com.google.accompanist:accompanist-pager:0.32.0")
     implementation("com.google.accompanist:accompanist-pager-indicators:0.32.0")
+
+    implementation("androidx.startup:startup-runtime:1.2.0")
+    implementation("androidx.profileinstaller:profileinstaller:1.4.1")
 }

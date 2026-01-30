@@ -7,5 +7,6 @@ data class TransactionStatisticsData(
     val totalRevenue: Double,
     val totalTransactions: Int,
     val statusBreakdown: List<TransactionStatusBreakdown>,
-    val averageTransactionValue: Double
+    val averageTransactionValue: Double,
+    val recentTransactions: List<RecentTransaction>
 )
