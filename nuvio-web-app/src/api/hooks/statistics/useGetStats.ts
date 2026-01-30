@@ -6,12 +6,12 @@ export function useGetStats() {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
-    const getStats = async (): Promise<StatisticResponse> => {
+    const getStats = async (limit?: number): Promise<StatisticResponse> => {
         setLoading(true);
         setError(null);
 
         try {
-            const response = await getTransactionStats();
+            const response = await getTransactionStats(limit);
             return response;
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Login failed';
