@@ -170,6 +170,19 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    fun removeProductFromResults(productId: Long) {
+        _state.update {
+            it.copy(
+                results = it.results.filterNot { p -> p.id == productId },
+                favoriteProductIds = it.favoriteProductIds - productId
+            )
+        }
+
+        if (currentOffset > 0) {
+            currentOffset = (currentOffset - 1).coerceAtLeast(0)
+        }
+    }
+
     private fun buildFilterRequest(
         query: String,
         filterState: FilterState?,

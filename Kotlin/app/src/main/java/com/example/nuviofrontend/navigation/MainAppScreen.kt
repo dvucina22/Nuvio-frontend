@@ -106,6 +106,9 @@ fun MainAppScreen(
                         HomeTab.SEARCH -> SearchScreen(
                             onProductClick = { productId ->
                                 navController.navigate("product/$productId")
+                            },
+                            onEditProductClick = { productId ->
+                                navController.navigate("edit_product/$productId")
                             }
                         )
                         HomeTab.CART -> CartScreen(
