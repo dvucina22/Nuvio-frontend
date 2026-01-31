@@ -253,27 +253,11 @@ class SaleViewModel @Inject constructor(
     }
 
     private fun handlePaymentFailure(errorMessage: String) {
-        val currentState = _state.value
-        val newRetryCount = currentState.retryCount + 1
-
-        if (newRetryCount < maxRetries) {
-            _state.value = currentState.copy(
-                retryCount = newRetryCount,
-                isProcessing = false,
-                error = "$errorMessage (Attempt $newRetryCount of $maxRetries)"
-            )
-            attemptPayment()
-        } else {
-            _checkoutResult.value = CheckoutResult.Error(
-                "Payment failed after $maxRetries attempts. Please try again later.",
-                maxRetriesReached = true
-            )
-            _state.value = currentState.copy(
-                isProcessing = false,
-                retryCount = 0,
-                error = null
-            )
-        }
+        _checkoutResult.value = CheckoutResult.Error(errorMessage)
+        _state.value = _state.value.copy(
+            isProcessing = false,
+            retryCount = 0
+        )
     }
 
     fun clearError() {

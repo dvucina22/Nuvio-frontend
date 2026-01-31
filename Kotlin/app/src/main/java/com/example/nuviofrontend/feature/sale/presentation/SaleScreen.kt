@@ -352,10 +352,7 @@ fun PaymentMethodSection(
     onManualExpiryMonthChanged: (String) -> Unit,
     onManualExpiryYearChanged: (String) -> Unit,
     onManualFullNameChanged: (String) -> Unit,
-    viewModel: SaleViewModel = hiltViewModel()
 ) {
-    val useNewCard = viewModel.state.collectAsState().value.useNewCard
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -378,7 +375,7 @@ fun PaymentMethodSection(
 
             if (cards.isNotEmpty()) {
                 TextButton(
-                    onClick = { viewModel.setUseNewCard(!useNewCard) },
+                    onClick = onToggleUseNewCard,
                     colors = ButtonDefaults.textButtonColors(
                         contentColor = AccentColor
                     )
