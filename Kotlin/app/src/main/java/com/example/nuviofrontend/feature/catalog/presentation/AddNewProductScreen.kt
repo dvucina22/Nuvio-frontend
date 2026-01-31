@@ -227,7 +227,6 @@ fun AddNewProductScreen(
                             label = stringResource(R.string.label_product_name),
                             isError = viewModel.fieldErrors.containsKey("productName"),
                             errorMessage = viewModel.fieldErrors["productName"],
-                            labelColor = MaterialTheme.colorScheme.onBackground
                         )
 
                         val priceLabel = if (selectedCurrency == 0) {
@@ -247,7 +246,6 @@ fun AddNewProductScreen(
                             isError = viewModel.fieldErrors.containsKey("price"),
                             errorMessage = viewModel.fieldErrors["price"],
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            labelColor = MaterialTheme.colorScheme.onBackground
                         )
 
                         CustomDropdownAddProduct(
@@ -289,7 +287,6 @@ fun AddNewProductScreen(
                             isError = viewModel.fieldErrors.containsKey("quantity"),
                             errorMessage = viewModel.fieldErrors["quantity"],
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            labelColor = MaterialTheme.colorScheme.onBackground
                         )
 
                         CustomTextFieldAligned(
@@ -302,7 +299,6 @@ fun AddNewProductScreen(
                             label = stringResource(R.string.label_model_number),
                             isError = viewModel.fieldErrors.containsKey("modelNumber"),
                             errorMessage = viewModel.fieldErrors["modelNumber"],
-                            labelColor = MaterialTheme.colorScheme.onBackground
                         )
 
                         CustomTextFieldAligned(
@@ -315,7 +311,6 @@ fun AddNewProductScreen(
                             label = stringResource(R.string.label_sku),
                             isError = viewModel.fieldErrors.containsKey("sku"),
                             errorMessage = viewModel.fieldErrors["sku"],
-                            labelColor = MaterialTheme.colorScheme.onBackground
                         )
 
                         CustomDescriptionField(

@@ -5,6 +5,7 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -45,8 +47,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.core.R
 import com.example.core.settings.CurrencyConverter
+import com.example.core.statistics.dto.RecentTransaction
 import com.example.core.statistics.dto.TransactionStatisticsData
 import com.example.core.statistics.dto.TransactionStatusBreakdown
+import com.example.core.ui.components.CustomButton
 import com.example.core.ui.components.CustomTopBar
 import com.example.core.ui.theme.AccentColor
 import com.example.core.ui.theme.Error
@@ -159,13 +163,25 @@ fun StatisticsContent(
         }
 
         item {
-            PdfReportSection(
-                isGenerating = isGeneratingPdf,
-                onGenerate = onGeneratePdf
+            RecentTransactionsSection(
+                transactions = data.recentTransactions.take(5),
+                currencyIndex = currencyIndex
             )
         }
 
-        item { Spacer(modifier = Modifier.height(80.dp)) }
+        item {
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                PdfReportSection(
+                    isGenerating = isGeneratingPdf,
+                    onGenerate = onGeneratePdf
+                )
+            }
+        }
+
+        item { Spacer(modifier = Modifier.height(100.dp)) }
     }
 }
 
@@ -174,27 +190,10 @@ fun PdfReportSection(
     isGenerating: Boolean,
     onGenerate: () -> Unit
 ) {
-    StatCard(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Button(
-            onClick = onGenerate,
-            enabled = !isGenerating,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            if (isGenerating) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(18.dp),
-                    strokeWidth = 2.dp
-                )
-                Spacer(modifier = Modifier.size(10.dp))
-                Text("Generating...")
-            } else {
-                Text(stringResource(R.string.generate_pdf_report))
-            }
-        }
-    }
+    CustomButton(
+        text = stringResource(R.string.generate_pdf_report),
+        onClick = onGenerate
+    )
 }
 
 @Composable
@@ -382,6 +381,109 @@ fun StatCard(
         )
     }
 }
+
+@Composable
+fun RecentTransactionsSection(
+    transactions: List<RecentTransaction>,
+    currencyIndex: Int
+) {
+    StatCard(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Text(
+            text = stringResource(R.string.last_transactions),
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            transactions.forEach { transaction ->
+                RecentTransactionItem(
+                    transaction = transaction,
+                    currencyIndex = currencyIndex
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun RecentTransactionItem(
+    transaction: RecentTransaction,
+    currencyIndex: Int
+) {
+    val statusColor = when (transaction.status) {
+        "APPROVED" -> Success
+        "DECLINED" -> Error
+        "PENDING" -> MaterialTheme.colorScheme.onBackground
+        else -> Yellow
+    }
+
+    val statusIcon = when (transaction.status) {
+        "APPROVED" -> Icons.Outlined.CheckCircle
+        "DECLINED" -> Icons.Outlined.Cancel
+        "PENDING" -> Icons.Outlined.HourglassEmpty
+        else -> Icons.Outlined.Refresh
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                imageVector = statusIcon,
+                contentDescription = null,
+                tint = statusColor,
+                modifier = Modifier.size(18.dp)
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Column {
+                Text(
+                    text = CurrencyConverter.convertPrice(
+                        transaction.amount / 100.00,
+                        currencyIndex
+                    ),
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+
+                Text(
+                    text = formatDate(transaction.createdAt),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                )
+            }
+        }
+
+        Text(
+            text = statusToString(transaction.status),
+            color = statusColor,
+            style = MaterialTheme.typography.bodySmall
+        )
+    }
+}
+
+fun formatDate(iso: String): String {
+    return try {
+        val instant = java.time.Instant.parse(iso)
+        val dateTime = instant.atZone(java.time.ZoneId.systemDefault())
+        dateTime.format(
+            java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
+        )
+    } catch (e: Exception) {
+        iso
+    }
+}
+
 
 @Composable
 fun statusToString(status: String): String {

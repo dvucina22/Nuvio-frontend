@@ -97,21 +97,33 @@ class SaleViewModel @Inject constructor(
 
     fun updateManualCardNumber(value: String) {
         val filtered = value.filter { it.isDigit() }.take(16)
-        _state.value = _state.value.copy(manualCardNumber = filtered)
+        _state.value = _state.value.copy(
+            manualCardNumber = filtered,
+            cardNumberError = null
+        )
     }
 
     fun updateManualExpiryMonth(value: String) {
         val filtered = value.filter { it.isDigit() }.take(2)
-        _state.value = _state.value.copy(manualExpiryMonth = filtered)
+        _state.value = _state.value.copy(
+            manualExpiryMonth = filtered,
+            expiryMonthError = null
+        )
     }
 
     fun updateManualExpiryYear(value: String) {
         val filtered = value.filter { it.isDigit() }.take(2)
-        _state.value = _state.value.copy(manualExpiryYear = filtered)
+        _state.value = _state.value.copy(
+            manualExpiryYear = filtered,
+            expiryYearError = null
+        )
     }
 
     fun updateManualFullName(value: String) {
-        _state.value = _state.value.copy(manualFullName = value)
+        _state.value = _state.value.copy(
+            manualFullName = value,
+            fullNameError = null
+        )
     }
 
     fun processSale() {
@@ -279,4 +291,6 @@ class SaleViewModel @Inject constructor(
     fun setUseNewCard(value: Boolean) {
         _state.value = _state.value.copy(useNewCard = value)
     }
+
+
 }

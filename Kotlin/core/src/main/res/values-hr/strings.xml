@@ -408,4 +408,5 @@
     <string name="return_to_cart">Povratak u košaricu</string>
     <string name="confirm_void_transaction">Jeste li sigurni da želite stornirati ovu transakciju?</string>
     <string name="generate_pdf_report">Izgeneriraj PDF izvještaj</string>
+    <string name="last_transactions">Zadnjih 5 transakcija</string>
 </resources>

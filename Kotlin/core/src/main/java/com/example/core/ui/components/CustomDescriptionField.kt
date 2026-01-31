@@ -69,82 +69,86 @@ fun CustomDescriptionField(
         }
 
         Box(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = (minLines * 24).dp, max = (maxLines * 24).dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(MaterialTheme.colorScheme.surfaceContainerLowest.copy(alpha = 0.7f))
+                .border(
+                    width = if (isError) 1.dp else 0.dp,
+                    color = if (isError) Error else if (isFocused) MaterialTheme.colorScheme.onBackground.copy(
+                        alpha = 0.5f
+                    ) else Color.Transparent,
+                    shape = RoundedCornerShape(8.dp)
+                )
+                .onFocusChanged { isFocused = it.isFocused }
+                .padding(horizontal = 12.dp, vertical = 12.dp)
         ) {
-            BasicTextField(
-                value = value,
-                onValueChange = onValueChange,
-                singleLine = false,
-                cursorBrush = SolidColor(Black),
-                textStyle = textStyle.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
-                    textAlign = TextAlign.Start,
-                    lineHeight = textStyle.fontSize * 1.2f
-                ),
-                visualTransformation = visualTransformation,
-                keyboardOptions = keyboardOptions,
-                maxLines = maxLines,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = (minLines * 24).dp, max = (maxLines * 24).dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.surfaceContainerLowest.copy(alpha = 0.7f))
-                    .border(
-                        width = if (isError) 1.dp else 0.dp,
-                        color = if (isError) Error else if (isFocused) MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f) else Color.Transparent,
-                        shape = RoundedCornerShape(8.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(modifier = Modifier.weight(1f)) {
+                    if (value.isEmpty()) {
+                        Text(
+                            text = placeholder,
+                            style = textStyle.copy(
+                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                            )
+                        )
+                    }
+                    BasicTextField(
+                        value = value,
+                        onValueChange = onValueChange,
+                        singleLine = false,
+                        cursorBrush = SolidColor(Black),
+                        textStyle = textStyle.copy(
+                            color = MaterialTheme.colorScheme.onBackground,
+                            lineHeight = textStyle.fontSize * 1.2f
+                        ),
+                        visualTransformation = visualTransformation,
+                        keyboardOptions = keyboardOptions,
+                        maxLines = maxLines,
+                        modifier = Modifier.fillMaxWidth()
                     )
-                    .onFocusChanged { isFocused = it.isFocused }
-                    .padding(horizontal = 12.dp, vertical = 12.dp),
-                decorationBox = { innerTextField ->
-                    Box(modifier = Modifier.fillMaxWidth()) {
-                        if (value.isEmpty()) {
-                            Text(
-                                text = placeholder,
-                                style = textStyle.copy(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f))
-                            )
-                        }
-                        innerTextField()
-                    }
+                }
 
-                    if (isError && errorMessage != null) {
-                        IconButton(
-                            onClick = { expanded = true },
-                            modifier = Modifier
-                                .size(20.dp)
-                                .align(Alignment.TopEnd)
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_error_hint),
-                                contentDescription = "Prikaži grešku",
-                                tint = Error
-                            )
-                        }
-                    }
-
-                    if (isError && errorMessage != null) {
-                        DropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false },
-                            modifier = Modifier
-                                .wrapContentWidth()
-                                .wrapContentHeight()
-                                .background(Color(0xFF1A1F16))
-                                .shadow(elevation = 8.dp, clip = true),
-                            offset = DpOffset(x = (-50).dp, y = (-60).dp)
-                        ) {
-                            Column(modifier = Modifier.padding(12.dp)) {
-                                Text(
-                                    text = errorMessage,
-                                    color = White.copy(alpha = 0.9f),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    textAlign = TextAlign.Center
-                                )
-                            }
-                        }
+                if (isError && errorMessage != null) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    IconButton(
+                        onClick = { expanded = true },
+                        modifier = Modifier.size(20.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_error_hint),
+                            contentDescription = "Prikaži grešku",
+                            tint = Error
+                        )
                     }
                 }
-            )
+            }
+
+            if (isError && errorMessage != null) {
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .wrapContentHeight()
+                        .background(Color(0xFF1A1F16))
+                        .shadow(elevation = 8.dp, clip = true),
+                    offset = DpOffset(x = (-50).dp, y = (-60).dp)
+                ) {
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        Text(
+                            text = errorMessage,
+                            color = White.copy(alpha = 0.9f),
+                            style = MaterialTheme.typography.bodySmall,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
         }
     }
 }
