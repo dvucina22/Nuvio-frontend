@@ -235,7 +235,7 @@ fun CardItem(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .height(92.dp)
+            .height(95.dp)
             .then(
                 if (isCardExpired(card.expiry))
                     Modifier.border(1.dp, Error, RoundedCornerShape(8.dp))

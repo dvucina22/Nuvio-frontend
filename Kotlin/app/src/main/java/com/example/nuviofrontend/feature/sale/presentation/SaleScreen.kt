@@ -387,7 +387,9 @@ fun PaymentMethodSection(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = if (useNewCard) stringResource(R.string.payment_use_saved_card) else stringResource(R.string.payment_new_card),
+                        text = if (useNewCard) stringResource(R.string.payment_use_saved_card) else stringResource(
+                            R.string.payment_new_card
+                        ),
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Medium,
                     )
@@ -422,58 +424,60 @@ fun PaymentMethodSection(
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            CustomTextField(
-                value = manualCardNumber,
-                onValueChange = onManualCardNumberChanged,
-                placeholder = stringResource(R.string.card_number),
-                label = stringResource(R.string.card_number),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                visualTransformation = CardNumberVisualTransformation(),
-                isError = cardNumberError != null,
-                errorMessage = cardNumberError
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp)
+            Column(
+                modifier = Modifier.padding(horizontal = 16.dp)
             ) {
-                CustomTextField(
-                    value = manualExpiryMonth,
-                    onValueChange = onManualExpiryMonthChanged,
-                    placeholder = stringResource(R.string.expiry_mm),
-                    label = stringResource(R.string.expiry_mm),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    isError = expiryMonthError != null,
-                    errorMessage = expiryMonthError,
-                    modifier = Modifier.weight(1f)
-                )
 
                 CustomTextField(
-                    value = manualExpiryYear,
-                    onValueChange = onManualExpiryYearChanged,
-                    placeholder = stringResource(R.string.expiry_yy),
-                    label = stringResource(R.string.expiry_yy),
+                    value = manualCardNumber,
+                    onValueChange = onManualCardNumberChanged,
+                    placeholder = stringResource(R.string.card_number),
+                    label = stringResource(R.string.card_number),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    isError = expiryYearError != null,
-                    errorMessage = expiryYearError,
-                    modifier = Modifier.weight(1f)
+                    visualTransformation = CardNumberVisualTransformation(),
+                    isError = cardNumberError != null,
+                    errorMessage = cardNumberError
                 )
 
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    CustomTextField(
+                        value = manualExpiryMonth,
+                        onValueChange = onManualExpiryMonthChanged,
+                        placeholder = stringResource(R.string.expiry_mm),
+                        label = stringResource(R.string.expiry_mm),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        isError = expiryMonthError != null,
+                        errorMessage = expiryMonthError,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    CustomTextField(
+                        value = manualExpiryYear,
+                        onValueChange = onManualExpiryYearChanged,
+                        placeholder = stringResource(R.string.expiry_yy),
+                        label = stringResource(R.string.expiry_yy),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        isError = expiryYearError != null,
+                        errorMessage = expiryYearError,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                CustomTextField(
+                    value = manualFullName,
+                    onValueChange = onManualFullNameChanged,
+                    placeholder = stringResource(R.string.full_name_on_card),
+                    label = stringResource(R.string.full_name_on_card),
+                    isError = fullNameError != null,
+                    errorMessage = fullNameError
+                )
             }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            CustomTextField(
-                value = manualFullName,
-                onValueChange = onManualFullNameChanged,
-                placeholder = stringResource(R.string.full_name_on_card),
-                label = stringResource(R.string.full_name_on_card),
-                isError = fullNameError != null,
-                errorMessage = fullNameError
-            )
-
         }
     }
 }
