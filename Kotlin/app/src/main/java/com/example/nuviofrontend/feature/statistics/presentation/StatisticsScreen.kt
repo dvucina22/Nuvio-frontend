@@ -163,13 +163,6 @@ fun StatisticsContent(
         }
 
         item {
-            RecentTransactionsSection(
-                transactions = data.recentTransactions.take(5),
-                currencyIndex = currencyIndex
-            )
-        }
-
-        item {
             Box(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
@@ -241,7 +234,7 @@ fun SummaryCard(
 
         Text(
             text = label,
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.displaySmall,
             color = MaterialTheme.colorScheme.onBackground
         )
     }
@@ -381,109 +374,6 @@ fun StatCard(
         )
     }
 }
-
-@Composable
-fun RecentTransactionsSection(
-    transactions: List<RecentTransaction>,
-    currencyIndex: Int
-) {
-    StatCard(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Text(
-            text = stringResource(R.string.last_transactions),
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onBackground
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            transactions.forEach { transaction ->
-                RecentTransactionItem(
-                    transaction = transaction,
-                    currencyIndex = currencyIndex
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun RecentTransactionItem(
-    transaction: RecentTransaction,
-    currencyIndex: Int
-) {
-    val statusColor = when (transaction.status) {
-        "APPROVED" -> Success
-        "DECLINED" -> Error
-        "PENDING" -> MaterialTheme.colorScheme.onBackground
-        else -> Yellow
-    }
-
-    val statusIcon = when (transaction.status) {
-        "APPROVED" -> Icons.Outlined.CheckCircle
-        "DECLINED" -> Icons.Outlined.Cancel
-        "PENDING" -> Icons.Outlined.HourglassEmpty
-        else -> Icons.Outlined.Refresh
-    }
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 6.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                imageVector = statusIcon,
-                contentDescription = null,
-                tint = statusColor,
-                modifier = Modifier.size(18.dp)
-            )
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Column {
-                Text(
-                    text = CurrencyConverter.convertPrice(
-                        transaction.amount / 100.00,
-                        currencyIndex
-                    ),
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-
-                Text(
-                    text = formatDate(transaction.createdAt),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
-                )
-            }
-        }
-
-        Text(
-            text = statusToString(transaction.status),
-            color = statusColor,
-            style = MaterialTheme.typography.bodySmall
-        )
-    }
-}
-
-fun formatDate(iso: String): String {
-    return try {
-        val instant = java.time.Instant.parse(iso)
-        val dateTime = instant.atZone(java.time.ZoneId.systemDefault())
-        dateTime.format(
-            java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
-        )
-    } catch (e: Exception) {
-        iso
-    }
-}
-
 
 @Composable
 fun statusToString(status: String): String {

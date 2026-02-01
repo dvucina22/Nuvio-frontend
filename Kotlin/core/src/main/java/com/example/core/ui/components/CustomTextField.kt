@@ -44,6 +44,7 @@ import com.example.core.ui.theme.Error
 import com.example.core.ui.theme.White
 import com.example.core.R
 import com.example.core.ui.theme.BackgroundNavDark
+import com.example.core.ui.theme.DarkColor
 
 @Composable
 fun CustomTextField(
@@ -179,7 +180,7 @@ fun CustomTextField(
                         modifier = Modifier
                             .wrapContentWidth()
                             .wrapContentHeight()
-                            .background(Color(0xFF1A1F16))
+                            .background(DarkColor)
                             .shadow(elevation = 8.dp, clip = true),
                         offset = DpOffset(x = (-50).dp, y = (-60).dp)
                     ) {

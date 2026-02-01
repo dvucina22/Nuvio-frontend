@@ -15,6 +15,7 @@ val BackgroundBehindButton = Color(0x598A8A8A)
 val GrayOne = Color(0xFFCACACA)
 
 val CardItemBackground = Color(0xCC232323)
+val DarkColor = Color(0xFF1A1F16)
 
 
 

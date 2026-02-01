@@ -109,16 +109,18 @@ class TransactionsViewModel @Inject constructor(
             val result = transactionRepository.getTransactionHistory(request)
 
             result.onSuccess { resp ->
+                val filtered = resp.transactions.filterNot { it.status == "APPROVED" && it.productCount == 0 }
+
                 currentPage = resp.page
                 total = resp.total
+
+                val end = resp.transactions.isEmpty() || (total != null && currentPage * pageSize >= total!!)
 
                 _state.update {
                     it.copy(
                         isLoading = false,
-                        results = resp.transactions,
-                        endReached = resp.transactions.isEmpty() ||
-                                resp.transactions.size < pageSize ||
-                                (total != null && resp.transactions.size.toLong() >= total!!),
+                        results = filtered,
+                        endReached = end,
                         error = null
                     )
                 }
@@ -149,13 +151,13 @@ class TransactionsViewModel @Inject constructor(
             val result = transactionRepository.getTransactionHistory(request)
 
             result.onSuccess { resp ->
+                val filtered = resp.transactions.filterNot { it.status == "APPROVED" && it.productCount == 0 }
+
                 currentPage = resp.page
                 total = resp.total
 
-                val merged = current.results + resp.transactions
-                val end = resp.transactions.isEmpty() ||
-                        resp.transactions.size < pageSize ||
-                        (total != null && merged.size.toLong() >= total!!)
+                val merged = current.results + filtered
+                val end = resp.transactions.isEmpty() || (total != null && merged.size.toLong() >= total!!)
 
                 _state.update {
                     it.copy(
@@ -188,9 +190,8 @@ class TransactionsViewModel @Inject constructor(
         val minAmount = filterState?.amountRange?.start?.toLong()?.takeIf { it > 0L }
         val maxAmount = filterState?.amountRange?.endInclusive?.toLong()?.takeIf { it > 0L }
 
-        val minCount = filterState?.productCountRange?.start?.toInt()?.takeIf { it > 0 }
-        val maxCount = filterState?.productCountRange?.endInclusive?.toInt()?.takeIf { it > 0 }
-
+        val minCount = filterState?.productCountRange?.start?.toInt()
+        val maxCount = filterState?.productCountRange?.endInclusive?.toInt()
         return TransactionFilterRequest(
             search = query.takeIf { it.isNotBlank() },
             dateFrom = dateFrom,
