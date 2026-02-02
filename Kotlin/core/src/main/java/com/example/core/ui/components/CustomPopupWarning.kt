@@ -36,8 +36,11 @@ import com.example.core.ui.theme.BackgroundNavDark
 import com.example.core.ui.theme.ButtonColorDark
 import com.example.core.R
 import com.example.core.ui.theme.AccentColor
-import com.example.core.ui.theme.Error
-import com.example.core.ui.theme.WarningPopUpBackground
+import com.example.core.ui.theme.BackgroundNavDarkDark
+import com.example.core.ui.theme.DarkBorder
+import com.example.core.ui.theme.DarkColor
+import com.example.core.ui.theme.DarkOverLay
+import com.example.core.ui.theme.WhiteSoft
 
 @Composable
 fun CustomPopupWarning(
@@ -51,13 +54,13 @@ fun CustomPopupWarning(
     Dialog(onDismissRequest = onDismiss) {
         Surface(
             shape = androidx.compose.foundation.shape.RoundedCornerShape(6.dp),
-            color = MaterialTheme.colorScheme.surfaceContainer,
+            color = DarkColor,
             modifier = Modifier
                 .width(264.dp)
                 .heightIn(min = 150.dp)
                 .border(
-                    width = 0.5.dp,
-                    color = MaterialTheme.colorScheme.surfaceDim ,
+                    width = 1.dp,
+                    color = DarkBorder,
                     shape = androidx.compose.foundation.shape.RoundedCornerShape(6.dp)
                 )
         ) {
@@ -75,7 +78,7 @@ fun CustomPopupWarning(
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = title,
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = WhiteSoft,
                         style = MaterialTheme.typography.bodyMedium,
                         fontSize = 14.sp
                     )
@@ -90,7 +93,7 @@ fun CustomPopupWarning(
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Close",
-                            tint = MaterialTheme.colorScheme.onBackground,
+                            tint = WhiteSoft,
                             modifier = Modifier.size(16.dp)
                         )
                     }
@@ -107,7 +110,7 @@ fun CustomPopupWarning(
                 ) {
                     Text(
                         text = message,
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = WhiteSoft,
                         style = MaterialTheme.typography.bodyMedium,
                         fontSize = 13.sp,
                         textAlign = TextAlign.Center,
@@ -131,7 +134,7 @@ fun CustomPopupWarning(
                     SmallCustomButton(
                         text = confirmText,
                         onClick = onConfirm,
-                        containerColor = ButtonColorDark
+                        containerColor = AccentColor
                     )
                 }
             }

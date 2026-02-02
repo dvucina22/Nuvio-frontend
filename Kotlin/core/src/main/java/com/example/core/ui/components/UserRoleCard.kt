@@ -2,6 +2,7 @@ package com.example.core.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.core.R
 import com.example.core.auth.dto.Role
+import com.example.core.ui.theme.AccentColor
 import com.example.core.ui.theme.Error
 import com.example.core.ui.theme.White
 
@@ -117,14 +119,20 @@ fun UserRoleCard(
                 }
 
                 if (isActive) {
-                    IconButton(
-                        onClick = onDeactivate,
-                        modifier = Modifier.size(32.dp)
+                    Box(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .border(1.dp, AccentColor, shape = CircleShape)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.surfaceDim)
+                            .clickable { onDeactivate() },
+                        contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Default.Delete,
                             contentDescription = stringResource(R.string.delete),
-                            tint = Error
+                            tint = Error,
+                            modifier = Modifier.size(16.dp)
                         )
                     }
                 }

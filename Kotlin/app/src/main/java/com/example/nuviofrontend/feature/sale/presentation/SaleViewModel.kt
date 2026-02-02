@@ -28,9 +28,15 @@ data class CheckoutState(
     val manualExpiryMonth: String = "",
     val manualExpiryYear: String = "",
     val manualFullName: String = "",
+    val useNewCard: Boolean = false,
     val error: String? = null,
     val isProcessing: Boolean = false,
-    val retryCount: Int = 0
+    val retryCount: Int = 0,
+
+    val cardNumberError: String? = null,
+    val expiryMonthError: String? = null,
+    val expiryYearError: String? = null,
+    val fullNameError: String? = null
 )
 
 sealed class CheckoutResult {
@@ -91,25 +97,38 @@ class SaleViewModel @Inject constructor(
 
     fun updateManualCardNumber(value: String) {
         val filtered = value.filter { it.isDigit() }.take(16)
-        _state.value = _state.value.copy(manualCardNumber = filtered)
+        _state.value = _state.value.copy(
+            manualCardNumber = filtered,
+            cardNumberError = null
+        )
     }
 
     fun updateManualExpiryMonth(value: String) {
         val filtered = value.filter { it.isDigit() }.take(2)
-        _state.value = _state.value.copy(manualExpiryMonth = filtered)
+        _state.value = _state.value.copy(
+            manualExpiryMonth = filtered,
+            expiryMonthError = null
+        )
     }
 
     fun updateManualExpiryYear(value: String) {
         val filtered = value.filter { it.isDigit() }.take(2)
-        _state.value = _state.value.copy(manualExpiryYear = filtered)
+        _state.value = _state.value.copy(
+            manualExpiryYear = filtered,
+            expiryYearError = null
+        )
     }
 
     fun updateManualFullName(value: String) {
-        _state.value = _state.value.copy(manualFullName = value)
+        _state.value = _state.value.copy(
+            manualFullName = value,
+            fullNameError = null
+        )
     }
 
     fun processSale() {
         val currentState = _state.value
+        var hasError = false
 
         if (currentState.cartItems.isEmpty()) {
             _state.value = currentState.copy(error = "Cart is empty")
@@ -121,34 +140,39 @@ class SaleViewModel @Inject constructor(
             return
         }
 
-        val usingSavedCard = currentState.manualCardNumber.isEmpty() && currentState.selectedCard != null
+        val usingSavedCard = !currentState.useNewCard && currentState.selectedCard != null
 
         if (!usingSavedCard) {
-            if (currentState.manualCardNumber.length != 16) {
-                _state.value = currentState.copy(error = "Card number must be 16 digits")
-                return
-            }
+            val cardNumberError = if (currentState.manualCardNumber.length != 16) "Card number must be 16 digits" else null
+            val monthInt = currentState.manualExpiryMonth.toIntOrNull()
+            val expiryMonthError = if (monthInt == null || monthInt !in 1..12) "Invalid expiry month (1-12)" else null
+            val yearInt = currentState.manualExpiryYear.toIntOrNull()
+            val expiryYearError = if (yearInt == null || yearInt !in 0..99) "Invalid expiry year" else null
+            val fullNameError = if (currentState.manualFullName.isBlank()) "Full name is required" else null
 
-            val month = currentState.manualExpiryMonth.toIntOrNull()
-            if (month == null || month !in 1..12) {
-                _state.value = currentState.copy(error = "Invalid expiry month (1-12)")
-                return
-            }
+            hasError = listOf(cardNumberError, expiryMonthError, expiryYearError, fullNameError).any { it != null }
 
-            val year = currentState.manualExpiryYear.toIntOrNull()
-            if (year == null || year < 0 || year > 99) {
-                _state.value = currentState.copy(error = "Invalid expiry year")
-                return
-            }
+            _state.value = currentState.copy(
+                cardNumberError = cardNumberError,
+                expiryMonthError = expiryMonthError,
+                expiryYearError = expiryYearError,
+                fullNameError = fullNameError
+            )
 
-            if (currentState.manualFullName.isBlank()) {
-                _state.value = currentState.copy(error = "Full name is required")
-                return
-            }
+            if (hasError) return
         }
+
+        _state.value = _state.value.copy(
+            cardNumberError = null,
+            expiryMonthError = null,
+            expiryYearError = null,
+            fullNameError = null
+        )
 
         attemptPayment()
     }
+
+
 
     private fun attemptPayment() {
         val currentState = _state.value
@@ -202,15 +226,19 @@ class SaleViewModel @Inject constructor(
 
                 result.onSuccess { response ->
                     if (!response.success) {
-                        // Handle API error response
                         val errorMsg = response.error?.message ?: "Unknown error"
                         handlePaymentFailure(errorMsg)
                     } else if (response.data?.status == "APPROVED") {
-                        // Payment approved
+                        try {
+                            cartRepository.clearCart(_state.value.cartItems)
+                            _state.value = _state.value.copy(cartItems = emptyList())
+                        } catch (e: Exception) {
+                            _state.value = _state.value.copy(error = "Payment successful but failed to clear cart")
+                        }
+
                         _checkoutResult.value = CheckoutResult.Success(response)
                         _state.value = _state.value.copy(isProcessing = false, retryCount = 0)
                     } else {
-                        // Payment declined
                         val status = response.data?.status?.lowercase() ?: "declined"
                         val responseCode = response.data?.responseCode ?: ""
                         handlePaymentFailure("Payment $status (Code: $responseCode)")
@@ -225,27 +253,11 @@ class SaleViewModel @Inject constructor(
     }
 
     private fun handlePaymentFailure(errorMessage: String) {
-        val currentState = _state.value
-        val newRetryCount = currentState.retryCount + 1
-
-        if (newRetryCount < maxRetries) {
-            _state.value = currentState.copy(
-                retryCount = newRetryCount,
-                isProcessing = false,
-                error = "$errorMessage (Attempt $newRetryCount of $maxRetries)"
-            )
-            attemptPayment()
-        } else {
-            _checkoutResult.value = CheckoutResult.Error(
-                "Payment failed after $maxRetries attempts. Please try again later.",
-                maxRetriesReached = true
-            )
-            _state.value = currentState.copy(
-                isProcessing = false,
-                retryCount = 0,
-                error = null
-            )
-        }
+        _checkoutResult.value = CheckoutResult.Error(errorMessage)
+        _state.value = _state.value.copy(
+            isProcessing = false,
+            retryCount = 0
+        )
     }
 
     fun clearError() {
@@ -259,4 +271,10 @@ class SaleViewModel @Inject constructor(
     fun resetRetryCount() {
         _state.value = _state.value.copy(retryCount = 0)
     }
+
+    fun setUseNewCard(value: Boolean) {
+        _state.value = _state.value.copy(useNewCard = value)
+    }
+
+
 }

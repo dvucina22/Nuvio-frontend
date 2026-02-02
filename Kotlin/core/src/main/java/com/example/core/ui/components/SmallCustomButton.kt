@@ -10,8 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.core.ui.theme.AccentColor
-import com.example.core.ui.theme.ButtonColorDark
 
 @Composable
 fun SmallCustomButton(
@@ -30,7 +30,11 @@ fun SmallCustomButton(
                 if (width != null) Modifier.width(width.dp) else Modifier
             ),
         shape = androidx.compose.foundation.shape.RoundedCornerShape(6.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = containerColor)
+        colors = ButtonDefaults.buttonColors(containerColor = containerColor),
+        contentPadding = androidx.compose.foundation.layout.PaddingValues(
+            horizontal = 8.dp,
+            vertical = 4.dp
+        )
     ) {
         Text(
             text = text,

@@ -12,6 +12,8 @@ import com.example.core.network.api.ApiService
 import com.example.core.network.interceptor.AuthInterceptor
 import com.example.core.network.token.IUserPrefs
 import com.example.core.sale.ISaleService
+import com.example.core.statistics.IStatisticsRepository
+import com.example.core.statistics.IStatisticsService
 import com.example.core.transactions.ITransactionRepository
 import com.example.nuviofrontend.feature.cart.data.CartRepository
 import com.example.nuviofrontend.feature.cart.data.CartService
@@ -28,6 +30,8 @@ import com.example.nuviofrontend.feature.profile.data.UserRepository
 import com.example.nuviofrontend.feature.profile.data.UserService
 import com.example.nuviofrontend.feature.sale.data.SaleRepository
 import com.example.nuviofrontend.feature.sale.data.SaleService
+import com.example.nuviofrontend.feature.statistics.data.StatisticsRepository
+import com.example.nuviofrontend.feature.statistics.data.StatisticsService
 import com.example.nuviofrontend.feature.transactions.data.TransactionRepository
 import com.example.nuviofrontend.feature.transactions.data.TransactionService
 import dagger.Module
@@ -176,5 +180,17 @@ object AppModule {
     @Singleton
     fun providePreferencesDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
         return context.dataStore
+    }
+
+    @Provides
+    @Singleton
+    fun provideStatisticsService(apiService: ApiService): IStatisticsService{
+        return StatisticsService(apiService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideStatisticsRepository(statisticsService: StatisticsService): IStatisticsRepository{
+        return StatisticsRepository(statisticsService)
     }
 }

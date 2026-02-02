@@ -33,7 +33,6 @@ import com.example.nuviofrontend.feature.cart.presentation.CartScreen
 import com.example.nuviofrontend.feature.search.presentation.SearchScreen
 import com.example.core.R
 import com.example.core.ui.theme.AccentColor
-import com.example.core.ui.theme.CardItemBackgroundDark
 import com.example.core.ui.theme.LightOverlay
 import com.example.core.ui.theme.IconUnselectedTintDark
 import com.example.nuviofrontend.feature.catalog.presentation.AddNewProductScreen
@@ -107,6 +106,9 @@ fun MainAppScreen(
                         HomeTab.SEARCH -> SearchScreen(
                             onProductClick = { productId ->
                                 navController.navigate("product/$productId")
+                            },
+                            onEditProductClick = { productId ->
+                                navController.navigate("edit_product/$productId")
                             }
                         )
                         HomeTab.CART -> CartScreen(
@@ -213,6 +215,11 @@ fun MainAppScreen(
                             }
                             launchSingleTop = true
                         }
+                    },
+                    onReturnToCart = {
+                        navController.navigate("cart_screen") {
+                            popUpTo("checkout") { inclusive = true }
+                        }
                     }
                 )
             }
@@ -247,12 +254,18 @@ fun MainAppScreen(
                             }
                             launchSingleTop = true
                         }
+                    },
+                    onReturnToCart = {
+                        navController.navigate(HomeTab.CART.name) {
+                            popUpTo("checkout") { inclusive = true }
+                            launchSingleTop = true
+                        }
                     }
                 )
             }
         }
 
-        if (currentRoute !in hideBottomBarRoutes && !currentRoute.orEmpty().startsWith("product/") && !currentRoute.orEmpty().startsWith("edit_product/")) {
+        if (currentRoute !in hideBottomBarRoutes && !currentRoute.orEmpty().startsWith("edit_product/")) {
             CustomBottomNavBar(
                 selectedIndex = tabs.indexOfFirst { it.name == currentRoute },
                 onItemSelected = { index ->

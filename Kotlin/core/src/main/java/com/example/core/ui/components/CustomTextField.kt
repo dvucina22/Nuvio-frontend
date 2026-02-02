@@ -43,20 +43,17 @@ import androidx.compose.ui.unit.dp
 import com.example.core.ui.theme.Error
 import com.example.core.ui.theme.White
 import com.example.core.R
-import com.example.core.ui.theme.BackgroundColorInput
 import com.example.core.ui.theme.BackgroundNavDark
-import com.example.core.ui.theme.Black
-import com.example.core.ui.theme.ButtonColorSelected
-import com.example.core.ui.theme.ColorInput
+import com.example.core.ui.theme.DarkColor
 
 @Composable
 fun CustomTextField(
+    modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit,
     labelColor: Color = MaterialTheme.colorScheme.onBackground,
     placeholder: String,
     label: String? = null,
-    modifier: Modifier = Modifier,
     isPassword: Boolean = false,
     passwordVisible: Boolean = false,
     onPasswordVisibilityChange: (() -> Unit)? = null,
@@ -167,7 +164,7 @@ fun CustomTextField(
                                 ) {
                                     Icon(
                                         painter = painterResource(id = R.drawable.ic_error_hint),
-                                        contentDescription = "Prikaži grešku",
+                                        contentDescription = "Show error",
                                         tint = Error
                                     )
                                 }
@@ -183,7 +180,7 @@ fun CustomTextField(
                         modifier = Modifier
                             .wrapContentWidth()
                             .wrapContentHeight()
-                            .background(Color(0xFF1A1F16))
+                            .background(DarkColor)
                             .shadow(elevation = 8.dp, clip = true),
                         offset = DpOffset(x = (-50).dp, y = (-60).dp)
                     ) {

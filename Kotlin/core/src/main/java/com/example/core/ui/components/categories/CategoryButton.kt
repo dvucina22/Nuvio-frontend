@@ -35,7 +35,7 @@ fun CategoryButton(
             .background(color = if (isSelected) AccentColor else MaterialTheme.colorScheme.surfaceContainer)
             .border(
                 width = 1.dp,
-                color = if (isSelected) AccentColor else MaterialTheme.colorScheme.surfaceVariant,
+                color = if (isSelected) AccentColor else MaterialTheme.colorScheme.surfaceDim,
                 shape = RoundedCornerShape(6.dp)
             )
             .clickable(onClick = onClick)

@@ -62,7 +62,7 @@ class CardViewModel @Inject constructor(
                     cardName = cardName,
                     cardNumber = cardNumber,
                     expirationMonth = expirationMonth,
-                    expirationYear = expirationYear,
+                    expirationYear = 2000 + expirationYear,
                     fullnameOnCard = fullName,
                     isPrimary = isPrimary
                 )

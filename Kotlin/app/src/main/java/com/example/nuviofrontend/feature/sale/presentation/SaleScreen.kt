@@ -1,6 +1,5 @@
 package com.example.nuviofrontend.feature.sale.presentation
 
-import android.R.attr.fontWeight
 import androidx.compose.foundation.Image
 import kotlin.collections.isNotEmpty
 import androidx.compose.foundation.background
@@ -28,13 +27,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -44,12 +41,8 @@ import com.example.core.cards.dto.CardDto
 import com.example.core.model.UserProfile
 import com.example.core.sale.dto.SaleResponse
 import com.example.nuviofrontend.feature.profile.presentation.CardNumberVisualTransformation
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
+import com.example.core.ui.components.CustomTextField
 import com.example.core.ui.components.CustomTopBar
 import com.example.core.ui.theme.AccentColor
 
@@ -128,11 +121,17 @@ fun CheckoutScreen(
                         manualExpiryMonth = state.manualExpiryMonth,
                         manualExpiryYear = state.manualExpiryYear,
                         manualFullName = state.manualFullName,
+                        cardNumberError = state.cardNumberError,
+                        expiryMonthError = state.expiryMonthError,
+                        expiryYearError = state.expiryYearError,
+                        fullNameError = state.fullNameError,
+                        useNewCard = state.useNewCard,
                         onCardSelected = { viewModel.selectCard(it) },
                         onManualCardNumberChanged = { viewModel.updateManualCardNumber(it) },
                         onManualExpiryMonthChanged = { viewModel.updateManualExpiryMonth(it) },
                         onManualExpiryYearChanged = { viewModel.updateManualExpiryYear(it) },
-                        onManualFullNameChanged = { viewModel.updateManualFullName(it) }
+                        onManualFullNameChanged = { viewModel.updateManualFullName(it) },
+                        onToggleUseNewCard = { viewModel.setUseNewCard(!state.useNewCard) }
                     )
                 }
 
@@ -342,14 +341,18 @@ fun PaymentMethodSection(
     manualExpiryMonth: String,
     manualExpiryYear: String,
     manualFullName: String,
+    cardNumberError: String?,
+    expiryMonthError: String?,
+    expiryYearError: String?,
+    fullNameError: String?,
+    useNewCard: Boolean,
+    onToggleUseNewCard: () -> Unit,
     onCardSelected: (CardDto) -> Unit,
     onManualCardNumberChanged: (String) -> Unit,
     onManualExpiryMonthChanged: (String) -> Unit,
     onManualExpiryYearChanged: (String) -> Unit,
-    onManualFullNameChanged: (String) -> Unit
+    onManualFullNameChanged: (String) -> Unit,
 ) {
-    var useNewCard by remember { mutableStateOf(cards.isEmpty()) }
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -372,7 +375,7 @@ fun PaymentMethodSection(
 
             if (cards.isNotEmpty()) {
                 TextButton(
-                    onClick = { useNewCard = !useNewCard },
+                    onClick = onToggleUseNewCard,
                     colors = ButtonDefaults.textButtonColors(
                         contentColor = AccentColor
                     )
@@ -384,7 +387,9 @@ fun PaymentMethodSection(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = if (useNewCard) stringResource(R.string.payment_use_saved_card) else stringResource(R.string.payment_new_card),
+                        text = if (useNewCard) stringResource(R.string.payment_use_saved_card) else stringResource(
+                            R.string.payment_new_card
+                        ),
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Medium,
                     )
@@ -419,71 +424,60 @@ fun PaymentMethodSection(
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            OutlinedTextField(
-                value = manualCardNumber,
-                onValueChange = onManualCardNumberChanged,
-                label = { Text(stringResource(R.string.card_number)) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.fillMaxWidth(),
-                visualTransformation = CardNumberVisualTransformation(),
-                textStyle = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.onBackground),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF004CBB),
-                    unfocusedBorderColor = MaterialTheme.colorScheme.surfaceDim,
-                    focusedLabelColor = Color(0xFF004CBB),
-                    unfocusedLabelColor = MaterialTheme.colorScheme.surfaceVariant
-                )
-            )
+            Column(
+                modifier = Modifier.padding(horizontal = 16.dp)
+            ) {
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OutlinedTextField(
-                    value = manualExpiryMonth,
-                    onValueChange = onManualExpiryMonthChanged,
-                    label = { Text(stringResource(R.string.expiry_mm)) },
+                CustomTextField(
+                    value = manualCardNumber,
+                    onValueChange = onManualCardNumberChanged,
+                    placeholder = stringResource(R.string.card_number),
+                    label = stringResource(R.string.card_number),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    textStyle = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.onBackground),
-                    modifier = Modifier.weight(1f),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF004CBB),
-                        unfocusedBorderColor = Color(0xFFCACACA),
-                        focusedLabelColor = Color(0xFF004CBB),
-                        unfocusedLabelColor = Color(0xFF6B7280)
-                    )
+                    visualTransformation = CardNumberVisualTransformation(),
+                    isError = cardNumberError != null,
+                    errorMessage = cardNumberError
                 )
 
-                OutlinedTextField(
-                    value = manualExpiryYear,
-                    onValueChange = onManualExpiryYearChanged,
-                    label = { Text(stringResource(R.string.expiry_yy)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    textStyle = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.onBackground),
-                    modifier = Modifier.weight(1f),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF004CBB),
-                        unfocusedBorderColor = Color(0xFFCACACA),
-                        focusedLabelColor = Color(0xFF004CBB),
-                        unfocusedLabelColor = Color(0xFF6B7280)
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    CustomTextField(
+                        value = manualExpiryMonth,
+                        onValueChange = onManualExpiryMonthChanged,
+                        placeholder = stringResource(R.string.expiry_mm),
+                        label = stringResource(R.string.expiry_mm),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        isError = expiryMonthError != null,
+                        errorMessage = expiryMonthError,
+                        modifier = Modifier.weight(1f)
                     )
+
+                    CustomTextField(
+                        value = manualExpiryYear,
+                        onValueChange = onManualExpiryYearChanged,
+                        placeholder = stringResource(R.string.expiry_yy),
+                        label = stringResource(R.string.expiry_yy),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        isError = expiryYearError != null,
+                        errorMessage = expiryYearError,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                CustomTextField(
+                    value = manualFullName,
+                    onValueChange = onManualFullNameChanged,
+                    placeholder = stringResource(R.string.full_name_on_card),
+                    label = stringResource(R.string.full_name_on_card),
+                    isError = fullNameError != null,
+                    errorMessage = fullNameError
                 )
             }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            OutlinedTextField(
-                value = manualFullName,
-                onValueChange = onManualFullNameChanged,
-                label = { Text(stringResource(R.string.full_name_on_card)) },
-                textStyle = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.onBackground),
-                modifier = Modifier.fillMaxWidth(),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF004CBB),
-                    unfocusedBorderColor = Color(0xFFCACACA),
-                    focusedLabelColor = Color(0xFF004CBB),
-                    unfocusedLabelColor = Color(0xFF6B7280)
-                )
-            )
         }
     }
 }

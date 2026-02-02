@@ -18,9 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.example.core.ui.theme.AccentColor
-import com.example.core.ui.theme.White
 import com.example.core.ui.theme.ButtonColorDark
-import com.example.core.ui.theme.ButtonColorSelected
 
 
 @Composable

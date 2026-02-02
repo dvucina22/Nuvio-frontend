@@ -2,7 +2,6 @@ package com.example.nuviofrontend.feature.catalog.data
 
 import com.example.core.catalog.dto.AddProductRequest
 import com.example.core.catalog.dto.AddProductResponse
-import com.example.core.catalog.dto.Product
 import com.example.core.catalog.dto.ProductDetail
 import com.example.core.catalog.dto.SuccessfulDeleteResponse
 import com.example.core.catalog.dto.UpdateProductRequest

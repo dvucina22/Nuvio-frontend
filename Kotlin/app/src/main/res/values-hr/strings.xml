@@ -49,7 +49,7 @@
     <string name="products">Proizvodi</string>
     <string name="favorites">Favoriti</string>
     <string name="cart">Košarica</string>
-    <string name="order_history">Povijest narudžbi</string>
+    <string name="order_history">Povijest transakcija</string>
     <string name="my_profile">Moj profil</string>
     <string name="sign_out">Odjava</string>
 

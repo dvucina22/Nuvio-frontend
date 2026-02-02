@@ -1,26 +1,42 @@
 package com.example.nuviofrontend.feature.catalog.presentation
 
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircleOutline
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -36,41 +52,33 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.rememberAsyncImagePainter
 import com.example.auth.presentation.AuthViewModel
 import com.example.core.R
 import com.example.core.catalog.dto.Product
 import com.example.core.ui.components.CustomPopupWarning
+import com.example.core.ui.components.IconActionBox
 import com.example.core.ui.components.ProductCard
+import com.example.core.ui.components.banner.BannerComponent
 import com.example.core.ui.components.banner.BannerData
+import com.example.core.ui.components.categories.CategoryButton
+import com.example.core.ui.components.categories.CategoryButtonData
+import com.example.core.ui.theme.AccentColor
 import com.example.core.ui.theme.Black
-import com.example.core.ui.theme.White
+import com.example.nuviofrontend.feature.settings.presentation.SettingsViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.yield
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.layout.ContentScale
-import coil.compose.rememberAsyncImagePainter
-import com.example.core.ui.components.IconActionBox
-import com.example.core.ui.components.banner.BannerComponent
-import com.example.core.ui.components.categories.CategoryButton
-import com.example.core.ui.components.categories.CategoryButtonData
-import com.example.core.ui.theme.AccentColor
-import com.example.core.ui.theme.IconDark
-import com.example.nuviofrontend.feature.settings.presentation.SettingsViewModel
 
 data class Category(
     val id: Long,
@@ -122,7 +130,6 @@ fun HomeScreen(
         showDeletePopup = true
     }
 
-
     val greeting = when (gender?.lowercase()) {
         "male" -> stringResource(R.string.welcome_male, firstName ?: "")
         "female" -> stringResource(R.string.welcome_female, firstName ?: "")
@@ -141,29 +148,30 @@ fun HomeScreen(
             id = 1,
             imageUrl = "https://res.cloudinary.com/dx6vzaymg/image/upload/v1765468054/Gemini_Generated_Image_xj3bq9xj3bq9xj3b_jlud1h.png",
             title = "",
-            subtitle = "",
-            buttonText = stringResource(R.string.banner_btn_shop_now),
-            onButtonClick = {  }
+            subtitle = ""
         ),
         BannerData(
             id = 2,
             imageUrl = "https://res.cloudinary.com/dx6vzaymg/image/upload/v1765468055/Group_108_zwyhez.png",
             title = "",
-            subtitle = "",
-            buttonText = stringResource(R.string.banner_btn_explore),
-            onButtonClick = {  }
+            subtitle = ""
         ),
         BannerData(
             id = 3,
             imageUrl = "https://res.cloudinary.com/dx6vzaymg/image/upload/v1765468054/Gemini_Generated_Image_a5us7ma5us7ma5us_crsjza.png",
             title = "",
-            subtitle = "",
-            buttonText = stringResource(R.string.banner_btn_view_deals),
-            onButtonClick = {  }
+            subtitle = ""
         )
     )
 
+    val selectedCategoryName = when (selectedCategoryId) {
+        1L -> "Gaming"
+        2L -> "Multimedia"
+        3L -> "Business"
+        else -> "All"
+    }
 
+    val filteredFlashDeals = state.flashDeals.filterByCategory(selectedCategoryName)
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -201,13 +209,6 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.spacedBy(7.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(onClick = { }) {
-                        Icon(
-                            imageVector = Icons.Default.Notifications,
-                            contentDescription = "Notifications",
-                            tint = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
                     if (isLoggedIn && (isAdmin || isSeller)) {
                         IconActionBox(
                             onClick = onAddProductClick
@@ -250,15 +251,13 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            if (state.isLoading && state.flashDeals.isEmpty()) {
+            if (state.isLoading && filteredFlashDeals.isEmpty()) {
                 LoadingRow()
-            } else if (state.flashDeals.isNotEmpty()) {
+            } else if (filteredFlashDeals.isNotEmpty()) {
                 FlashDealsRow(
-                    products = state.flashDeals.take(6),
+                    products = filteredFlashDeals.take(6),
                     favoriteIds = state.favoriteProductIds,
-                    onToggleFavorite = { id, newValue ->
-                        viewModel.setFavorite(id, newValue)
-                    },
+                    onToggleFavorite = { id, newValue -> viewModel.setFavorite(id, newValue) },
                     onProductClick = { productId -> onProductClick(productId) },
                     onDeleteProduct = { productId ->
                         productIdToDelete = productId
@@ -279,9 +278,7 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             SectionHeader(
-                title = stringResource(R.string.latest_arrivals),
-                actionText = stringResource(R.string.see_all),
-                onActionClick = {  }
+                title = stringResource(R.string.latest_arrivals)
             )
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -635,9 +632,7 @@ fun BannerCard(banner: Banner) {
 
 @Composable
 fun SectionHeader(
-    title: String,
-    actionText: String? = null,
-    onActionClick: () -> Unit = {}
+    title: String
 ) {
     Row(
         modifier = Modifier
@@ -652,15 +647,6 @@ fun SectionHeader(
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold
         )
-        if (actionText != null) {
-            TextButton(onClick = onActionClick) {
-                Text(
-                    text = actionText,
-                    color = Color(0xFF004CBB),
-                    fontSize = 14.sp
-                )
-            }
-        }
     }
 }
 
@@ -884,5 +870,13 @@ fun RecommendedProductsGrid(
                 isSeller = isSeller
             )
         }
+    }
+}
+
+fun List<Product>.filterByCategory(selectedCategoryName: String?): List<Product> {
+    return if (selectedCategoryName == null || selectedCategoryName.lowercase() == "all") {
+        this
+    } else {
+        this.filter { it.category.equals(selectedCategoryName, ignoreCase = true) }
     }
 }

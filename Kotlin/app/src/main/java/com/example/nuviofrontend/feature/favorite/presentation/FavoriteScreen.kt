@@ -91,7 +91,7 @@ fun FavoriteScreen(
                     ) {
                         Text(
                             text = stringResource(R.string.favorites_empty_message),
-                            color = Color(0xFF344351),
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontSize = 14.sp
                         )
                     }

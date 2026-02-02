@@ -26,8 +26,10 @@ import com.example.core.catalog.dto.SuccessfulDeleteResponse
 import com.example.core.catalog.dto.UpdateProductRequest
 import com.example.core.catalog.dto.UpdateProductResponse
 import com.example.core.network.dto.ApiResponse
+import com.example.core.network.interceptor.AuthInterceptor
 import com.example.core.sale.dto.SaleRequest
 import com.example.core.sale.dto.SaleResponse
+import com.example.core.statistics.dto.TransactionStatisticsResponse
 import com.example.core.transactions.dto.TransactionDetail
 import com.example.core.transactions.dto.TransactionFilterRequest
 import com.example.core.transactions.dto.TransactionListResponse
@@ -45,6 +47,7 @@ import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.HTTP
+import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
@@ -118,6 +121,9 @@ interface ApiService {
     @DELETE("catalog/products/cart/{id}")
     suspend fun deleteCartItem(@Path("id") productId: Int): Response<Unit>
 
+    @GET("catalog/products/cart/empty")
+    suspend fun clearCart(): Response<Unit>
+
     @POST("transactions/sale")
     suspend fun makeSale(@Body request: SaleRequest): Response<SaleResponse>
     @GET("accounts/users")
@@ -142,4 +148,12 @@ interface ApiService {
 
     @GET("transactions/history/{id}")
     suspend fun getTransactionDetail(@Path("id") id: Long): ApiResponse<TransactionDetail>
+
+    @GET("transactions/statistics")
+    suspend fun getTransactionStatistics(): Response<TransactionStatisticsResponse>
+
+    @POST("transactions/sale/{transaction_id}/void")
+    suspend fun voidTransaction(
+        @Path("transaction_id") transactionId: Long
+    ): Response<Unit>
 }

@@ -2,7 +2,6 @@ package com.example.nuviofrontend.feature.catalog.data
 
 import android.net.Uri
 import com.example.core.network.api.ApiService
-import com.example.core.user.dto.UpdateProfilePictureRequest
 import com.example.nuviofrontend.feature.profile.data.CloudinaryService
 import retrofit2.HttpException
 import java.io.IOException

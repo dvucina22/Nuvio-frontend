@@ -1,8 +1,6 @@
 package com.example.nuviofrontend.feature.search.presentation
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,7 +26,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
@@ -50,32 +47,30 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.auth.presentation.AuthViewModel
 import com.example.core.R
 import com.example.core.catalog.dto.AttributeFilter
 import com.example.core.catalog.dto.Brand
 import com.example.core.catalog.dto.Category
 import com.example.core.catalog.dto.Product
+import com.example.core.ui.components.CustomPopupWarning
 import com.example.core.ui.components.CustomRangeSlider
 import com.example.core.ui.components.IconActionBox
 import com.example.core.ui.components.ProductCard
 import com.example.core.ui.components.SearchField
 import com.example.core.ui.theme.AccentColor
-import com.example.core.ui.theme.BackgroundNavDark
-import com.example.core.ui.theme.BackgroundNavDarkDark
-import com.example.core.ui.theme.Black
 import com.example.core.ui.theme.GrayOne
-import com.example.core.ui.theme.IconDark
 import com.example.core.ui.theme.IconSelectedTintDark
 import com.example.core.ui.theme.LightOverlay
 import com.example.core.ui.theme.SelectedItemBackgroundDark
 import com.example.core.ui.theme.White
 import com.example.core.ui.theme.WhiteSoft
+import com.example.nuviofrontend.feature.catalog.presentation.ProductManagementViewModel
 import com.example.nuviofrontend.feature.settings.presentation.SettingsViewModel
 import kotlinx.coroutines.launch
 
@@ -83,7 +78,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel(),
+    productManagementViewModel: ProductManagementViewModel = hiltViewModel(),
     onProductClick: (Long) -> Unit,
+    onEditProductClick: (Long) -> Unit,
     settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -99,6 +96,16 @@ fun SearchScreen(
     }
 
     val selectedCurrency by settingsViewModel.currencyFlow.collectAsState(initial = 1)
+
+    val authViewModel: AuthViewModel = hiltViewModel()
+    val authState by authViewModel.uiState.collectAsState()
+    val isLoggedIn = authState.isLoggedIn
+    val isAdmin = authState.isAdmin
+    val isSeller = authState.isSeller
+    val canManageProducts = isLoggedIn && (isAdmin || isSeller)
+
+    var showDeletePopup by remember { mutableStateOf(false) }
+    var productIdToDelete by remember { mutableStateOf<Long?>(null) }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -127,11 +134,13 @@ fun SearchScreen(
                     )
                 }
             }
+
             Column(
                 modifier = Modifier.fillMaxSize()
             ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .padding(end = 12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -158,48 +167,84 @@ fun SearchScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                when {
-                    state.isLoading -> {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 32.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(color = IconSelectedTintDark)
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    contentPadding = PaddingValues(horizontal = 0.dp, vertical = 8.dp)
+                ) {
+                    if (state.isLoading) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 32.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator(color = IconSelectedTintDark)
+                            }
                         }
                     }
 
-                    state.results.isEmpty() &&
-                            state.query.isNotBlank() &&
-                            state.error == null -> {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 32.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = stringResource(R.string.no_results),
-                                color = MaterialTheme.colorScheme.surfaceContainerLowest
-                            )
+                    if (state.results.isEmpty() && state.query.isNotBlank() && state.error == null) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 32.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.no_results),
+                                    color = MaterialTheme.colorScheme.surfaceContainerLowest
+                                )
+                            }
                         }
                     }
 
-                    state.results.isNotEmpty() -> {
-                        SearchResultsGrid(
-                            products = state.results,
-                            isLoadingMore = state.isLoadingMore,
-                            favoriteProductIds = state.favoriteProductIds,
-                            onLoadMore = { viewModel.loadMore() },
-                            onToggleFavorite = { productId, shouldBeFavorite ->
-                                viewModel.setFavorite(productId, shouldBeFavorite)
+                    itemsIndexed(items = state.results, key = { _, product -> product.id }) { index, product ->
+                        if (index == state.results.lastIndex) {
+                            LaunchedEffect(key1 = index) { viewModel.loadMore() }
+                        }
+
+                        ProductCard(
+                            product = product,
+                            selectedCurrency = selectedCurrency,
+                            isFavorite = state.favoriteProductIds.contains(product.id),
+                            onFavoriteChange = { shouldBeFavorite ->
+                                viewModel.setFavorite(product.id, shouldBeFavorite)
                             },
-                            onProductClick = { productId ->
-                                onProductClick(productId)
+                            onClick = { onProductClick(product.id) },
+                            showMenu = canManageProducts,
+                            onDelete = { productId ->
+                                if (!canManageProducts) return@ProductCard
+                                productIdToDelete = productId
+                                showDeletePopup = true
                             },
-                            selectedCurrency = selectedCurrency
+                            onEdit = { productId ->
+                                if (!canManageProducts) return@ProductCard
+                                onEditProductClick(productId)
+                            },
+                            isAdmin = isAdmin,
+                            isSeller = isSeller,
+                            modifier = Modifier.fillMaxWidth()
                         )
+                    }
+
+                    if (state.isLoadingMore) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 16.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator(color = IconSelectedTintDark)
+                            }
+                        }
+                    }
+
+                    item {
+                        Spacer(modifier = Modifier.height(30.dp))
                     }
                 }
             }
@@ -262,55 +307,26 @@ fun SearchScreen(
                 )
             }
         }
-    }
-}
 
-@Composable
-private fun SearchResultsGrid(
-    products: List<Product>,
-    isLoadingMore: Boolean,
-    favoriteProductIds: Set<Long>,
-    onLoadMore: () -> Unit,
-    onToggleFavorite: (productId: Long, shouldBeFavorite: Boolean) -> Unit,
-    onProductClick: (Long) -> Unit,
-    selectedCurrency: Int
-) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues(horizontal = 0.dp, vertical = 8.dp)
-    ) {
-        itemsIndexed(products) { index, product ->
-            if (index == products.lastIndex) {
-                LaunchedEffect(key1 = index) {
-                    onLoadMore()
-                }
-            }
-
-            ProductCard(
-                product = product,
-                selectedCurrency = selectedCurrency,
-                isFavorite = favoriteProductIds.contains(product.id),
-                onFavoriteChange = { shouldBeFavorite ->
-                    onToggleFavorite(product.id, shouldBeFavorite)
+        if (showDeletePopup && productIdToDelete != null) {
+            CustomPopupWarning(
+                title = stringResource(R.string.warning),
+                message = stringResource(R.string.delete_item_confirm),
+                confirmText = stringResource(R.string.next),
+                dismissText = stringResource(R.string.cancel),
+                onDismiss = {
+                    showDeletePopup = false
+                    productIdToDelete = null
                 },
-                onClick = { onProductClick(product.id) },
-                showMenu = false,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-
-        if (isLoadingMore) {
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(color = IconSelectedTintDark)
+                onConfirm = {
+                    productIdToDelete?.let { id ->
+                        productManagementViewModel.deleteProduct(id)
+                        viewModel.removeProductFromResults(id)
+                    }
+                    showDeletePopup = false
+                    productIdToDelete = null
                 }
-            }
+            )
         }
     }
 }
@@ -464,7 +480,6 @@ private fun SearchFilterSheetContent(
             usedAttributes.forEach { attribute ->
                 val attrName = attribute.name
                 val selectedValues = filterState.selectedAttributes[attrName] ?: emptySet()
-
                 val valuesList = attribute.items.map { it.value }
 
                 if (valuesList.isNotEmpty()) {
@@ -505,7 +520,6 @@ private fun SearchFilterSheetContent(
                     }
                 }
             }
-
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -593,7 +607,6 @@ private fun FilterChip(
                 if (selected) AccentColor
                 else MaterialTheme.colorScheme.surfaceContainerLowest
             )
-            .clickable(onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Text(
@@ -647,7 +660,7 @@ private fun attributeSectionTitle(name: String): String {
         "display_resolution" -> stringResource(R.string.attribute_display_resolution)
         "color" -> stringResource(R.string.attribute_color)
         "build_material" -> stringResource(R.string.attribute_build_material)
-        "weight_kg" -> stringResource( R.string.attribute_weight)
+        "weight_kg" -> stringResource(R.string.attribute_weight)
         "battery_wh" -> stringResource(R.string.attribute_battery)
         else -> name
     }
@@ -689,4 +702,3 @@ private fun attributeValueLabel(attributeName: String, value: String): String {
 private fun normalizeNumericUnderscore(raw: String): String {
     return raw.replace("_", ".")
 }
-

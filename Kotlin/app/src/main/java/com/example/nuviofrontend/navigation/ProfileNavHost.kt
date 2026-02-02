@@ -24,6 +24,7 @@ import com.example.nuviofrontend.feature.profile.presentation.ProfileScreen
 import com.example.nuviofrontend.feature.profile.presentation.ProfileViewModel
 import com.example.nuviofrontend.feature.profile.presentation.UsersScreen
 import com.example.nuviofrontend.feature.settings.presentation.SettingsScreen
+import com.example.nuviofrontend.feature.statistics.presentation.StatisticsScreen
 import com.example.nuviofrontend.feature.support.presentation.SupportScreen
 import com.example.nuviofrontend.feature.transactions.presentation.TransactionDetailScreen
 import com.example.nuviofrontend.feature.transactions.presentation.TransactionsScreen
@@ -40,6 +41,7 @@ sealed class ProfileRoute(val route: String) {
     object TransactionDetail : ProfileRoute("profile_transaction_detail/{transactionId}") {
         fun createRoute(id: Long) = "profile_transaction_detail/$id"
     }
+    object Statistics : ProfileRoute("statistics")
 }
 
 @Composable
@@ -78,7 +80,8 @@ fun ProfileNavHost(
                 onNavigateToUsers = { navController.navigate(ProfileRoute.Users.route) },
                 onNavigateToSupport = { navController.navigate(ProfileRoute.Support.route) },
                 onNavigateToSettings = { navController.navigate(ProfileRoute.Settings.route) },
-                onNavigateToTransactions = { navController.navigate(ProfileRoute.Transactions.route) }
+                onNavigateToTransactions = { navController.navigate(ProfileRoute.Transactions.route) },
+                onNavigateToStatistics = { navController.navigate(ProfileRoute.Statistics.route) }
             )
         }
 
@@ -108,13 +111,14 @@ fun ProfileNavHost(
                 }
             }
 
-            ChangePasswordScreen(
-                isLoggedIn = isLoggedIn,
-                firstName = firstName,
-                lastName = lastName,
-                email = email,
-                onBack = { navController.popBackStack() }
-            )
+            if (email != null) {
+                ChangePasswordScreen(
+                    userEmail = email,
+                    onBack = { navController.popBackStack() }
+                )
+            } else {
+                Toast.makeText(context, "User email not available", Toast.LENGTH_SHORT).show()
+            }
         }
 
         composable(ProfileRoute.EditProfile.route) {
@@ -173,7 +177,6 @@ fun ProfileNavHost(
 
             CardScreen(
                 viewModel = viewModel,
-                onViewTransactions = { _ -> },
                 onBack = { navController.popBackStack() }
             )
         }
@@ -197,7 +200,8 @@ fun ProfileNavHost(
             TransactionsScreen(
                 onTransactionClick = { id ->
                     navController.navigate(ProfileRoute.TransactionDetail.createRoute(id))
-                }
+                },
+                onBack = { navController.popBackStack() }
             )
         }
 
@@ -208,6 +212,12 @@ fun ProfileNavHost(
 
             TransactionDetailScreen(
                 transactionId = transactionId,
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(ProfileRoute.Statistics.route){
+            StatisticsScreen(
                 onBack = { navController.popBackStack() }
             )
         }

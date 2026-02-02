@@ -40,10 +40,6 @@ import com.example.core.R
 import com.example.core.ui.components.CustomTextField
 import com.example.core.ui.components.SmallCustomButton
 import com.example.core.ui.theme.BackgroundNavDark
-import com.example.core.ui.theme.Black
-import com.example.core.ui.theme.ButtonColorDark
-import com.example.core.ui.theme.CardItemBackgroundLight
-import com.example.core.ui.theme.White
 
 @Composable
 fun AddCardDialog(
@@ -94,10 +90,12 @@ fun AddCardDialog(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    val firstDigit  = cardNumber.firstOrNull()?.digitToIntOrNull()
+
                     val cardLogo = when {
-                        cardNumber.startsWith("4") -> R.drawable.visa_logo
-                        cardNumber.startsWith("5") -> R.drawable.mastercard_logo
-                        else -> R.drawable.add_new_card
+                        firstDigit == null -> R.drawable.add_new_card
+                        firstDigit % 2 == 0 -> R.drawable.visa_logo
+                        else -> R.drawable.mastercard_logo
                     }
                     Image(
                         painter = painterResource(id = cardLogo),
@@ -152,8 +150,8 @@ fun AddCardDialog(
                             month = it.filter { ch -> ch.isDigit() }
                             expiryError = null
                         },
-                        placeholder = stringResource(R.string.month),
-                        label = stringResource(R.string.due_date),
+                        placeholder = stringResource(R.string.expiry_mm),
+                        label = stringResource(R.string.expiry_mm),
                         modifier = Modifier.weight(1f),
                         isError = expiryError != null,
                         errorMessage = expiryError
@@ -167,8 +165,8 @@ fun AddCardDialog(
                             year = it.filter { ch -> ch.isDigit() }
                             expiryError = null
                         },
-                        placeholder = stringResource(R.string.year),
-                        label = "",
+                        placeholder = stringResource(R.string.expiry_yy),
+                        label = stringResource(R.string.expiry_yy),
                         modifier = Modifier.weight(1f),
                         isError = expiryError != null,
                         errorMessage = expiryError
@@ -199,7 +197,7 @@ fun AddCardDialog(
                     SmallCustomButton(
                         text = stringResource(R.string.cancel),
                         onClick = onDismiss,
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
+                        containerColor = BackgroundNavDark
                     )
 
                     SmallCustomButton(

@@ -67,6 +67,7 @@
     <string name="change_password">Change password</string>
     <string name="users">Users</string>
     <string name="help">Help</string>
+    <string name="statistics">Statistics</string>
 
     <string name="edit_profile_title">Edit profile</string>
     <string name="back_button">Back</string>
@@ -390,4 +391,19 @@
     <string name="no_products">No products</string>
     <string name="quantity">Quantity</string>
     <string name="transaction_time">Transaction time</string>
+
+    <string name="total_revenue">Total revenue</string>
+    <string name="total_transactions">Total transactions</string>
+    <string name="average_transaction">Average transaction value</string>
+    <string name="successful">Successful</string>
+    <string name="unsuccessful">Unsuccessful</string>
+    <string name="cancelled">Cancelled</string>
+    <string name="pending">Pending</string>
+    <string name="shopping_cart_without_products">Your shopping cart is empty.</string>
+
+    <string name="no_cards">You currently don\'t have any cards. Add one and it will be displayed here.</string>
+    <string name="return_to_cart">Return to cart</string>
+    <string name="confirm_void_transaction">Are you sure you want to void this transaction?</string>
+    <string name="generate_pdf_report">Generate PDF report</string>
+    <string name="last_transactions">Last 5 transactions</string>
 </resources>

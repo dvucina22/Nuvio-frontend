@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Help
@@ -31,7 +33,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -39,14 +40,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.core.R
-import androidx.compose.ui.res.stringResource
 import com.example.core.ui.components.CustomButton
-import com.example.core.ui.components.CustomTopBar
 import com.example.core.ui.components.ProfileHeader
-import com.example.core.ui.theme.AccentColor
 import com.example.core.ui.theme.BackgroundNavDark
-import com.example.core.ui.theme.IconDark
-import com.example.core.ui.theme.White
 
 @Composable
 fun ProfileScreen(
@@ -60,6 +56,7 @@ fun ProfileScreen(
     onNavigateToSupport: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {},
     onNavigateToTransactions: () -> Unit = {},
+    onNavigateToStatistics: () -> Unit = {}
     ) {
     val profileState by viewModel.profileState.collectAsState()
     val isLoggedIn = profileState.isLoaded && profileState.email.isNotBlank()
@@ -103,71 +100,119 @@ fun ProfileScreen(
             }
 
             Spacer(modifier = Modifier.height(20.dp))
-            Column(
+
+            LazyColumn (
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 20.dp)
+                    .padding(horizontal = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                ProfileHeader(
-                    displayName = displayName,
-                    displayEmail = displayEmail,
-                    profilePictureUrl = profileState.profilePictureUrl ?: ""
-                )
-
-                if (isLoggedIn) {
-                    CustomButton(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = stringResource(R.string.edit_button),
-                        onClick = onEdit
+                item {
+                    ProfileHeader(
+                        displayName = displayName,
+                        displayEmail = displayEmail,
+                        profilePictureUrl = profileState.profilePictureUrl ?: ""
                     )
                 }
 
-                Spacer(modifier = Modifier.height(20.dp))
+                if (isLoggedIn) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CustomButton(
+                                text = stringResource(R.string.edit_button),
+                                onClick = onEdit
+                            )
+                        }
+                    }
+                }
 
-                Divider(color = BackgroundNavDark)
+                item { Spacer(modifier = Modifier.height(20.dp)) }
+
+                item { Divider(color = BackgroundNavDark) }
 
                 if (isLoggedIn) {
-                    ProfileMenuItem(Icons.Default.Settings, stringResource(R.string.settings)){
-                        onNavigateToSettings()
+                    item {
+                        ProfileMenuItem(Icons.Default.Settings, stringResource(R.string.settings)) {
+                            onNavigateToSettings()
+                        }
                     }
-                    ProfileMenuItem(
-                        Icons.Default.CreditCard,
-                        stringResource(R.string.saved_cards)
-                    ) {
-                        onNavigateToSavedCards()
+                    item {
+                        ProfileMenuItem(
+                            Icons.Default.CreditCard,
+                            stringResource(R.string.saved_cards)
+                        ) {
+                            onNavigateToSavedCards()
+                        }
                     }
-                    ProfileMenuItem(Icons.Default.List, stringResource(R.string.order_history)) {
-                        onNavigateToTransactions()
+                    item {
+                        ProfileMenuItem(
+                            Icons.Default.List,
+                            stringResource(R.string.order_history)
+                        ) {
+                            onNavigateToTransactions()
+                        }
                     }
-                    ProfileMenuItem(Icons.Default.Lock, stringResource(R.string.change_password)) {
-                        onChangePassword()
-                    }
-
-                    if (isAdmin) {
-                        ProfileMenuItem(Icons.Default.People, stringResource(R.string.users)) {
-                            onNavigateToUsers()
+                    item {
+                        ProfileMenuItem(
+                            Icons.Default.Lock,
+                            stringResource(R.string.change_password)
+                        ) {
+                            onChangePassword()
                         }
                     }
 
-                    Divider(color = BackgroundNavDark)
+                    if (isAdmin) {
+                        item {
+                            ProfileMenuItem(Icons.Default.People, stringResource(R.string.users)) {
+                                onNavigateToUsers()
+                            }
+                        }
+                    }
+
+                    if (isAdmin) {
+                        item {
+                            ProfileMenuItem(
+                                Icons.Default.BarChart,
+                                stringResource(R.string.statistics)
+                            ) {
+                                onNavigateToStatistics()
+                            }
+                        }
+                    }
+
+                   item { Divider(color = BackgroundNavDark) }
                 }
 
-                ProfileMenuItem(Icons.Default.Help, stringResource(R.string.help)){
-                    onNavigateToSupport()
+                item {
+                    ProfileMenuItem(Icons.Default.Help, stringResource(R.string.help)) {
+                        onNavigateToSupport()
+                    }
                 }
 
                 if (isLoggedIn) {
-                    ProfileMenuItem(Icons.Default.ExitToApp, stringResource(R.string.sign_out)) {
-                        onSignOut()
+                    item {
+                        ProfileMenuItem(
+                            Icons.Default.ExitToApp,
+                            stringResource(R.string.sign_out)
+                        ) {
+                            onSignOut()
+                        }
                     }
                 } else {
-                    ProfileMenuItem(
-                        Icons.Default.ExitToApp,
-                        stringResource(R.string.login_button)
-                    ) {
-                        onNavigateToLogin()
+                    item {
+                        ProfileMenuItem(
+                            Icons.Default.ExitToApp,
+                            stringResource(R.string.login_button)
+                        ) {
+                            onNavigateToLogin()
+                        }
                     }
                 }
+                item { Spacer(modifier = Modifier.height(50.dp)) }
             }
         }
     }

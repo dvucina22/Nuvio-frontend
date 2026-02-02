@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.example.core.ui.theme.AccentColor
-import com.example.core.ui.theme.LightOverlay
 
 @Composable
 fun IconActionBox(
